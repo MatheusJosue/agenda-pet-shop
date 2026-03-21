@@ -1,0 +1,199 @@
+/* Input - Glassmorphism Design System */
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Label */
+.label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.required {
+  color: rgb(236, 72, 153);
+  font-weight: 600;
+}
+
+/* Input Wrapper */
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border-radius: 12px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.inputWrapper:focus-within {
+  transform: translateY(-1px);
+}
+
+/* Icons */
+.leftIcon,
+.rightIcon {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.5);
+  pointer-events: none;
+  transition: color 0.2s;
+}
+
+.leftIcon {
+  left: 12px;
+}
+
+.rightIcon {
+  right: 12px;
+}
+
+.inputWrapper:focus-within .leftIcon,
+.inputWrapper:focus-within .rightIcon {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Input */
+.input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: white;
+  font-size: 15px;
+  transition: all 0.2s;
+}
+
+.input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.input:focus {
+  outline: none;
+}
+
+.hasLeftIcon {
+  padding-left: 40px;
+}
+
+.hasRightIcon {
+  padding-right: 40px;
+}
+
+/* Sizes */
+.size-sm {
+  border-radius: 10px;
+}
+
+.size-sm .input {
+  padding: 8px 12px;
+  font-size: 14px;
+}
+
+.size-sm .leftIcon {
+  left: 10px;
+}
+
+.size-sm .rightIcon {
+  right: 10px;
+}
+
+.size-md {
+  border-radius: 12px;
+}
+
+.size-md .input {
+  padding: 12px 16px;
+  font-size: 15px;
+}
+
+.size-lg {
+  border-radius: 14px;
+}
+
+.size-lg .input {
+  padding: 16px 20px;
+  font-size: 16px;
+}
+
+.size-lg .leftIcon {
+  left: 16px;
+}
+
+.size-lg .rightIcon {
+  right: 16px;
+}
+
+/* Variants */
+.variant-default {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.variant-default:focus-within {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(168, 85, 247, 0.6);
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.15),
+    0 0 0 3px rgba(168, 85, 247, 0.1);
+}
+
+.variant-filled {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid transparent;
+}
+
+.variant-filled:focus-within {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(168, 85, 247, 0.6);
+  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.1);
+}
+
+.variant-underline {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.variant-underline .input {
+  padding: 8px 0;
+}
+
+.variant-underline:focus-within {
+  border-bottom-color: rgb(168, 85, 247);
+  box-shadow: 0 1px 0 0 rgb(168, 85, 247);
+}
+
+/* Error State */
+.error {
+  border-color: rgb(239, 68, 68) !important;
+}
+
+.error:focus-within {
+  border-color: rgb(239, 68, 68) !important;
+  box-shadow:
+    0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+}
+
+.input:disabled,
+.inputWrapper:has(.input:disabled) {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Error Message */
+.errorMessage {
+  font-size: 13px;
+  color: rgb(239, 68, 68);
+  margin-top: 4px;
+}
