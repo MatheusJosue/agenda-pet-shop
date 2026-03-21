@@ -1,7 +1,7 @@
 # Agenda Pet Shop - Design Document
 
 **Date:** 2026-03-21
-**Status:** Approved
+**Status:** Approved (v1.1 - Review fixes applied)
 **Author:** AI Design Assistant
 
 ---
@@ -45,8 +45,10 @@ agenda-pet-shop/
 ├── src/
 │   ├── app/
 │   │   ├── (auth)/              # Auth routes group
-│   │   │   ├── register/        # Register with invite code
-│   │   │   └── login/           # Login page
+│   │   │   ├── login/           # Login page
+│   │   │   └── register/        # Register with invite code
+│   │   ├── admin/               # One-time admin setup
+│   │   │   └── setup/           # Initial admin creation
 │   │   ├── (admin)/             # Admin dashboard
 │   │   │   ├── layout.tsx       # Admin-only layout
 │   │   │   ├── dashboard/       # Global metrics
@@ -101,7 +103,8 @@ CREATE TABLE invites (
   used BOOLEAN DEFAULT FALSE,
   company_id UUID REFERENCES companies(id),
   expires_at TIMESTAMPTZ NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT NOW()
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- Index for code lookup
@@ -221,7 +224,8 @@ CREATE TABLE appointments (
   client_plan_id UUID REFERENCES client_plans(id),
   notes TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  CHECK (used_credit = FALSE OR client_plan_id IS NOT NULL)
 );
 
 CREATE INDEX idx_appointments_company ON appointments(company_id);
@@ -276,7 +280,7 @@ CREATE POLICY "Company can insert own appointments"
 #### **Company Registration via Invite**
 1. Admin generates invite code at `/admin/invites`
 2. Admin shares code manually
-3. Company accesses `/register`
+3. Company accesses `/register` (route: `/auth/register`)
 4. Enters: name, email, password, INVITE CODE
 5. System validates code (unused, not expired)
 6. Creates: company, user (role=company_admin), marks invite as used
@@ -300,18 +304,47 @@ CREATE POLICY "Company can insert own appointments"
 
 ```typescript
 // middleware.ts
-export function middleware(request: NextRequest) {
-  const token = getServerToken()
-  if (!token) return NextResponse.redirect('/login')
+import { createServerClient } from '@supabase/auth-helpers-nextjs'
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 
-  const userRole = await getUserRole(token)
-  const path = request.nextUrl.pathname
+export async function middleware(request: NextRequest) {
+  const res = NextResponse.next()
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    { request, response: res }
+  )
 
-  if (userRole === 'admin' && !path.startsWith('/admin'))
-    return NextResponse.redirect('/admin/dashboard')
+  const { data: { session } } = await supabase.auth.getSession()
 
-  if (userRole.startsWith('company') && !path.startsWith('/app'))
-    return NextResponse.redirect('/app/dashboard')
+  if (!session && !request.nextUrl.pathname.startsWith('/login') &&
+      !request.nextUrl.pathname.startsWith('/register') &&
+      !request.nextUrl.pathname.startsWith('/admin/setup')) {
+    return NextResponse.redirect(new URL('/login', request.url))
+  }
+
+  if (session) {
+    // Get user role from custom claims or database
+    const { data: user } = await supabase
+      .from('users')
+      .select('role')
+      .eq('id', session.user.id)
+      .single()
+
+    const userRole = user?.role
+    const path = request.nextUrl.pathname
+
+    if (userRole === 'admin' && !path.startsWith('/admin')) {
+      return NextResponse.redirect(new URL('/admin/dashboard', request.url))
+    }
+
+    if (userRole?.startsWith('company') && !path.startsWith('/app')) {
+      return NextResponse.redirect(new URL('/app/dashboard', request.url))
+    }
+  }
+
+  return res
 }
 ```
 
@@ -443,31 +476,29 @@ export async function createAppointment(data: FormData) {
 }
 ```
 
-### 6.2 Credit Logic
+### 6.2 Credit Logic (Atomic - No Race Conditions)
 
 ```typescript
 export async function verifyAndDeductCredit(
   clientId: string,
   planId: string
-) {
-  // Get active plan
-  const plan = await supabase
+): Promise<{ success: boolean; planId: string }> {
+  // Atomic UPDATE with WHERE clause to prevent race conditions
+  const { data, error } = await supabase
     .from('client_plans')
-    .select('*')
+    .update({ credits_remaining: supabase.raw('credits_remaining - 1') })
+    .select('id, credits_remaining')
     .eq('client_id', clientId)
     .eq('plan_id', planId)
     .eq('active', true)
+    .gt('credits_remaining', 0)  // Only update if credits > 0
     .single()
 
-  if (plan.credits_remaining <= 0) {
-    throw new Error('Sem créditos suficientes')
+  if (error || !data) {
+    throw new Error('Sem créditos suficientes ou plano não encontrado')
   }
 
-  // Deduct credit
-  await supabase
-    .from('client_plans')
-    .update({ credits_remaining: plan.credits_remaining - 1 })
-    .eq('id', plan.id)
+  return { success: true, planId: data.id }
 }
 ```
 
@@ -493,6 +524,7 @@ export async function verifyAndDeductCredit(
 
 ```
 /admin/
+├── setup/page.tsx          // One-time initial admin creation
 ├── dashboard/page.tsx      // Global metrics
 ├── companies/
 │   ├── page.tsx            // Companies list
@@ -619,5 +651,9 @@ SUPABASE_SERVICE_ROLE_KEY=
 
 ---
 
-**Document Version:** 1.0
+**Document Version:** 1.1
 **Last Updated:** 2026-03-21
+
+### Changelog
+- v1.1: Added /admin/setup route, fixed credit deduction race condition, added CHECK constraint for used_credit, added middleware implementation details
+- v1.0: Initial design document
