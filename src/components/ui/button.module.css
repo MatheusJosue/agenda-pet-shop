@@ -1,0 +1,181 @@
+/* Button - Glassmorphism Design System */
+
+.button {
+  /* Base styles */
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 500;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+  outline: none;
+}
+
+.button:focus-visible {
+  outline: 2px solid rgb(168, 85, 247);
+  outline-offset: 2px;
+}
+
+/* Sizes */
+.size-sm {
+  padding: 8px 16px;
+  font-size: 14px;
+  gap: 6px;
+}
+
+.size-md {
+  padding: 12px 24px;
+  font-size: 15px;
+}
+
+.size-lg {
+  padding: 16px 32px;
+  font-size: 16px;
+  gap: 10px;
+}
+
+/* Variants - Primary (pink/purple gradient with glass effect) */
+.variant-primary {
+  background: linear-gradient(
+    135deg,
+    rgb(236, 72, 153) 0%,
+    rgb(168, 85, 247) 50%,
+    rgb(59, 130, 246) 100%
+  );
+  color: white;
+  box-shadow:
+    0 4px 16px rgba(236, 72, 153, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+}
+
+.variant-primary:hover:not(:disabled) {
+  box-shadow:
+    0 8px 24px rgba(236, 72, 153, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+  transform: translateY(-1px);
+}
+
+.variant-primary:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow:
+    0 2px 8px rgba(236, 72, 153, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+}
+
+/* Variants - Secondary (glass card) */
+.variant-secondary {
+  background: rgba(255, 255, 255, 0.08);
+  color: white;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.variant-secondary:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.variant-secondary:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Variants - Outline */
+.variant-outline {
+  background: transparent;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.variant-outline:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Variants - Ghost */
+.variant-ghost {
+  background: transparent;
+  color: white;
+  border: none;
+}
+
+.variant-ghost:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Disabled state */
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Loading state */
+.loading {
+  pointer-events: none;
+}
+
+.content {
+  display: inline-flex;
+  align-items: center;
+}
+
+.loading .content {
+  visibility: hidden;
+}
+
+/* Spinner */
+.spinner {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.spinnerDot {
+  width: 6px;
+  height: 6px;
+  background: white;
+  border-radius: 50%;
+  animation: bounce 1.4s infinite ease-in-out both;
+}
+
+.spinnerDot:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.spinnerDot:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+@keyframes bounce {
+  0%, 80%, 100% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Size-specific spinner dots */
+.size-sm .spinnerDot {
+  width: 4px;
+  height: 4px;
+}
+
+.size-lg .spinnerDot {
+  width: 8px;
+  height: 8px;
+  gap: 6px;
+}
