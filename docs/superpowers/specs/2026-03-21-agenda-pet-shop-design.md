@@ -1,7 +1,7 @@
 # Agenda Pet Shop - Design Document
 
 **Date:** 2026-03-21
-**Status:** Approved (v1.1 - Review fixes applied)
+**Status:** Approved (v1.2 - All review issues resolved)
 **Author:** AI Design Assistant
 
 ---
@@ -274,15 +274,21 @@ CREATE POLICY "Company can insert own appointments"
 
 #### **Admin Setup (One-time)**
 1. Access `/admin/setup` (only if no admin exists)
-2. Create first admin account
-3. Redirect to `/admin/dashboard`
+2. Server action checks: `SELECT COUNT(*) FROM users WHERE role = 'admin'`
+3. If count > 0, redirect to `/login` with error
+4. If count = 0, show setup form (email + password)
+5. Create admin user in Supabase Auth + users table
+6. Redirect to `/admin/dashboard`
 
 #### **Company Registration via Invite**
 1. Admin generates invite code at `/admin/invites`
 2. Admin shares code manually
 3. Company accesses `/register` (route: `/auth/register`)
 4. Enters: name, email, password, INVITE CODE
-5. System validates code (unused, not expired)
+5. System validates code:
+   - If expired: "Este código de convite expirou. Peça um novo ao administrador."
+   - If already used: "Este código já foi utilizado."
+   - If invalid: "Código de convite inválido."
 6. Creates: company, user (role=company_admin), marks invite as used
 7. Redirects to `/app/dashboard`
 8. Auto-setup: creates default services and plans
@@ -478,27 +484,61 @@ export async function createAppointment(data: FormData) {
 
 ### 6.2 Credit Logic (Atomic - No Race Conditions)
 
+**PostgreSQL Function (created in Supabase):**
+```sql
+CREATE OR REPLACE FUNCTION deduct_credit(
+  p_client_id UUID,
+  p_plan_id UUID
+) RETURNS TABLE (
+  success BOOLEAN,
+  client_plan_id UUID,
+  credits_remaining INTEGER
+) LANGUAGE plpgsql AS $$
+BEGIN
+  UPDATE client_plans
+  SET credits_remaining = credits_remaining - 1
+  WHERE id = (
+    SELECT id FROM client_plans
+    WHERE client_id = p_client_id
+      AND plan_id = p_plan_id
+      AND active = true
+      AND credits_remaining > 0
+    LIMIT 1
+    FOR UPDATE SKIP LOCKED  -- Prevent race conditions
+  )
+  RETURNING id, credits_remaining;
+
+  IF FOUND THEN
+    RETURN QUERY SELECT true, id, credits_remaining FROM client_plans
+      WHERE client_id = p_client_id AND plan_id = p_plan_id;
+  ELSE
+    RAISE EXCEPTION 'Sem créditos suficientes ou plano não encontrado';
+  END IF;
+END;
+$$;
+```
+
+**Server Action:**
 ```typescript
 export async function verifyAndDeductCredit(
   clientId: string,
-  planId: string
-): Promise<{ success: boolean; planId: string }> {
-  // Atomic UPDATE with WHERE clause to prevent race conditions
+  planId: string  // This is the plan template ID from plans table
+): Promise<{ success: boolean; clientPlanId: string }> {
+  // Use PostgreSQL function for atomic credit deduction
   const { data, error } = await supabase
-    .from('client_plans')
-    .update({ credits_remaining: supabase.raw('credits_remaining - 1') })
-    .select('id, credits_remaining')
-    .eq('client_id', clientId)
-    .eq('plan_id', planId)
-    .eq('active', true)
-    .gt('credits_remaining', 0)  // Only update if credits > 0
-    .single()
+    .rpc('deduct_credit', {
+      p_client_id: clientId,
+      p_plan_id: planId
+    })
 
-  if (error || !data) {
-    throw new Error('Sem créditos suficientes ou plano não encontrado')
+  if (error) {
+    throw new Error(error.message || 'Sem créditos suficientes ou plano não encontrado')
   }
 
-  return { success: true, planId: data.id }
+  return {
+    success: data.success,
+    clientPlanId: data.client_plan_id
+  }
 }
 ```
 
@@ -651,9 +691,10 @@ SUPABASE_SERVICE_ROLE_KEY=
 
 ---
 
-**Document Version:** 1.1
+**Document Version:** 1.2
 **Last Updated:** 2026-03-21
 
 ### Changelog
-- v1.1: Added /admin/setup route, fixed credit deduction race condition, added CHECK constraint for used_credit, added middleware implementation details
+- v1.2: Fixed credit deduction using Supabase RPC with PostgreSQL function, added admin setup implementation details, added error messages for expired invites, clarified client_plan_id vs plan_id
+- v1.1: Added /admin/setup route, fixed credit deduction race condition, added CHECK constraint for used_credit, added updated_at to invites table, added middleware implementation details
 - v1.0: Initial design document
