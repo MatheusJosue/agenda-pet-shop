@@ -9,7 +9,18 @@ CREATE OR REPLACE FUNCTION deduct_credit(
 DECLARE
   v_client_plan_id UUID;
   v_credits_remaining INTEGER;
+  v_user_company_id UUID;
 BEGIN
+  -- Get user's company for authorization
+  SELECT company_id INTO v_user_company_id
+  FROM users
+  WHERE id = auth.uid();
+
+  -- Verify user has a company
+  IF v_user_company_id IS NULL THEN
+    RAISE EXCEPTION 'Usuário não associado a uma empresa';
+  END IF;
+
   -- Atomic update with lock to prevent race conditions
   UPDATE client_plans
   SET credits_remaining = credits_remaining - 1
@@ -17,6 +28,7 @@ BEGIN
     SELECT id FROM client_plans
     WHERE client_id = p_client_id
       AND plan_id = p_plan_id
+      AND company_id = v_user_company_id  -- Authorization check
       AND active = true
       AND credits_remaining > 0
     LIMIT 1
