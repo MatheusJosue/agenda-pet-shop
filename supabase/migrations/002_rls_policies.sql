@@ -141,7 +141,11 @@ CREATE POLICY "Users can update own profile"
   ON users FOR UPDATE
   TO authenticated
   USING (id = auth.uid())
-  WITH CHECK (id = auth.uid());
+  WITH CHECK (
+    id = auth.uid() AND
+    role = (SELECT role FROM users WHERE id = auth.uid()) AND
+    company_id = (SELECT company_id FROM users WHERE id = auth.uid())
+  );
 
 -- Company admins can view users from their company
 CREATE POLICY "Company admins can view company users"
