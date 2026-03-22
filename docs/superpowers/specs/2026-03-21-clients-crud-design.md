@@ -30,15 +30,25 @@ Complete CRUD (Create, Read, Update, Delete) functionality for Clients in the Ag
 src/
 ├── lib/actions/
 │   └── clients.ts                    # Server actions for CRUD
+├── lib/types/
+│   └── clients.ts                    # Client type definitions
 ├── app/(app)/app/clientes/
 │   ├── page.tsx                      # Client list (refactor existing)
-│   └── novo/
-│       └── page.tsx                  # Create new client
-├── components/clients/
-│   ├── client-card.tsx               # Single client card component
-│   ├── client-form.tsx               # Reusable form component
-│   ├── client-search-bar.tsx         # Search with real-time filtering
-│   └── client-list-skeleton.tsx      # Loading state
+│   ├── novo/
+│   │   └── page.tsx                  # Create new client
+│   └── [id]/
+│       ├── page.tsx                  # Client details view
+│       └── editar/
+│           └── page.tsx              # Edit client
+├── components/
+│   ├── ui/
+│   │   └── dialog.tsx                # Modal/Dialog component (NEW)
+│   └── clients/
+│       ├── client-card.tsx           # Single client card component
+│       ├── client-form.tsx           # Reusable form component
+│       ├── client-search-bar.tsx     # Search with real-time filtering
+│       ├── client-list-skeleton.tsx  # Loading state
+│       └── client-delete-dialog.tsx  # Delete confirmation modal
 └── test/
     ├── lib/actions/clients.test.ts   # Server actions tests
     └── components/clients/           # Component tests
@@ -55,7 +65,46 @@ src/
 
 **Security:** All database operations use Row Level Security (RLS) with `company_id` to ensure multi-tenant isolation.
 
+## Type Definitions
+
+```typescript
+// lib/types/clients.ts
+export interface Client {
+  id: string
+  company_id: string
+  name: string
+  phone: string  // stored as digits only: "11987654321"
+  email?: string | null
+  notes?: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface ClientInput {
+  name: string
+  phone: string  // user enters formatted, we strip to digits
+  email?: string
+  notes?: string
+}
+```
+
 ## Components
+
+### 0. Dialog Component (`components/ui/dialog.tsx`) - NEW
+
+**Purpose:** Reusable modal/dialog for confirmations and forms
+
+**API:**
+```typescript
+interface DialogProps {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  title: string
+  description?: string
+  children: React.ReactNode
+  footer?: React.ReactNode
+}
+```
 
 ### 1. Server Actions (`lib/actions/clients.ts`)
 
@@ -68,6 +117,7 @@ export interface ClientResponse {
 export interface ClientsListResponse {
   data?: Client[]
   error?: string
+  appointmentCount?: number  // for delete validation
 }
 
 // Core operations
@@ -75,25 +125,39 @@ export async function getClients(search?: string): ClientsListResponse
 export async function getClientById(id: string): ClientResponse
 export async function createClient(input: ClientInput): ClientResponse
 export async function updateClient(id: string, input: ClientInput): ClientResponse
+export async function checkClientAppointments(id: string): Promise<number>  // returns count
 export async function deleteClient(id: string): ClientResponse
 ```
 
 **Validation:** Uses existing `clientSchema` from `@/lib/validation/clients`
 
+**Phone handling:**
+- Input: User enters formatted `(11) 98765-4321`
+- Strip: Remove non-digits before storing: `11987654321`
+- Display: Format back to `(XX) XXXXX-XXXX` in UI
+
 **Security:**
 - Validates `company_id` from session before all operations
-- Returns 404 if client doesn't belong to user's company
-- Checks for future appointments before deletion
+- Returns error message if client doesn't belong to user's company
+- `checkClientAppointments` queries future appointments before allowing delete
+- No duplicate validation enforced (allow same phone/email for different clients)
 
 ### 2. Client List Page (`app/(app)/app/clientes/page.tsx`)
 
 **Features:**
-- Real-time search (debounce 300ms)
+- Real-time search (debounce 300ms via custom hook `useDebounce`)
 - GlassCard-based client list
-- Empty state with call-to-action
-- Skeleton loading
+- Empty state with call-to-action (different for "no clients" vs "no search results")
+- Skeleton loading while fetching
 
-**Search Scope:** Name, phone, email
+**Search Scope:** Name, phone, email (ILIKE query)
+
+**Empty States:**
+
+| Scenario                | Icon | Message                     | Action         |
+|-------------------------|------|-----------------------------|----------------|
+| No clients exist        | 👥   | "Nenhum cliente cadastrado" | "Adicionar"    |
+| Search has no results   | 🔍   | "Nenhum resultado encontrado" | "Limpar busca" |
 
 **Layout:**
 ```
@@ -103,12 +167,14 @@ export async function deleteClient(id: string): ClientResponse
 │  🔍 [Buscar cliente...]            │
 ├─────────────────────────────────────┤
 │  ┌───────────────────────────────┐  │
-│  │  👤 João Silva      ✏️ 🗑️    │  │
+│  │  👤 João Silva      ✏️  🗑️  │  │
 │  │  📱 (11) 98765-4321           │  │
 │  │  ✉️ joao@email.com            │  │
 │  └───────────────────────────────┘  │
 └─────────────────────────────────────┘
 ```
+
+**Pagination:** None for MVP (assume <100 clients). Add cursor-based pagination in future enhancement.
 
 ### 3. Client Card Component (`components/clients/client-card.tsx`)
 
@@ -116,49 +182,117 @@ export async function deleteClient(id: string): ClientResponse
 ```typescript
 interface ClientCardProps {
   client: Client
-  onEdit: (id: string) => void
-  onDelete: (id: string) => void
+  onDelete: (id: string) => void  // opens delete dialog
 }
 ```
 
 **Behavior:**
-- Click card body → navigate to details
-- Click edit button → navigate to edit
-- Click delete → confirm modal → delete
+- Click card body → navigate to `/app/clientes/[id]` (details page)
+- Click edit button → navigate to `/app/clientes/[id]/editar` (edit page)
+- Click delete button → trigger `onDelete` callback
+
+**Display formatting:**
+- Phone: Format from digits to `(XX) XXXXX-XXXX` via `formatPhone()` utility
+- Email: Hide line if not provided
 
 ### 4. Client Form (`components/clients/client-form.tsx`)
+
+**Props:**
+```typescript
+interface ClientFormProps {
+  client?: Client  // if provided, form is in edit mode
+  onSuccess: () => void  // callback after successful submit
+  onCancel?: () => void  // optional cancel action
+}
+```
 
 **Fields:**
 | Field    | Type      | Required | Validation                     |
 |----------|-----------|----------|--------------------------------|
 | name     | text      | Yes      | min 3 characters               |
-| phone    | tel       | Yes      | 10-11 digits                   |
+| phone    | tel       | Yes      | 10-11 digits (stripped)        |
 | email    | email     | No       | Valid email format if provided |
 | notes    | textarea  | No       | max 500 characters             |
 
 **Features:**
-- Auto-mask phone: `(XX) XXXXX-XXXX`
-- Auto-focus first field
-- Enter advances to next field
-- Ctrl+Enter submits
-- Esc cancels (with confirmation if dirty)
+- Phone input: Auto-mask as `(XX) XXXXX-XXXX` while typing, strip to digits on submit
+- Auto-focus first field on mount
+- Enter key advances to next field
+- Ctrl+Enter submits form
+- Esc key cancels (with confirmation if form has changes)
 - Real-time validation with Zod
+- Loading state on submit button
+- Show error toast on failure, success toast on success
 
 ### 5. Create Page (`app/(app)/app/clientes/novo/page.tsx`)
 
 **Route:** `/app/clientes/novo`
 
 **Features:**
-- Uses `client-form.tsx`
-- On success: redirect to list with success toast
-- On error: show inline error messages
+- Uses `client-form.tsx` (no client prop = create mode)
+- On success: redirect to `/app/clientes` with success toast
+- On error: stay on page, show inline errors
 
-### 6. Delete Confirmation
+### 6. Client Details Page (`app/(app)/app/clientes/[id]/page.tsx`) - NEW
 
-**Protection:**
-- Check for future appointments before allowing delete
-- Show modal: "Delete {name}?" with cancel/confirm
-- If appointments exist: "Client has X upcoming appointments. Cannot delete."
+**Route:** `/app/clientes/[id]`
+
+**Layout:**
+```
+┌─────────────────────────────────────┐
+│ ← Voltar    João Silva    [Editar]  │
+├─────────────────────────────────────┤
+│ 📱 (11) 98765-4321                  │
+│ ✉️ joao@email.com                   │
+│                                     │
+│ 📝 Notas:                           │
+│ Cliente desde 2024. Prefere banho... │
+│                                     │
+│ ┌───────────────────────────────┐  │
+│ │ 🐕 Pets (2)              Ver →│  │
+│ │ 📅 Agendamentos (3)      Ver →│  │
+│ └───────────────────────────────┘  │
+└─────────────────────────────────────┘
+```
+
+**Features:**
+- Display client information
+- "Editar" button → navigates to `/app/clientes/[id]/editar`
+- Pets card → navigates to pets filtered by this client (future feature)
+- Appointments card → navigates to appointments filtered by this client (future feature)
+- Show loading skeleton while fetching client
+- Show error state if client not found or unauthorized
+
+### 7. Edit Page (`app/(app)/app/clientes/[id]/editar/page.tsx`) - NEW
+
+**Route:** `/app/clientes/[id]/editar`
+
+**Features:**
+- Fetch client by id on mount
+- Uses `client-form.tsx` with client prop = edit mode
+- Pre-fills form with existing data
+- Phone: format from digits to mask on load
+- On success: redirect to `/app/clientes/[id]` (details page)
+- On error: stay on page, show inline errors
+- Show loading skeleton while fetching
+
+### 8. Delete Confirmation (`components/clients/client-delete-dialog.tsx`)
+
+**Flow:**
+1. User clicks delete button on card
+2. Opens `Dialog` with client name
+3. Before showing confirm button, calls `checkClientAppointments(id)`
+4. If appointments > 0:
+   - Hide confirm button
+   - Show: "Este cliente possui {count} agendamentos futuros. Não é possível excluir."
+5. If appointments = 0:
+   - Show "Excluir {name}?" message
+   - Show "Cancelar" and "Excluir" buttons
+6. On confirm: call `deleteClient(id)`, close dialog, refresh list
+
+**Loading states:**
+- Skeleton in dialog while checking appointments
+- Loading state on delete button while deleting
 
 ## Error Handling
 
@@ -166,18 +300,28 @@ interface ClientCardProps {
 
 | Error Type                     | User Message                          |
 |--------------------------------|---------------------------------------|
-| Validation failed              | "Please check the form for errors"    |
-| Client not found               | "Client not found"                    |
-| Unauthorized (wrong company)   | "You don't have permission"           |
-| Has future appointments        | "Cannot delete client with appointments" |
-| Database error                 | "Something went wrong. Try again."    |
+| Validation failed              | "Por favor, verifique os campos"      |
+| Client not found               | "Cliente não encontrado"              |
+| Unauthorized (wrong company)   | "Você não tem permissão para acessar" |
+| Has future appointments        | "Não é possível excluir cliente com agendamentos futuros" |
+| Database error                 | "Algo deu errado. Tente novamente."   |
+
+**Note:** Server Actions return `{ error?: string }`, not HTTP status codes. The UI converts errors to toast messages.
 
 ### Form Validation
 
 Real-time validation with Zod schema:
-- Show error below each field
-- Disable submit button until valid
-- Show success message on submit
+- Show error below each field as user types
+- Disable submit button until form is valid
+- Show success toast on submit
+- Show error toast on server error
+- Field-level errors display inline
+
+### Network Error Handling
+
+- On timeout: Show "Tempo limite excedido. Tente novamente."
+- On network error: Show "Erro de conexão. Verifique sua internet."
+- Retry mechanism: User can retry by clicking submit again
 
 ## Testing
 
@@ -185,22 +329,35 @@ Real-time validation with Zod schema:
 
 **Server Actions (`lib/actions/clients.test.ts`):**
 - `getClients` returns company-scoped clients
+- `getClients` filters by search term
 - `getClientById` returns only client from same company
+- `getClientById` returns error for wrong company
 - `createClient` creates with correct company_id
+- `createClient` strips phone to digits
 - `updateClient` updates only own company's client
+- `checkClientAppointments` returns correct count
 - `deleteClient` prevents deletion with appointments
+- `deleteClient` deletes when no appointments
 
 **Components:**
-- `client-form`: validates inputs, submits on valid, shows errors
-- `client-card`: renders correctly, handles actions
+- `client-form`: validates inputs, strips phone, submits on valid, shows errors
+- `client-card`: formats phone correctly, hides email if null, handles actions
 - `client-search-bar`: filters correctly, debounces input
+- `client-delete-dialog`: shows appointments count, prevents delete when needed
+- `dialog`: opens/closes, renders children, handles footer
+
+**Utilities:**
+- `formatPhone()`: converts digits to masked format
+- `stripPhone()`: converts masked format to digits
+- `useDebounce()`: delays value updates
 
 ### Integration Tests
 
-- Create client → appears in list
-- Search finds created client
-- Edit client → changes persist
+- Create client → appears in list → can search for it
+- Edit client → changes persist in details page
 - Delete client → removed from list
+- Cannot delete client with appointments
+- Cannot access other company's clients
 
 **Target Coverage:** 80%+
 
@@ -209,12 +366,15 @@ Real-time validation with Zod schema:
 1. [ ] User can create a client with valid data
 2. [ ] User can view all company clients in list
 3. [ ] User can search clients by name/phone/email
-4. [ ] User can edit existing client
-5. [ ] User can delete client (protected if appointments exist)
-6. [ ] All actions scoped to user's company (RLS)
-7. [ ] 80%+ test coverage
-8. [ ] No TypeScript errors
-9. [ ] All tests pass
+4. [ ] User can view client details page
+5. [ ] User can edit existing client
+6. [ ] User can delete client (protected if appointments exist)
+7. [ ] All actions scoped to user's company (RLS)
+8. [ ] Phone number formatted correctly in UI
+9. [ ] Empty states show correct message
+10. [ ] 80%+ test coverage
+11. [ ] No TypeScript errors
+12. [ ] All tests pass
 
 ## Dependencies
 
@@ -226,7 +386,10 @@ Real-time validation with Zod schema:
 - `@/lib/validation/clients` - Client schema
 
 **New:**
-- None (uses existing dependencies)
+- `components/ui/dialog.tsx` - Modal/Dialog component
+- `lib/types/clients.ts` - Type definitions
+- `lib/utils/phone.ts` - Phone formatting utilities
+- `lib/hooks/use-debounce.ts` - Debounce hook
 
 ## Future Enhancements
 
@@ -238,11 +401,18 @@ Out of scope for this implementation:
 4. **Bulk Import** - Import clients from CSV
 5. **Client Tags** - Categorize clients (VIP, new, etc.)
 6. **Client Notes Timeline** - Multiple notes with timestamps
+7. **Duplicate Validation** - Warn on duplicate phone/email
+8. **Pagination** - Cursor-based for 100+ clients
+9. **Soft Delete** - Archive instead of hard delete for audit trail
 
 ## Implementation Notes
 
 1. **Multi-tenancy:** All queries MUST filter by `company_id` from user session
-2. **Phone formatting:** Store as digits only, format for display
-3. **Email optional:** Don't show email field in card if not provided
-4. **Soft delete consideration:** Currently using hard delete; may need soft delete for audit trail
+2. **Phone formatting:**
+   - Store: 10-11 digits only (e.g., "11987654321")
+   - Display: `(XX) XXXXX-XXXX` (e.g., "(11) 98765-4321")
+   - Input: Auto-mask while typing, strip before submit
+3. **Email optional:** Don't show email line in card if null
+4. **Concurrency:** Last write wins for edits (consider optimistic locking in future)
 5. **Pagination:** Add after 100+ clients (use cursor-based)
+6. **Dialog reuse:** Create dialog.tsx to be reusable for other features
