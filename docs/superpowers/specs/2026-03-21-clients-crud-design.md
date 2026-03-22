@@ -109,6 +109,12 @@ interface DialogProps {
 ### 1. Server Actions (`lib/actions/clients.ts`)
 
 ```typescript
+'use server'
+
+import { createClient } from '@/lib/supabase/server'
+import { clientSchema } from '@/lib/validation/clients'
+import { escapeHtml } from '@/lib/utils/security'
+
 export interface ClientResponse {
   data?: Client
   error?: string
@@ -117,7 +123,22 @@ export interface ClientResponse {
 export interface ClientsListResponse {
   data?: Client[]
   error?: string
-  appointmentCount?: number  // for delete validation
+}
+
+// Helper: Get company_id from authenticated user session
+async function getCurrentCompanyId(): Promise<string | null> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) return null
+
+  const { data: userData } = await supabase
+    .from('users')
+    .select('company_id')
+    .eq('id', user.id)
+    .single()
+
+  return userData?.company_id || null
 }
 
 // Core operations
@@ -125,9 +146,23 @@ export async function getClients(search?: string): ClientsListResponse
 export async function getClientById(id: string): ClientResponse
 export async function createClient(input: ClientInput): ClientResponse
 export async function updateClient(id: string, input: ClientInput): ClientResponse
-export async function checkClientAppointments(id: string): Promise<number>  // returns count
+export async function checkClientAppointments(id: string): Promise<number>
 export async function deleteClient(id: string): ClientResponse
 ```
+
+**Session Validation Pattern (used in all actions):**
+```typescript
+const companyId = await getCurrentCompanyId()
+if (!companyId) {
+  return { error: 'Não autenticado' }
+}
+// Use companyId in all queries
+```
+
+**XSS Prevention for Notes Field:**
+- Store raw notes in database (escaped at display time)
+- Use `escapeHtml()` when rendering notes in UI
+- Validate max length (500 chars) via Zod schema
 
 **Validation:** Uses existing `clientSchema` from `@/lib/validation/clients`
 
@@ -137,9 +172,11 @@ export async function deleteClient(id: string): ClientResponse
 - Display: Format back to `(XX) XXXXX-XXXX` in UI
 
 **Security:**
-- Validates `company_id` from session before all operations
-- Returns error message if client doesn't belong to user's company
+- All queries filter by `company_id` from user session (via `getCurrentCompanyId()`)
+- RLS policies enforce company-scoped access at database level
+- Returns error if client doesn't belong to user's company
 - `checkClientAppointments` queries future appointments before allowing delete
+- Notes field sanitized at display time to prevent XSS
 - No duplicate validation enforced (allow same phone/email for different clients)
 
 ### 2. Client List Page (`app/(app)/app/clientes/page.tsx`)
@@ -323,6 +360,128 @@ Real-time validation with Zod schema:
 - On network error: Show "Erro de conexão. Verifique sua internet."
 - Retry mechanism: User can retry by clicking submit again
 
+### UUID Validation for Dynamic Routes
+
+For routes `[id]` and `[id]/editar`, validate the ID parameter:
+
+```typescript
+// lib/utils/validation.ts
+export function isValidUUID(id: string): boolean {
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+  return uuidRegex.test(id)
+}
+```
+
+**Usage in pages:**
+- If invalid UUID: Show 404 page (use `notFound()` from Next.js)
+- Catch this before making database queries
+
+## Security Implementation
+
+### XSS Prevention
+
+**Utility Function (`lib/utils/security.ts`):**
+```typescript
+/**
+ * Escape HTML to prevent XSS attacks
+ * Use when rendering user-generated content like notes
+ */
+export function escapeHtml(text: string): string {
+  const map: Record<string, string> = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#x27;'
+  }
+  return text.replace(/[&<>"']/g, (char) => map[char])
+}
+```
+
+**Usage:**
+```typescript
+// When displaying notes in UI
+<div>{escapeHtml(client.notes || '')}</div>
+```
+
+**Why escape at display time:**
+- Preserves original data in database
+- Allows different escape strategies if needed (e.g., Markdown rendering in future)
+- Defense in depth: even if database is compromised, XSS is prevented
+
+## Utilities
+
+### useDebounce Hook (`lib/hooks/use-debounce.ts`)
+
+```typescript
+import { useState, useEffect } from 'react'
+
+export function useDebounce<T>(value: T, delay: number = 300): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value)
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedValue(value)
+    }, delay)
+
+    return () => {
+      clearTimeout(timer)
+    }
+  }, [value, delay])
+
+  return debouncedValue
+}
+```
+
+**Usage in search:**
+```typescript
+const [search, setSearch] = useState('')
+const debouncedSearch = useDebounce(search, 300)
+
+useEffect(() => {
+  // Only query when debounced value changes
+  queryClients(debouncedSearch)
+}, [debouncedSearch])
+```
+
+### Phone Formatting Utilities (`lib/utils/phone.ts`)
+
+```typescript
+/**
+ * Strip non-digit characters from phone
+ * "(11) 98765-4321" → "11987654321"
+ */
+export function stripPhone(phone: string): string {
+  return phone.replace(/\D/g, '')
+}
+
+/**
+ * Format phone digits to Brazilian mask
+ * "11987654321" → "(11) 98765-4321"
+ */
+export function formatPhone(digits: string): string {
+  const cleaned = stripPhone(digits)
+
+  if (cleaned.length === 10) {
+    // Landline: (XX) XXXX-XXXX
+    return cleaned.replace(/^(\d{2})(\d{4})(\d{4})$/, '($1) $2-$3')
+  } else if (cleaned.length === 11) {
+    // Mobile: (XX) XXXXX-XXXX
+    return cleaned.replace(/^(\d{2})(\d{5})(\d{4})$/, '($1) $2-$3')
+  }
+
+  return digits // Return original if format doesn't match
+}
+
+/**
+ * Validate phone has 10-11 digits
+ */
+export function isValidPhone(phone: string): boolean {
+  const digits = stripPhone(phone)
+  return /^\d{10,11}$/.test(digits)
+}
+```
+
 ## Testing
 
 ### Unit Tests
@@ -349,7 +508,10 @@ Real-time validation with Zod schema:
 **Utilities:**
 - `formatPhone()`: converts digits to masked format
 - `stripPhone()`: converts masked format to digits
+- `isValidPhone()`: validates 10-11 digit phone
 - `useDebounce()`: delays value updates
+- `isValidUUID()`: validates UUID format
+- `escapeHtml()`: prevents XSS attacks
 
 ### Integration Tests
 
@@ -387,9 +549,13 @@ Real-time validation with Zod schema:
 
 **New:**
 - `components/ui/dialog.tsx` - Modal/Dialog component
+- `components/clients/*` - Client-specific components
 - `lib/types/clients.ts` - Type definitions
 - `lib/utils/phone.ts` - Phone formatting utilities
+- `lib/utils/security.ts` - XSS prevention utilities
+- `lib/utils/validation.ts` - UUID validation
 - `lib/hooks/use-debounce.ts` - Debounce hook
+- `lib/actions/clients.ts` - Server actions for CRUD
 
 ## Future Enhancements
 
@@ -408,11 +574,30 @@ Out of scope for this implementation:
 ## Implementation Notes
 
 1. **Multi-tenancy:** All queries MUST filter by `company_id` from user session
+   - Use `getCurrentCompanyId()` helper in all server actions
+   - RLS policies provide defense-in-depth at database level
+
 2. **Phone formatting:**
    - Store: 10-11 digits only (e.g., "11987654321")
    - Display: `(XX) XXXXX-XXXX` (e.g., "(11) 98765-4321")
    - Input: Auto-mask while typing, strip before submit
+
 3. **Email optional:** Don't show email line in card if null
-4. **Concurrency:** Last write wins for edits (consider optimistic locking in future)
-5. **Pagination:** Add after 100+ clients (use cursor-based)
-6. **Dialog reuse:** Create dialog.tsx to be reusable for other features
+
+4. **XSS Prevention:**
+   - Use `escapeHtml()` when rendering notes field
+   - Never render user input without escaping
+
+5. **UUID Validation:**
+   - Validate `[id]` parameter format before database queries
+   - Return 404 for invalid UUIDs using `notFound()`
+
+6. **Concurrency:** Last write wins for edits (consider optimistic locking in future)
+
+7. **Pagination:** Add after 100+ clients (use cursor-based)
+
+8. **Dialog reuse:** Create dialog.tsx to be reusable for other features
+
+9. **Session validation:** Server Actions must check authentication on every request
+   - `getCurrentCompanyId()` returns null if not authenticated
+   - Return appropriate error message to UI
