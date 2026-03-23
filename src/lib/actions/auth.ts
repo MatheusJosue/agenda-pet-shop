@@ -1,6 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
+import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { loginSchema, registerSchema } from '@/lib/validation/auth'
@@ -29,7 +30,7 @@ export async function login(formData: FormData) {
   }
 
   revalidatePath('/', 'layout')
-  return { success: true }
+  redirect('/app')
 }
 
 export async function register(formData: FormData) {
@@ -111,12 +112,14 @@ export async function register(formData: FormData) {
   }
 
   revalidatePath('/', 'layout')
-  return { success: true }
+  redirect('/app')
 }
 
-export async function logout(): Promise<{ success: boolean }> {
+export async function logout() {
   const supabase = await createClient()
   const { error } = await supabase.auth.signOut()
   revalidatePath('/', 'layout')
-  return { success: !error }
+  if (!error) {
+    redirect('/login')
+  }
 }

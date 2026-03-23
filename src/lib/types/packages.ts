@@ -60,3 +60,15 @@ export type PetPackagesResponse = {
   data: PetPackageWithRelations[]
   error?: string
 }
+
+export type PackageTypeInput = {
+  name: string
+  interval_days: 7 | 15 | 30
+  credits: number
+  price: number
+}
+
+export type PackageTypeResponse = {
+  data?: PackageType
+  error?: string
+}

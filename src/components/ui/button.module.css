@@ -112,6 +112,33 @@
   background: rgba(255, 255, 255, 0.08);
 }
 
+/* Variants - Danger (red gradient for delete actions) */
+.variant-danger {
+  background: linear-gradient(
+    135deg,
+    rgb(239, 68, 68) 0%,
+    rgb(220, 38, 38) 100%
+  );
+  color: white;
+  box-shadow:
+    0 4px 16px rgba(239, 68, 68, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+}
+
+.variant-danger:hover:not(:disabled) {
+  box-shadow:
+    0 8px 24px rgba(239, 68, 68, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+  transform: translateY(-1px);
+}
+
+.variant-danger:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow:
+    0 2px 8px rgba(239, 68, 68, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+}
+
 /* Disabled state */
 .button:disabled {
   cursor: not-allowed;

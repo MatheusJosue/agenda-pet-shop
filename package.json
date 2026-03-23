@@ -15,12 +15,18 @@
     "@supabase/supabase-js": "^2.99.3",
     "@types/classnames": "^2.3.0",
     "classnames": "^2.5.1",
+    "clsx": "^2.1.1",
     "date-fns": "^3.6.0",
+    "framer-motion": "^12.38.0",
+    "lucide-react": "^0.577.0",
     "next": "16.2.1",
     "react": "19.2.4",
     "react-day-picker": "^9.14.0",
     "react-dom": "19.2.4",
     "react-icons": "^5.6.0",
+    "react-toastify": "^11.0.5",
+    "sweetalert2": "^11.26.24",
+    "tailwind-merge": "^3.5.0",
     "zod": "^3.25.76"
   },
   "devDependencies": {
@@ -32,12 +38,14 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/react-toastify": "^4.0.2",
     "@vitejs/plugin-react": "^6.0.1",
     "babel-plugin-react-compiler": "1.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.2.1",
     "jsdom": "^29.0.1",
     "tailwindcss": "^4",
+    "tsx": "^4.21.0",
     "typescript": "^5",
     "vitest": "^1.6.1"
   }

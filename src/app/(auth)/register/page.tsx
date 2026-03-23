@@ -1,6 +1,7 @@
 'use client'
 
-import { useActionState } from 'react'
+import { useActionState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { register } from '@/lib/actions/auth'
 import { GlassCard } from '@/components/ui/glass-card'
@@ -19,6 +20,7 @@ interface RegisterFormState {
 }
 
 export default function RegisterPage() {
+  const router = useRouter()
   const [state, formAction, isPending] = useActionState<RegisterFormState, FormData>(
     async (prevState, formData) => {
       const result = await register(formData)
@@ -30,6 +32,12 @@ export default function RegisterPage() {
     },
     {}
   )
+
+  useEffect(() => {
+    if (state.success) {
+      router.push('/app')
+    }
+  }, [state.success, router])
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-purple-900/20 via-pink-800/20 to-purple-900/20">

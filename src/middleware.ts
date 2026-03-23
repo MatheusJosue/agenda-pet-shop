@@ -5,6 +5,13 @@ export async function middleware(request: NextRequest) {
   const requestHeaders = new Headers(request.headers)
   requestHeaders.set('x-pathname', request.nextUrl.pathname)
 
+  // Create response first
+  const response = NextResponse.next({
+    request: {
+      headers: requestHeaders,
+    },
+  })
+
   // Create Supabase client for middleware
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -30,11 +37,6 @@ export async function middleware(request: NextRequest) {
   const { data: { session } } = await supabase.auth.getSession()
 
   const pathname = request.nextUrl.pathname
-  const response = NextResponse.next({
-    request: {
-      headers: requestHeaders,
-    },
-  })
 
   // Public routes that don't require authentication
   const publicRoutes = ['/', '/login', '/register']

@@ -1,120 +1,228 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from 'react'
-import Link from 'next/link'
-import { BottomNavigation } from '@/components/layout/bottom-navigation'
-import { GlassCard } from '@/components/ui/glass-card'
-import { WhatsAppButton } from '@/components/ui/whatsapp-button'
-import { Button } from '@/components/ui/button'
-import { getExhaustedPackages } from '@/lib/actions/packages'
-import { generateExhaustedPackageMessage } from '@/lib/utils/whatsapp'
-import type { PetPackageWithRelations } from '@/lib/types/packages'
-import { PawPrint, Calendar } from 'lucide-react'
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { BottomNavigation } from "@/components/layout/bottom-navigation";
+import { GlassCard } from "@/components/ui/glass-card";
+import { Button } from "@/components/ui/button";
+import { AnimatedIcon } from "@/components/ui/animated-icon";
+import { motion } from "framer-motion";
+import {
+  Package,
+  Plus,
+  Sparkles,
+  Pencil,
+  Trash2,
+  Calendar,
+} from "lucide-react";
+import type { PackageType } from "@/lib/types/packages";
 
 export default function PacotesPage() {
-  const [packages, setPackages] = useState<PetPackageWithRelations[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [packageTypes, setPackageTypes] = useState<PackageType[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
-    getExhaustedPackages().then(result => {
-      if (result.error) {
-        setError(result.error)
-      } else {
-        setPackages(result.data || [])
+    async function loadPackageTypes() {
+      try {
+        const { getPackageTypes } = await import("@/lib/actions/packages");
+        const { data } = await getPackageTypes();
+        setPackageTypes(data || []);
+      } catch (error) {
+        console.error("Error loading package types:", error);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false)
-    })
-  }, [])
+    }
+    loadPackageTypes();
+  }, []);
 
-  const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr + 'T00:00:00')
-    return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })
-  }
+  const handleDelete = async (id: string, name: string) => {
+    if (deleteConfirm !== id) {
+      setDeleteConfirm(id);
+      return;
+    }
+
+    setDeleting(true);
+    try {
+      const { deletePackageType } = await import("@/lib/actions/packages");
+      const result = await deletePackageType(id);
+
+      if (result.error) {
+        alert(result.error);
+      } else {
+        // Remove from list
+        setPackageTypes((prev) => prev.filter((pt) => pt.id !== id));
+        setDeleteConfirm(null);
+      }
+    } catch (error) {
+      alert("Erro ao excluir tipo de pacote");
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const getIntervalLabel = (days: number) => {
+    switch (days) {
+      case 7:
+        return "Semanal";
+      case 15:
+        return "Quinzenal";
+      case 30:
+        return "Mensal";
+      default:
+        return `${days} dias`;
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 relative overflow-hidden pb-20">
       {/* Animated background decoration */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-fuchsia-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+        <div
+          className="absolute -bottom-40 -left-40 w-96 h-96 bg-fuchsia-500/10 rounded-full blur-3xl animate-pulse"
+          style={{ animationDelay: "1s" }}
+        />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/5 rounded-full blur-3xl" />
       </div>
 
       {/* Header */}
-      <header className="border-b border-white/10 backdrop-blur-md bg-white/5 sticky top-0 z-10">
+      <header className="border-b border-white/10 backdrop-blur-md bg-white/5 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-fuchsia-500 flex items-center justify-center text-xl shadow-lg shadow-purple-500/30">
-              📦
+          <div className="flex items-center justify-between">
+            {/* Title Section with Icon */}
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500 to-fuchsia-500 flex items-center justify-center text-2xl shadow-lg shadow-purple-500/30">
+                📦
+              </div>
+              <div>
+                <h1
+                  className="text-3xl font-bold text-white mb-1"
+                  style={{ fontFamily: "var(--font-outfit), sans-serif" }}
+                >
+                  Pacotes
+                </h1>
+                <p className="text-purple-200/60">
+                  {packageTypes?.length || 0} tipo
+                  {packageTypes?.length !== 1 ? "s" : ""}
+                </p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-2xl font-bold text-white" style={{ fontFamily: 'var(--font-outfit), sans-serif' }}>
-                Pacotes
-              </h1>
-              <p className="text-purple-200/60 text-sm">
-                Pacotes com créditos esgotados
-              </p>
-            </div>
+
+            {/* Add Button */}
+            <Link href="/app/pacotes/novo">
+              <Button variant="primary" size="md" className="gap-2">
+                <Plus size={18} />
+                Novo Tipo
+              </Button>
+            </Link>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative">
+      <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
         {loading ? (
           <div className="flex items-center justify-center py-12">
-            <div className="w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full animate-spin" />
+            <div className="w-10 h-10 border-4 border-purple-500 border-t-transparent rounded-full animate-spin" />
           </div>
-        ) : error ? (
-          <GlassCard variant="default" className="p-4 bg-red-500/20 border-red-500/50">
-            <p className="text-red-200">⚠️ {error}</p>
-          </GlassCard>
-        ) : packages.length === 0 ? (
-          <GlassCard variant="default" className="p-12 text-center">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-purple-500/20 flex items-center justify-center">
-              <PawPrint size={32} className="text-purple-300" />
-            </div>
-            <p className="text-purple-200/60">Nenhum pacote esgotado no momento</p>
+        ) : !packageTypes || packageTypes.length === 0 ? (
+          <GlassCard
+            variant="default"
+            className="p-12 text-center animate-in fade-in slide-in-from-bottom-4 duration-500"
+          >
+            <AnimatedIcon
+              icon={Sparkles}
+              variant="spin"
+              size={48}
+              className="text-fuchsia-400 mb-4 mx-auto"
+            />
+            <h2 className="text-xl font-semibold text-white mb-2">
+              Nenhum tipo de pacote cadastrado
+            </h2>
+            <p className="text-purple-200/60 mb-6">
+              Comece adicionando seu primeiro tipo de pacote
+            </p>
+            <Link href="/app/pacotes/novo">
+              <Button variant="primary" size="md" className="gap-2">
+                <Plus size={16} />
+                Adicionar Tipo de Pacote
+              </Button>
+            </Link>
           </GlassCard>
         ) : (
-          <div className="space-y-4">
-            {packages.map((pkg) => (
-              <GlassCard
-                key={pkg.id}
-                variant="default"
-                className="p-5"
+          <div className="space-y-3">
+            {packageTypes.map((pkgType, index) => (
+              <motion.div
+                key={pkgType.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05, duration: 0.3 }}
               >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <PawPrint size={20} className="text-purple-400 flex-shrink-0" />
-                      <span className="font-semibold text-white">{pkg.pet.name}</span>
+                <GlassCard
+                  variant="default"
+                  className="p-5 hover:scale-[1.01] hover:bg-white/10 transition-all group"
+                >
+                  <div className="flex items-center gap-4">
+                    {/* Icon */}
+                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500 to-fuchsia-500 flex items-center justify-center flex-shrink-0 shadow-lg shadow-purple-500/30 group-hover:scale-110 transition-transform duration-300">
+                      <Package size={26} className="text-white" />
                     </div>
-                    <p className="text-sm text-purple-200/60 mb-1">{pkg.client.name}</p>
-                    <div className="flex items-center gap-1 text-sm text-purple-200/40">
-                      <Calendar size={14} />
-                      <span>Venceu em {formatDate(pkg.expires_at)}</span>
+
+                    {/* Content */}
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-white mb-1">
+                        {pkgType.name}
+                      </h3>
+                      <p className="text-sm text-purple-200/60 flex items-center gap-1.5">
+                        <span className="w-5 h-5 rounded-full bg-purple-500/20 flex items-center justify-center">
+                          <Calendar size={12} className="text-purple-300" />
+                        </span>
+                        {getIntervalLabel(pkgType.interval_days)}
+                      </p>
+                      <p className="text-xs text-purple-300/60 mt-1">
+                        {pkgType.credits} crédito
+                        {pkgType.credits !== 1 ? "s" : ""}
+                      </p>
                     </div>
-                    <p className="text-xs text-purple-200/40 mt-1">{pkg.package_type.name}</p>
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <WhatsAppButton
-                      phone={pkg.client.phone}
-                      message={generateExhaustedPackageMessage(
-                        pkg.client.name,
-                        pkg.pet.name,
-                        pkg.package_type.name
-                      )}
-                      size="sm"
-                    />
-                    <Link href={`/app/pets/${pkg.pet.id}`}>
-                      <Button variant="secondary" size="sm">
-                        Ver Pet
+
+                    {/* Price */}
+                    <div className="text-right flex-shrink-0">
+                      <p className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-fuchsia-400">
+                        R$ {pkgType.price.toFixed(0)}
+                      </p>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <Link href={`/app/pacotes/${pkgType.id}/editar`}>
+                        <Button variant="secondary" size="sm" className="w-9 h-9 px-0 flex items-center justify-center">
+                          <Pencil size={16} />
+                        </Button>
+                      </Link>
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => handleDelete(pkgType.id, pkgType.name)}
+                        disabled={deleting}
+                        className={
+                          deleteConfirm === pkgType.id
+                            ? "bg-red-500/20 hover:bg-red-500/30 border-red-500/50 w-9 h-9 px-0 flex items-center justify-center"
+                            : "w-9 h-9 px-0 flex items-center justify-center"
+                        }
+                      >
+                        {deleteConfirm === pkgType.id ? (
+                          <span className="text-red-300 text-sm font-bold">!</span>
+                        ) : (
+                          <Trash2 size={16} />
+                        )}
                       </Button>
-                    </Link>
+                    </div>
                   </div>
-                </div>
-              </GlassCard>
+                </GlassCard>
+              </motion.div>
             ))}
           </div>
         )}
@@ -122,5 +230,5 @@ export default function PacotesPage() {
 
       <BottomNavigation />
     </div>
-  )
+  );
 }

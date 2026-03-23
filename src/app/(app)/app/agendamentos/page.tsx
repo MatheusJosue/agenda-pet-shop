@@ -119,7 +119,7 @@ export default function AgendamentosPage() {
             <p className="text-purple-200/60">Nenhum agendamento para este período</p>
           </GlassCard>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-4">
             {appointments.map((appointment: AppointmentWithRelations, index) => {
               const SizeIcon = sizeIcons[appointment.pet.size]
               return (
@@ -134,11 +134,11 @@ export default function AgendamentosPage() {
                   <Link href={`/app/agendamentos/${appointment.id}`}>
                     <GlassCard
                       variant="default"
-                      className="p-4 hover:scale-[1.01] hover:bg-white/10 transition-all cursor-pointer group"
+                      className="p-5 hover:scale-[1.01] hover:bg-white/10 transition-all cursor-pointer group"
                     >
-                      <div className="flex items-center gap-4">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                         {/* Date */}
-                        <div className="text-center min-w-[60px]">
+                        <div className="text-center min-w-[70px] sm:min-w-[70px]">
                           <div className="text-2xl font-bold text-purple-300">
                             {formatDate(appointment.date).split('/')[0]}
                           </div>
@@ -149,11 +149,11 @@ export default function AgendamentosPage() {
 
                         {/* Content */}
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <SizeIcon size={20} className="text-purple-400" />
+                          <div className="flex items-center gap-2 mb-2">
+                            <SizeIcon size={20} className="text-purple-400 flex-shrink-0" />
                             <span className="font-semibold text-white truncate">{appointment.pet.name}</span>
                           </div>
-                          <div className="flex items-center gap-2 text-sm text-purple-200/60">
+                          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-purple-200/60">
                             <span className="flex items-center gap-1">
                               <User size={14} />
                               {appointment.client.name}
@@ -172,17 +172,17 @@ export default function AgendamentosPage() {
                         </div>
 
                         {/* Status & Price */}
-                        <div className="text-right flex-shrink-0 flex flex-col items-end">
-                          <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium border mb-1 ${statusStyles[appointment.status]}`}>
+                        <div className="text-right flex-shrink-0 flex sm:flex-col items-center sm:items-end justify-between sm:justify-start gap-3 sm:gap-0">
+                          <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium border ${statusStyles[appointment.status]}`}>
                             {statusLabels[appointment.status]}
                           </span>
-                          <p className="text-lg font-bold text-purple-300">
-                            R$ {appointment.price.toFixed(2)}
-                          </p>
+                          <div className="flex items-center sm:flex-col gap-3 sm:gap-1">
+                            <p className="text-lg font-bold text-purple-300">
+                              R$ {appointment.price.toFixed(2)}
+                            </p>
+                            <ChevronRight size={18} className="text-purple-300/50 group-hover:translate-x-1 group-hover:text-purple-300 transition-all sm:mt-1" />
+                          </div>
                         </div>
-
-                        {/* Arrow */}
-                        <ChevronRight size={18} className="text-purple-300/50 group-hover:translate-x-1 group-hover:text-purple-300 transition-all" />
                       </div>
                     </GlassCard>
                   </Link>

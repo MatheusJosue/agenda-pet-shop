@@ -1,11 +1,14 @@
 import { ProgressBar } from '@/components/ui/progress-bar'
+import { Button } from '@/components/ui/button'
+import { Pencil } from 'lucide-react'
 import type { PetPackageWithRelations } from '@/lib/types/packages'
 
 interface PackageCardProps {
   packageData: PetPackageWithRelations
+  onChange?: () => void
 }
 
-export function PackageCard({ packageData }: PackageCardProps) {
+export function PackageCard({ packageData, onChange }: PackageCardProps) {
   const totalCredits = packageData.package_type.credits
   const remainingCredits = packageData.credits_remaining
 
@@ -28,8 +31,21 @@ export function PackageCard({ packageData }: PackageCardProps) {
             Vence em {formatDate(packageData.expires_at)}
           </p>
         </div>
-        <div className="w-32">
-          <ProgressBar current={remainingCredits} total={totalCredits} showLabel={false} />
+        <div className="flex items-center gap-3">
+          <div className="w-24">
+            <ProgressBar current={remainingCredits} total={totalCredits} showLabel={false} />
+          </div>
+          {onChange && (
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={onChange}
+              className="w-9 h-9 px-0 flex items-center justify-center shrink-0"
+              title="Alterar pacote"
+            >
+              <Pencil size={16} />
+            </Button>
+          )}
         </div>
       </div>
     </div>

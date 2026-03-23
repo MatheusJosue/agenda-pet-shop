@@ -11,9 +11,10 @@ interface AddPackageModalProps {
   petId: string
   petName: string
   onClose: () => void
+  isEditing?: boolean
 }
 
-export function AddPackageModal({ petId, petName, onClose }: AddPackageModalProps) {
+export function AddPackageModal({ petId, petName, onClose, isEditing = false }: AddPackageModalProps) {
   const router = useRouter()
   const [selectedType, setSelectedType] = useState<PackageType | null>(null)
   const [loading, setLoading] = useState(false)
@@ -64,7 +65,7 @@ export function AddPackageModal({ petId, petName, onClose }: AddPackageModalProp
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
       <GlassCard className="w-full max-w-md p-6">
         <h2 className="text-xl font-bold text-white mb-4">
-          Adicionar Pacote - {petName}
+          {isEditing ? 'Alterar Pacote' : 'Adicionar Pacote'} - {petName}
         </h2>
 
         {loadingTypes ? (

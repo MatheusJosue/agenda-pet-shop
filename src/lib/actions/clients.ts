@@ -19,9 +19,15 @@ export interface ClientsListResponse {
 // Helper: Get company_id from authenticated user session
 async function getCurrentCompanyId(): Promise<string | null> {
   const supabase = await createSupabaseClient()
-  const { data: { user } } = await supabase.auth.getUser()
 
-  if (!user) return null
+  // Use getUser() instead of getSession() for server-side code
+  // getUser() sends a request to validate the token, more secure than getSession()
+  const { data: { user }, error } = await supabase.auth.getUser()
+
+  if (error || !user) {
+    console.error('getCurrentCompanyId - auth error:', error)
+    return null
+  }
 
   const { data: userData } = await supabase
     .from('users')

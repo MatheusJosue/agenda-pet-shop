@@ -16,6 +16,14 @@
   color: rgba(255, 255, 255, 0.9);
 }
 
+:global(.light-input) .label {
+  color: rgb(71, 85, 105);
+}
+
+:global(.dark) :global(.light-input) .label {
+  color: rgba(255, 255, 255, 0.9);
+}
+
 .required {
   color: rgb(236, 72, 153);
   font-weight: 600;
@@ -46,12 +54,33 @@
   transition: color 0.2s;
 }
 
+:global(.light-input) .leftIcon,
+:global(.light-input) .rightIcon {
+  color: rgb(148, 163, 184);
+}
+
+:global(.dark) :global(.light-input) .leftIcon,
+:global(.dark) :global(.light-input) .rightIcon {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+:global(.light-input) .inputWrapper:focus-within .leftIcon,
+:global(.light-input) .inputWrapper:focus-within .rightIcon {
+  color: rgb(168, 85, 247);
+}
+
+:global(.dark) :global(.light-input) .inputWrapper:focus-within .leftIcon,
+:global(.dark) :global(.light-input) .inputWrapper:focus-within .rightIcon {
+  color: rgba(255, 255, 255, 0.8);
+}
+
 .leftIcon {
   left: 12px;
 }
 
 .rightIcon {
   right: 12px;
+  pointer-events: auto;
 }
 
 .inputWrapper:focus-within .leftIcon,
@@ -62,12 +91,28 @@
 /* Input */
 .input {
   width: 100%;
-  background: transparent;
+  background: transparent !important;
   border: none;
   outline: none;
   color: white;
   font-size: 15px;
   transition: all 0.2s;
+}
+
+:global(.light-input) .input {
+  color: rgb(15, 23, 42);
+}
+
+:global(.dark) :global(.light-input) .input {
+  color: white;
+}
+
+:global(.light-input) .input::placeholder {
+  color: rgb(148, 163, 184);
+}
+
+:global(.dark) :global(.light-input) .input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
 }
 
 .input::placeholder {
@@ -145,6 +190,34 @@
     0 0 0 3px rgba(168, 85, 247, 0.1);
 }
 
+/* Light Mode */
+.lightMode {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(168, 85, 247, 0.2);
+  box-shadow: 0 2px 8px rgba(168, 85, 247, 0.08);
+}
+
+:global(.dark) .lightMode {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.lightMode:focus-within {
+  background: rgba(255, 255, 255, 1);
+  border-color: rgba(168, 85, 247, 0.5);
+  box-shadow:
+    0 4px 16px rgba(168, 85, 247, 0.12),
+    0 0 0 3px rgba(168, 85, 247, 0.08);
+}
+
+:global(.dark) .lightMode:focus-within {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(168, 85, 247, 0.6);
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.15),
+    0 0 0 3px rgba(168, 85, 247, 0.1);
+}
+
 .variant-filled {
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid transparent;
@@ -196,4 +269,8 @@
   font-size: 13px;
   color: rgb(239, 68, 68);
   margin-top: 4px;
+}
+
+:global(.light-input) .errorMessage {
+  color: rgb(220, 38, 38);
 }
