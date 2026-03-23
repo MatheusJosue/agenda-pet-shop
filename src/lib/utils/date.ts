@@ -58,6 +58,9 @@ export function getDateRange(viewMode: ViewMode, date: Date): DateRange {
       return getWeekRange(date)
     case 'month':
       return getMonthRange(date)
+    default:
+      const _exhaustiveCheck: never = viewMode
+      return _exhaustiveCheck
   }
 }
 
@@ -77,6 +80,9 @@ export function navigateDate(date: Date, viewMode: ViewMode, direction: -1 | 1):
     case 'month':
       newDate.setMonth(newDate.getMonth() + direction)
       break
+    default:
+      const _exhaustiveCheck: never = viewMode
+      return _exhaustiveCheck
   }
 
   return newDate
@@ -86,15 +92,15 @@ export function navigateDate(date: Date, viewMode: ViewMode, direction: -1 | 1):
  * Format date for display based on view mode
  */
 export function formatPeriodLabel(viewMode: ViewMode, date: Date): string {
-  const options: Intl.DateTimeFormatOptions = {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric'
-  }
-
   switch (viewMode) {
-    case 'day':
+    case 'day': {
+      const options: Intl.DateTimeFormatOptions = {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      }
       return date.toLocaleDateString('pt-BR', options)
+    }
 
     case 'week': {
       const { start, end } = getWeekRange(date)
@@ -108,7 +114,8 @@ export function formatPeriodLabel(viewMode: ViewMode, date: Date): string {
       return date.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
 
     default:
-      return ''
+      const _exhaustiveCheck: never = viewMode
+      return _exhaustiveCheck
   }
 }
 
@@ -116,5 +123,8 @@ export function formatPeriodLabel(viewMode: ViewMode, date: Date): string {
  * Format date to ISO string (YYYY-MM-DD) for API
  */
 export function toISODate(date: Date): string {
-  return date.toISOString().split('T')[0]
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
 }
