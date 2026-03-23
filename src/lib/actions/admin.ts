@@ -16,9 +16,7 @@ export async function getAdminDashboardStats(): Promise<AdminActionResponse<Admi
     const [companiesResult, revenueResult, activeCompaniesResult, clientsResult] = await Promise.all([
       supabaseAdmin.from('companies').select('id', { count: 'exact', head: true }),
       supabaseAdmin.from('appointments').select('price').eq('status', 'completed'),
-      supabaseAdmin.from('appointments')
-        .select('company_id', { head: true })
-        .gte('date', thirtyDaysAgo),
+      supabaseAdmin.from('companies').select('id', { count: 'exact', head: true }).eq('active', true),
       supabaseAdmin.from('clients').select('id', { count: 'exact', head: true })
     ])
 
