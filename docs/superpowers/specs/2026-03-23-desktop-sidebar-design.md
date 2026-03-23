@@ -1,7 +1,7 @@
 # Desktop Sidebar e Layout Unificado - Design Document
 
 **Data:** 2026-03-23
-**Status:** Revisão 1 - Endereçando feedback do reviewer
+**Status:** Revisão 2 - Endereçando feedback do reviewer (Round 2)
 
 ## 1. Visão Geral
 
@@ -153,11 +153,35 @@ src/components/layout/
 
 ### 3.6 Tooltip (Estado Colapsado)
 
-**Implementação:**
-- Usar `@radix-ui/react-tooltip` (já é dependência do projeto)
-- Posicionamento: `side="right"`
-- Delay: `delayDuration={300}`
-- Content: Label do item de navegação
+**Implementação Customizada:**
+```tsx
+// Group para hover
+<div className="group relative flex items-center">
+  <Link href={item.href} className={navItemClasses}>
+    <Icon size={22} />
+  </Link>
+
+  {/* Tooltip - visível apenas no estado colapsado */}
+  {collapsed && (
+    <div className="absolute left-full ml-3 px-3 py-1.5 bg-zinc-800 text-zinc-200 text-sm
+                    rounded-lg whitespace-nowrap opacity-0 invisible group-hover:opacity-100
+                    group-hover:visible transition-all duration-200 z-[60]
+                    shadow-lg border border-zinc-700 pointer-events-none">
+      {item.label}
+      {/* Small arrow */}
+      <div className="absolute right-full top-1/2 -translate-y-1/2 border-8 border-transparent
+                      border-r-zinc-800" />
+    </div>
+  )}
+</div>
+```
+
+**Detalhes:**
+- Posicionamento: À direita do ícone (`left-full ml-3`)
+- Delay: CSS transition de 200ms
+- Z-index: `z-[60]` para ficar acima de tudo
+- Arrow decorativo usando border hack
+- `pointer-events-none` para não interferir com hover
 
 ---
 
@@ -179,19 +203,47 @@ src/components/layout/
 
 ### 4.3 Especificação do Dropdown
 
-**Componente:** Radix UI Dropdown Menu (`@radix-ui/react-dropdown-menu`)
+**Implementação Customizada** (seguindo padrão existente no AppDrawer):
+
+**Estrutura:**
+```tsx
+// Estado gerenciado no DesktopHeader
+const [dropdownOpen, setDropdownOpen] = useState(false)
+
+// Dropdown com backdrop + menu (similar ao AppDrawer)
+{dropdownOpen && (
+  <>
+    <div className="fixed inset-0 z-50" onClick={() => setDropdownOpen(false)} />
+    <div className="absolute right-0 top-full mt-2 z-[60] w-48 bg-zinc-900 rounded-xl
+                    border border-zinc-700 shadow-xl overflow-hidden">
+      <Link href="/app/perfil" className="flex items-center gap-3 px-4 py-3
+                                                 text-zinc-300 hover:bg-zinc-800
+                                                 hover:text-white transition-colors">
+        <User size={18} />
+        <span>Perfil</span>
+      </Link>
+      <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-3
+                                                       text-red-400 hover:bg-red-500/10
+                                                       hover:text-red-300 transition-colors">
+        <LogOut size={18} />
+        <span>Sair</span>
+      </button>
+    </div>
+  </>
+)}
+```
 
 **Items:**
 1. **Perfil** - Link: `/app/perfil` - Icon: User
 2. **Sair** - Action: `logout()` - Icon: LogOut (text-red-400)
 
-**Posicionamento:**
-- `align="end"` (alinhado à direita do avatar)
-- `sideOffset={8}` (gap de 8px do header)
+**Z-Index:**
+- Backdrop: `z-50`
+- Dropdown menu: `z-[60]` (acima de tudo)
 
 **Implementação de Logout:**
 - Usa action `logout()` de `@/lib/actions/auth`
-- Não é form submit (botão direto no dropdown)
+- Botão direto no dropdown (não é form submit)
 
 ### 4.4 Visibilidade
 - Visível apenas em desktop: `hidden xl:flex`
@@ -220,12 +272,10 @@ interface AppLayoutProps {
 }
 
 export function AppLayout({ children, companyName, user }: AppLayoutProps) {
-  const [drawerOpen, setDrawerOpen] = useState(false)
-
   return (
     <>
       {/* Desktop Layout */}
-      <div className="hidden xl:flex">
+      <div className="hidden xl:flex min-h-screen">
         <Sidebar />
         <div className="flex-1 flex flex-col">
           <DesktopHeader user={user} />
@@ -235,17 +285,18 @@ export function AppLayout({ children, companyName, user }: AppLayoutProps) {
         </div>
       </div>
 
-      {/* Mobile Layout */}
-      <div className="flex xl:hidden">
-        <AppHeader companyName={companyName} user={user} onMenuClick={() => setDrawerOpen(true)} />
-        <main>{children}</main>
+      {/* Mobile Layout - AppHeader gerencia seu próprio drawer state */}
+      <div className="flex xl:hidden min-h-screen">
+        <AppHeader companyName={companyName} user={user} />
+        <main className="flex-1 pb-20">{children}</main>
         <BottomNavigation />
-        <AppDrawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} companyName={companyName} user={user} />
       </div>
     </>
   )
 }
 ```
+
+**Nota:** AppHeader continua gerenciando seu próprio estado do drawer internamente. O AppLayout apenas controla a visibilidade desktop/mobile via CSS.
 
 ### 5.3 Modificação de Páginas Existentes
 
@@ -269,8 +320,16 @@ export function AppLayout({ children, companyName, user }: AppLayoutProps) {
 
 ### 6.1 AppHeader
 **Modificação necessária:**
-- Adicionar prop `onMenuClick` para ser chamada pelo botão hamburger
-- Adicionar `className="hidden xl:hidden"` para hide no desktop
+- Adicionar `hidden xl:flex` (ao invés de apenas `<header>`) para hide no desktop
+- Internamente continua gerenciando seu próprio drawer state (sem mudanças em props)
+
+**Implementação:**
+```tsx
+// Adicionar className ao header existente
+<header className="hidden xl:flex sticky top-0 z-30 ...">
+  {/* restante do código unchanged */}
+</header>
+```
 
 ### 6.2 BottomNavigation
 **Modificação necessária:**
@@ -305,7 +364,7 @@ export function AppLayout({ children, companyName, user }: AppLayoutProps) {
       </h1>
       <p className="text-zinc-400 mt-1">Subtítulo descritivo</p>
     </div>
-    <Button variant="gradient">Adicionar</Button>
+    <Button variant="primary">Adicionar</Button>
   </div>
 
   {/* Filters / Search (if applicable) */}
@@ -343,7 +402,7 @@ export function AppLayout({ children, companyName, user }: AppLayoutProps) {
 <div className="flex flex-col items-center justify-center py-12 text-center">
   <IconComponent className="w-16 h-16 text-zinc-600 mb-4" />
   <p className="text-zinc-400 text-lg">Mensagem vazia</p>
-  <Button variant="gradient" className="mt-4">Ação principal</Button>
+  <Button variant="primary" className="mt-4">Ação principal</Button>
 </div>
 ```
 
@@ -359,7 +418,7 @@ export function AppLayout({ children, companyName, user }: AppLayoutProps) {
 <div className="flex flex-col items-center justify-center py-12 text-center">
   <AlertCircle className="w-16 h-16 text-red-500 mb-4" />
   <p className="text-zinc-300 text-lg">{error}</p>
-  <Button variant="outline" className="mt-4" onClick={retry}>
+  <Button variant="secondary" className="mt-4" onClick={retry}>
     Tentar novamente
   </Button>
 </div>
@@ -512,4 +571,4 @@ Todas as páginas em `src/app/(app)/app/` que usam `<AppHeader>` e `<BottomNavig
 
 ---
 
-**Assinatura:** Design revisado (v1) - Pendente aprovação final.
+**Assinatura:** Design revisado (v2) - Pendente aprovação final.
