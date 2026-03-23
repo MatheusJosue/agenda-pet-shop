@@ -77,18 +77,14 @@ WHERE active = true;
 
 #### Modificação em `appointments`
 
-Adicionar coluna para vincular ao pacote do pet:
+A tabela `appointments` já possui coluna `used_credit`. Adicionar apenas a coluna para vincular ao pacote do pet:
 
 ```sql
 ALTER TABLE appointments
 ADD COLUMN pet_package_id UUID REFERENCES pet_packages(id);
 
--- Constraint: pacote deve ter créditos
-ALTER TABLE appointments
-ADD CONSTRAINT check_package_has_credits
-CHECK (pet_package_id IS NULL OR EXISTS (
-  SELECT 1 FROM pet_packages WHERE id = pet_package_id AND credits_remaining > 0
-));
+-- Note: Créditos são validados via aplicação e função decrement_package_credits
+-- para garantir consistência no momento do uso
 ```
 
 ### Security Functions
@@ -410,7 +406,8 @@ src/
    - Agendamento não pode usar crédito sem pacote vinculado
 
 3. **Exclusão:**
-   - Pacotes não podem ser excluídos, apenas desativados
+   - Pacotes não podem ser excluídos, apenas desativados (soft delete via `active = false`)
+   - Package_types também usam soft delete (coluna `active`)
    - Pacotes com créditos usados não podem ser modificados
    - Apenas admin pode desativar pacotes
 
