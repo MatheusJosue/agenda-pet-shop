@@ -59,6 +59,7 @@ export async function register(formData: FormData) {
     .single()
 
   if (inviteError || !invite) {
+    console.error('Invite error:', inviteError)
     return { success: false, error: 'Código de convite inválido ou expirado' }
   }
 
@@ -71,7 +72,8 @@ export async function register(formData: FormData) {
   })
 
   if (authError || !authData.user) {
-    return { success: false, error: 'Erro ao criar usuário' }
+    console.error('Auth error:', authError)
+    return { success: false, error: authError?.message || 'Erro ao criar usuário' }
   }
 
   let authUserCreated = true
@@ -88,6 +90,7 @@ export async function register(formData: FormData) {
       })
 
     if (userError) {
+      console.error('User insert error:', userError)
       throw new Error('Failed to create user profile')
     }
 
@@ -101,14 +104,16 @@ export async function register(formData: FormData) {
       .eq('id', invite.id)
 
     if (updateError) {
+      console.error('Invite update error:', updateError)
       throw new Error('Failed to mark invite as used')
     }
   } catch (error) {
+    console.error('Register error:', error)
     // Cleanup: Delete auth user if any step failed
     if (authUserCreated && authData.user?.id) {
       await supabaseAdmin.auth.admin.deleteUser(authData.user.id)
     }
-    return { success: false, error: 'Erro ao criar usuário' }
+    return { success: false, error: error instanceof Error ? error.message : 'Erro ao criar usuário' }
   }
 
   revalidatePath('/', 'layout')
