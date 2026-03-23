@@ -85,9 +85,8 @@ export default function RegisterPage() {
             label="Código de Convite"
             type="text"
             name="inviteCode"
-            placeholder="123456"
+            placeholder="ADMIN-SEED-2024"
             required
-            maxLength={6}
             error={!!state.errors?.inviteCode?.length || !!state.error}
             errorMessage={state.errors?.inviteCode?.[0]}
           />

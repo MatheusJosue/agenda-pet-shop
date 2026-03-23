@@ -41,6 +41,6 @@ VALUES (
 ON CONFLICT (code) DO NOTHING;
 
 -- Verification query (run to verify)
-SELECT 'Companies:' as info, id, name, email FROM companies
+SELECT 'Companies:' as info, id::text, name, email FROM companies
 UNION ALL
 SELECT 'Invites:', code, company_id::text, role FROM invites WHERE code = 'ADMIN-SEED-2024';

@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import Link from 'next/link'
 import { BottomNavigation } from '@/components/layout/bottom-navigation'
+import { AppHeader } from '@/components/layout/app-header'
 import { GlassCard } from '@/components/ui/glass-card'
 import { Button } from '@/components/ui/button'
 import { ViewModeSelector } from '@/components/agendamentos'
@@ -38,8 +39,26 @@ function formatDate(dateStr: string) {
 export default function AgendamentosPage() {
   const [viewMode, setViewMode] = useState<ViewMode>('day')
   const [selectedDate, setSelectedDate] = useState(new Date())
+  const [companyName, setCompanyName] = useState('Agenda Pet Shop')
+  const [user, setUser] = useState<{ user_metadata?: { name?: string }; email?: string } | null>(null)
 
   const { appointments, loading, error, periodLabel } = useAppointmentsFilter(viewMode, selectedDate)
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const { getAppStats } = await import('@/lib/actions/app')
+        const result = await getAppStats()
+        if (result.data) {
+          setCompanyName(result.data.companyName || 'Agenda Pet Shop')
+          setUser(result.data.user)
+        }
+      } catch (error) {
+        console.error('Error loading data:', error)
+      }
+    }
+    loadData()
+  }, [])
 
   const handlePrevious = useCallback(() => {
     setSelectedDate(prev => navigateDate(prev, viewMode, -1))
@@ -63,31 +82,21 @@ export default function AgendamentosPage() {
       </div>
 
       {/* Header */}
-      <header className="border-b border-white/10 backdrop-blur-md bg-white/5 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-fuchsia-500 flex items-center justify-center text-xl shadow-lg shadow-purple-500/30">
-                📅
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-white" style={{ fontFamily: 'var(--font-outfit), sans-serif' }}>
-                  Agendamentos
-                </h1>
-                <p className="text-purple-200/60 text-sm">
-                  {appointments?.length || 0} agendamento{appointments?.length !== 1 ? 's' : ''}
-                </p>
-              </div>
-            </div>
-            <Link href="/app/agendamentos/novo">
-              <Button variant="primary" size="sm" className="rounded-full gap-1">
-                <Plus size={16} />
-                Novo
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </header>
+      <AppHeader
+        companyName={companyName}
+        user={{ name: user?.user_metadata?.name, email: user?.email }}
+        title="Agendamentos"
+        subtitle={`${appointments?.length || 0} agendamento${appointments?.length !== 1 ? 's' : ''}`}
+        icon="📅"
+        action={
+          <Link href="/app/agendamentos/novo">
+            <Button variant="primary" size="sm" className="rounded-full gap-1">
+              <Plus size={16} />
+              Novo
+            </Button>
+          </Link>
+        }
+      />
 
       {/* Main Content */}
       <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative">

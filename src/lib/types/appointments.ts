@@ -42,6 +42,7 @@ export type AppointmentInput = {
   price: number
   useCredit?: boolean
   clientPlanId?: string
+  petPackageId?: string
   notes?: string
 }
 

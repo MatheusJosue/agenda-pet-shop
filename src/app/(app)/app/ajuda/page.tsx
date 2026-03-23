@@ -2,43 +2,20 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
 import { AppHeader } from '@/components/layout/app-header'
+import { BottomNavigation } from '@/components/layout/bottom-navigation'
 import { Button } from '@/components/ui/button'
 import { GlassCard } from '@/components/ui/glass-card'
 import {
   HelpCircle,
   ArrowLeft,
-  Book,
   MessageCircle,
   Mail,
-  Video,
-  FileText,
-  ChevronRight,
-  Sparkles
+  Sparkles,
+  ChevronRight
 } from 'lucide-react'
 
-const helpCategories = [
-  {
-    title: 'Começando',
-    icon: Book,
-    items: [
-      { title: 'Primeiros passos', description: 'Aprenda a usar o sistema' },
-      { title: 'Criar agendamento', description: 'Como agendar serviços' },
-      { title: 'Cadastrar clientes', description: 'Adicione seus clientes' },
-      { title: 'Gerenciar pets', description: 'Cadastre os animais' },
-    ]
-  },
-  {
-    title: 'Recursos',
-    icon: Video,
-    items: [
-      { title: 'Vídeo tutoriais', description: 'Assista e aprenda' },
-      { title: 'Documentação', description: 'Leia a documentação completa' },
-      { title: 'Dicas e truques', description: 'Aproveite ao máximo' },
-    ]
-  }
-]
+const helpCategories: Array<{ title: string; icon: any; items: Array<{ title: string; description: string }> }> = []
 
 const quickActions = [
   {
@@ -46,7 +23,7 @@ const quickActions = [
     description: 'Fale com nossa equipe',
     icon: MessageCircle,
     action: 'chat',
-    available: true
+    available: false
   },
   {
     title: 'Enviar email',
@@ -54,19 +31,12 @@ const quickActions = [
     icon: Mail,
     action: 'mailto:suporte@agendapetshop.com',
     available: true
-  },
-  {
-    title: 'Tutoriais',
-    description: 'Ver todos os vídeos',
-    icon: FileText,
-    action: 'tutorials',
-    available: false
   }
 ]
 
 export default function AjudaPage() {
   const router = useRouter()
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<{ user_metadata?: { name?: string }; email?: string } | null>(null)
   const [companyName, setCompanyName] = useState('Agenda Pet Shop')
   const [loading, setLoading] = useState(true)
 
@@ -203,7 +173,7 @@ export default function AjudaPage() {
         ))}
 
         {/* Contact CTA */}
-        <GlassCard variant="gradient" className="p-6 text-center">
+        <GlassCard variant="elevated" className="p-6 text-center">
           <div className="w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center mx-auto mb-3">
             <MessageCircle size={24} className="text-purple-400" />
           </div>
@@ -229,6 +199,8 @@ export default function AjudaPage() {
           </p>
         </div>
       </main>
+
+      <BottomNavigation />
     </div>
   )
 }

@@ -43,7 +43,7 @@ export function BottomNavigation() {
       initial={{ y: 100 }}
       animate={{ y: 0 }}
       transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-      className="fixed bottom-0 left-0 right-0 z-50 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-t border-purple-200/50 dark:border-purple-900/50 safe-area-inset-bottom"
+      className="flex xl:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-t border-purple-200/50 dark:border-purple-900/50 safe-area-inset-bottom"
     >
       <div className="flex items-center justify-around h-16 sm:h-20 max-w-lg mx-auto px-2">
         {tabs.map((tab, index) => {

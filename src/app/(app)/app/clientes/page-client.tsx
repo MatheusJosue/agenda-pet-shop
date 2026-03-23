@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { getClients } from '@/lib/actions/clients'
-import { CompactHeader } from '@/components/layout/compact-header'
+import { AppHeader } from '@/components/layout/app-header'
 import { BottomNavigation } from '@/components/layout/bottom-navigation'
 import { GlassCard } from '@/components/ui/glass-card'
 import { Button } from '@/components/ui/button'
@@ -19,6 +19,24 @@ export function ClientesPageContent() {
   const search = searchParams.get('q') || ''
   const [clients, setClients] = useState<Client[]>([])
   const [loading, setLoading] = useState(true)
+  const [companyName, setCompanyName] = useState('Agenda Pet Shop')
+  const [user, setUser] = useState<{ user_metadata?: { name?: string }; email?: string } | null>(null)
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const { getAppStats } = await import('@/lib/actions/app')
+        const result = await getAppStats()
+        if (result.data) {
+          setCompanyName(result.data.companyName || 'Agenda Pet Shop')
+          setUser(result.data.user)
+        }
+      } catch (error) {
+        console.error('Error loading data:', error)
+      }
+    }
+    loadData()
+  }, [])
 
   useEffect(() => {
     async function loadClients() {
@@ -43,32 +61,21 @@ export function ClientesPageContent() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/5 rounded-full blur-3xl" />
       </div>
 
-      {/* Header */}
-      <header className="border-b border-white/10 backdrop-blur-md bg-white/5 relative">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500 to-fuchsia-500 flex items-center justify-center text-2xl shadow-lg shadow-purple-500/30">
-                👥
-              </div>
-              <div>
-                <h1 className="text-3xl font-bold text-white mb-1" style={{ fontFamily: 'var(--font-outfit), sans-serif' }}>
-                  Clientes
-                </h1>
-                <p className="text-purple-200/60">
-                  {clients?.length || 0} cliente{clients?.length !== 1 ? 's' : ''}
-                </p>
-              </div>
-            </div>
-            <Link href="/app/clientes/novo">
-              <Button variant="primary" size="md" className="rounded-full gap-2">
-                <UserPlus size={18} />
-                Novo Cliente
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </header>
+      <AppHeader
+        companyName={companyName}
+        user={{ name: user?.user_metadata?.name, email: user?.email }}
+        title="Clientes"
+        subtitle={`${clients?.length || 0} cliente${clients?.length !== 1 ? 's' : ''}`}
+        icon="👥"
+        action={
+          <Link href="/app/clientes/novo">
+            <Button variant="primary" size="sm" className="rounded-full gap-1">
+              <UserPlus size={16} />
+              Novo
+            </Button>
+          </Link>
+        }
+      />
 
       <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
         {/* Search */}

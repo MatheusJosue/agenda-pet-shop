@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { AppHeader } from "@/components/layout/app-header";
 import { BottomNavigation } from "@/components/layout/bottom-navigation";
 import { GlassCard } from "@/components/ui/glass-card";
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,24 @@ export default function PacotesPage() {
   const [loading, setLoading] = useState(true);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [companyName, setCompanyName] = useState("Agenda Pet Shop");
+  const [user, setUser] = useState<{ user_metadata?: { name?: string }; email?: string } | null>(null);
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const { getAppStats } = await import("@/lib/actions/app");
+        const result = await getAppStats();
+        if (result.data) {
+          setCompanyName(result.data.companyName || "Agenda Pet Shop");
+          setUser(result.data.user);
+        }
+      } catch (error) {
+        console.error("Error loading data:", error);
+      }
+    }
+    loadData();
+  }, []);
 
   useEffect(() => {
     async function loadPackageTypes() {
@@ -38,7 +57,7 @@ export default function PacotesPage() {
     loadPackageTypes();
   }, []);
 
-  const handleDelete = async (id: string, name: string) => {
+  const handleDelete = async (id: string) => {
     if (deleteConfirm !== id) {
       setDeleteConfirm(id);
       return;
@@ -88,39 +107,21 @@ export default function PacotesPage() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/5 rounded-full blur-3xl" />
       </div>
 
-      {/* Header */}
-      <header className="border-b border-white/10 backdrop-blur-md bg-white/5 relative">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
-          <div className="flex items-center justify-between">
-            {/* Title Section with Icon */}
-            <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500 to-fuchsia-500 flex items-center justify-center text-2xl shadow-lg shadow-purple-500/30">
-                📦
-              </div>
-              <div>
-                <h1
-                  className="text-3xl font-bold text-white mb-1"
-                  style={{ fontFamily: "var(--font-outfit), sans-serif" }}
-                >
-                  Pacotes
-                </h1>
-                <p className="text-purple-200/60">
-                  {packageTypes?.length || 0} tipo
-                  {packageTypes?.length !== 1 ? "s" : ""}
-                </p>
-              </div>
-            </div>
-
-            {/* Add Button */}
-            <Link href="/app/pacotes/novo">
-              <Button variant="primary" size="md" className="gap-2">
-                <Plus size={18} />
-                Novo Tipo
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </header>
+      <AppHeader
+        companyName={companyName}
+        user={{ name: user?.user_metadata?.name, email: user?.email }}
+        title="Pacotes"
+        subtitle={`${packageTypes?.length || 0} tipo${packageTypes?.length !== 1 ? "s" : ""}`}
+        icon="📦"
+        action={
+          <Link href="/app/pacotes/novo">
+            <Button variant="primary" size="sm" className="rounded-full gap-1">
+              <Plus size={16} />
+              Novo
+            </Button>
+          </Link>
+        }
+      />
 
       {/* Main Content */}
       <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
@@ -205,7 +206,7 @@ export default function PacotesPage() {
                       <Button
                         variant="secondary"
                         size="sm"
-                        onClick={() => handleDelete(pkgType.id, pkgType.name)}
+                        onClick={() => handleDelete(pkgType.id)}
                         disabled={deleting}
                         className={
                           deleteConfirm === pkgType.id

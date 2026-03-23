@@ -131,7 +131,7 @@ export async function getActivePetPackage(petId: string): Promise<PetPackageWith
   const companyId = await getCurrentCompanyId()
 
   if (!companyId) {
-    return { error: 'Não autenticado' }
+    return { data: undefined, error: 'Não autenticado' }
   }
 
   const supabase = await createSupabaseClient()
@@ -161,7 +161,7 @@ export async function createPetPackage(input: PackageInput): Promise<PetPackageR
   const companyId = await getCurrentCompanyId()
 
   if (!companyId) {
-    return { error: 'Não autenticado' }
+    return { data: undefined, error: 'Não autenticado' }
   }
 
   const supabase = await createSupabaseClient()

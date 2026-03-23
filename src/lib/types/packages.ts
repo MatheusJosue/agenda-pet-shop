@@ -47,12 +47,12 @@ export type PackageTypesResponse = {
 }
 
 export type PetPackageResponse = {
-  data: PetPackageWithRelations | undefined
+  data?: PetPackageWithRelations
   error?: string
 }
 
 export type PetPackageWithRelationsResponse = {
-  data: PetPackageWithRelations | undefined
+  data?: PetPackageWithRelations
   error?: string
 }
 

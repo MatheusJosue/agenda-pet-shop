@@ -3,13 +3,14 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { AppHeader } from '@/components/layout/app-header'
+import { BottomNavigation } from '@/components/layout/bottom-navigation'
 import { Button } from '@/components/ui/button'
 import { GlassCard } from '@/components/ui/glass-card'
 import { User, Mail, Building2, Save, ArrowLeft } from 'lucide-react'
 
 export default function PerfilPage() {
   const router = useRouter()
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<{ user_metadata?: { name?: string }; email?: string } | null>(null)
   const [companyName, setCompanyName] = useState('Agenda Pet Shop')
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -183,6 +184,8 @@ export default function PerfilPage() {
           </p>
         </div>
       </main>
+
+      <BottomNavigation />
     </div>
   )
 }
