@@ -1,7 +1,7 @@
 # Desktop Sidebar e Layout Unificado - Design Document
 
 **Data:** 2026-03-23
-**Status:** Aprovado para implementação
+**Status:** Revisão 1 - Endereçando feedback do reviewer
 
 ## 1. Visão Geral
 
@@ -32,7 +32,7 @@ Criar uma experiência desktop distinta e profissional para o aplicativo Agenda 
 │   Page Content      │
 │                     │
 ├─────────────────────┤
-│ BottomNavigation    │ ← 4 tabs fixas
+│ BottomNavigation    │ ← 5 tabs fixas
 └─────────────────────┘
 ```
 
@@ -44,9 +44,29 @@ Criar uma experiência desktop distinta e profissional para o aplicativo Agenda 
 ├────────────────┼────────────────────┤
 │                │                    │
 │ Navigation     │  Page Content      │
-│ Icons/Labels   │  (max-width)       │
+│ Icons/Labels   │  (max-w-7xl)       │
 │                │                    │
 └────────────────┴────────────────────┘
+```
+
+### 2.3 Estratégia de Implementação de Layout
+
+**Criação de Layout Wrapper:**
+Como as páginas atualmente incluem `AppHeader` e `BottomNavigation` diretamente, a implementação usará um componente `AppLayout` wrapper que:
+
+1. Detecta breakpoint via CSS/Tailwind (não JavaScript)
+2. Renderiza condicionalmente via classes `hidden xl:flex` / `flex xl:hidden`
+3. Preserva o comportamento mobile existente
+
+**Arquitetura:**
+```
+src/components/layout/
+├── app-layout.tsx           # NOVO: Wrapper que gerencia desktop/mobile
+├── sidebar.tsx              # NOVO: Sidebar desktop collapsible
+├── desktop-header.tsx       # NOVO: Header simplificado desktop
+├── app-header.tsx           # EXISTENTE: hide no desktop
+├── bottom-navigation.tsx    # EXISTENTE: hide no desktop
+└── app-drawer.tsx           # EXISTENTE: sem alterações
 ```
 
 ---
@@ -57,7 +77,7 @@ Criar uma experiência desktop distinta e profissional para o aplicativo Agenda 
 - Navegação principal no desktop
 - Estado de colapso/expansão persistente
 - Indicador visual de página ativa
-- Links para todas as seções principais do app
+- Links para todas as seções do app (combina navegação principal + items de conta)
 
 ### 3.2 Estados
 
@@ -71,36 +91,73 @@ Criar uma experiência desktop distinta e profissional para o aplicativo Agenda 
 - Mostra: Apenas ícone centralizado
 - Tooltip ao hover com nome da seção
 
+**Estado Inicial:**
+- Padrão: **Expandido**
+- Verifica `localStorage` na montagem
+- Key: `agenda-pet-shop:sidebar-collapsed`
+
 ### 3.3 Comportamento de Colapso
 
 **Botão de Toggle:**
 - Localizado na base da sidebar
-- Ícone: `ChevronsLeft` (quando expandido) / `ChevronsRight` (quando colapsado)
-- Estado persistente em `localStorage` (chave: `sidebar-collapsed`)
+- Ícone: `ChevronsLeft` (expandido) / `ChevronsRight` (colapsado)
+- Estado persistente em `localStorage` (chave: `agenda-pet-shop:sidebar-collapsed`)
+- ARIA: `aria-label="Colapsar sidebar"` / `aria-label="Expandir sidebar"`
 
 **Animação:**
-- Transição suave de largura: `transition-all duration-300`
-- Labels desaparecem com fade: `transition-opacity duration-200`
+- Transição suave de largura: `transition-all duration-300 ease-in-out`
+- Labels desaparecem com fade: `transition-opacity duration-200 ease-in-out`
 
 ### 3.4 Itens de Navegação
 
-Ordem dos itens (topo → base):
-1. **Início** - Icon: Home - Link: `/app`
-2. **Agendamentos** - Icon: Calendar - Link: `/app/agendamentos`
-3. **Clientes** - Icon: Users - Link: `/app/clientes`
-4. **Pets** - Icon: PawPrint - Link: `/app/pets`
-5. **Serviços** - Icon: Scissors - Link: `/app/servicos`
-6. **Pacotes** - Icon: Package - Link: `/app/pacotes`
+**Itens Principais (topo → base):**
+1. **Início** - Icon: `Home` - Link: `/app`
+2. **Agenda** - Icon: `Calendar` - Link: `/app/agendamentos`
+3. **Clientes** - Icon: `Users` - Link: `/app/clientes`
+4. **Pacotes** - Icon: `Package` - Link: `/app/pacotes`
+5. **Serviços** - Icon: `Scissors` - Link: `/app/servicos`
+6. **Pets** - Icon: `Dog` - Link: `/app/pets`
 
 **Itens da Base (separados por divisor):**
-7. **Perfil** - Icon: UserCircle - Link: `/app/perfil`
-8. **Ajuda** - Icon: HelpCircle - Link: `/app/ajuda`
+7. **Perfil** - Icon: `UserCircle` - Link: `/app/perfil`
+8. **Ajuda** - Icon: `HelpCircle` - Link: `/app/ajuda`
 9. **Toggle Button** (último item)
 
-### 3.5 Item Ativo
+**Nota:** Sidebar inclui Pets, Perfil e Ajuda pois desktop não tem drawer. Mobile continua com apenas 5 tabs no bottom nav + drawer para items extras.
+
+### 3.5 Detecção de Item Ativo
+
+**Lógica de Matching:**
+```tsx
+// Para item com href="/app/agendamentos":
+// - Ativo quando pathname === "/app/agendamentos"
+// - NÃO ativo em páginas aninhadas como "/app/agendamentos/novo" ou "/app/agendamentos/[id]"
+
+// Para item com href="/app":
+// - Ativo quando pathname === "/app"
+```
+
+**Implementação:**
+- Usa `usePathname()` do Next.js
+- Matching exato (não prefixo)
+- Páginas de detail/novo ficam sem highlight de sidebar (comportamento aceitável)
+
+**Estilo Ativo:**
 - Background gradiente: `bg-gradient-to-r from-purple-500/20 to-fuchsia-500/20`
 - Border esquerda: `border-l-4 border-purple-500`
-- Texto: `text-purple-400` (não ativo: `text-zinc-400 hover:text-zinc-200`)
+- Texto: `text-purple-400`
+
+**Estilo Inativo:**
+- Texto: `text-zinc-400`
+- Hover: `text-zinc-200 hover:bg-zinc-800/50`
+
+### 3.6 Tooltip (Estado Colapsado)
+
+**Implementação:**
+- Usar `@radix-ui/react-tooltip` (já é dependência do projeto)
+- Posicionamento: `side="right"`
+- Delay: `delayDuration={300}`
+- Content: Label do item de navegação
 
 ---
 
@@ -108,7 +165,7 @@ Ordem dos itens (topo → base):
 
 ### 4.1 Responsabilidades
 - Header simplificado exclusivo para desktop
-- Logo à esquerda
+- Logo à esquerda (link para `/app`)
 - Avatar do usuário à direita com dropdown
 - Sem hamburger menu (navegação está na sidebar)
 
@@ -120,60 +177,126 @@ Ordem dos itens (topo → base):
 └──────────────────────────────────────────────┘
 ```
 
-**Left:** Logo Pet Shop
-- Texto gradiente: "Pet Shop"
-- Link para `/app`
+### 4.3 Especificação do Dropdown
 
-**Right:** User Dropdown
-- Avatar circular com iniciais
-- Dropdown ao click com:
-  - Perfil
-  - Sair
+**Componente:** Radix UI Dropdown Menu (`@radix-ui/react-dropdown-menu`)
 
-### 4.3 Visibilidade
+**Items:**
+1. **Perfil** - Link: `/app/perfil` - Icon: User
+2. **Sair** - Action: `logout()` - Icon: LogOut (text-red-400)
+
+**Posicionamento:**
+- `align="end"` (alinhado à direita do avatar)
+- `sideOffset={8}` (gap de 8px do header)
+
+**Implementação de Logout:**
+- Usa action `logout()` de `@/lib/actions/auth`
+- Não é form submit (botão direto no dropdown)
+
+### 4.4 Visibilidade
 - Visível apenas em desktop: `hidden xl:flex`
 - Altura fixa: `h-16`
-- Background: Glass effect com gradiente sutil
+- Z-index: `z-40` (abaixo da sidebar z-50)
 
 ---
 
-## 5. Modificações em Componentes Existentes
+## 5. Componente: AppLayout
 
-### 5.1 AppHeader
-**Comportamento atual (mobile):**
-- Hamburger menu → abre drawer
-- Avatar → abre menu dropdown
+### 5.1 Responsabilidades
+- Wrapper que gerencia renderização desktop vs mobile
+- Fornece estrutura consistente para todas as páginas do app
+- Gerencia estado do drawer (mobile)
 
-**Comportamento desktop:**
-- **Hide completely** em desktop (`hidden xl:hidden`)
-- DesktopHeader substitui completamente
+### 5.2 Implementação
 
-### 5.2 BottomNavigation
-**Comportamento:**
-- Hide em desktop: `hidden xl:flex` → `xl:hidden`
-- Visível apenas em mobile
+```tsx
+// src/components/layout/app-layout.tsx
+'use client'
 
-### 5.3 AppDrawer
+interface AppLayoutProps {
+  children: React.ReactNode
+  companyName: string
+  user: { name?: string; email?: string }
+}
+
+export function AppLayout({ children, companyName, user }: AppLayoutProps) {
+  const [drawerOpen, setDrawerOpen] = useState(false)
+
+  return (
+    <>
+      {/* Desktop Layout */}
+      <div className="hidden xl:flex">
+        <Sidebar />
+        <div className="flex-1 flex flex-col">
+          <DesktopHeader user={user} />
+          <main className="flex-1 overflow-auto">
+            {children}
+          </main>
+        </div>
+      </div>
+
+      {/* Mobile Layout */}
+      <div className="flex xl:hidden">
+        <AppHeader companyName={companyName} user={user} onMenuClick={() => setDrawerOpen(true)} />
+        <main>{children}</main>
+        <BottomNavigation />
+        <AppDrawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} companyName={companyName} user={user} />
+      </div>
+    </>
+  )
+}
+```
+
+### 5.3 Modificação de Páginas Existentes
+
+**Before:**
+```tsx
+<AppHeader ... />
+<main>...</main>
+<BottomNavigation />
+```
+
+**After:**
+```tsx
+<AppLayout companyName={...} user={...}>
+  <main>...</main>
+</AppLayout>
+```
+
+---
+
+## 6. Modificações em Componentes Existentes
+
+### 6.1 AppHeader
+**Modificação necessária:**
+- Adicionar prop `onMenuClick` para ser chamada pelo botão hamburger
+- Adicionar `className="hidden xl:hidden"` para hide no desktop
+
+### 6.2 BottomNavigation
+**Modificação necessária:**
+- Adicionar `className="hidden xl:flex"` → mudar para `xl:hidden` para hide no desktop
+
+### 6.3 AppDrawer
 **Sem alterações**
 - Continua funcionando apenas em mobile
-- Acionado pelo hamburger no AppHeader
+- Estado controlado pelo `AppLayout`
 
 ---
 
-## 6. Layout Unificado para Páginas de Listagem
+## 7. Layout Unificado para Páginas de Listagem
 
-### 6.1 Páginas Afetadas
+### 7.1 Páginas Afetadas
 - `/app/agendamentos`
 - `/app/clientes`
 - `/app/pets`
 - `/app/pacotes`
 - `/app/servicos`
 
-### 6.2 Padrão de Container
+### 7.2 Padrão de Container
 
 ```tsx
 // Wrapper padrão para todas as listagens
-<div className="space-y-6">
+<main className="max-w-7xl mx-auto px-6 py-8 space-y-8">
   {/* Page Header */}
   <div className="flex items-center justify-between">
     <div>
@@ -196,27 +319,24 @@ Ordem dos itens (topo → base):
   <div className="grid gap-4">
     {/* Cards or list items */}
   </div>
-</div>
+</main>
 ```
 
-### 6.3 Padrões de Cards
+### 7.3 Padrões de Cards
 
 **Card padrão (GlassCard):**
-```tsx
-<GlassCard className="p-6 hover:scale-[1.02] transition-transform">
-  {/* Content */}
-</GlassCard>
-```
+- Componente existe em `src/components/ui/glass-card.tsx`
+- Usar: `<GlassCard className="p-6 hover:scale-[1.02] transition-transform">`
 
 **Grid responsivo:**
 - Mobile: 1 coluna
 - MD: 2 colunas
-- XL: 3 colunas
+- XL: 3 colunas (desktop tem mais espaço)
 ```tsx
 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
 ```
 
-### 6.4 Estados Padronizados
+### 7.4 Estados Padronizados
 
 **Empty State:**
 ```tsx
@@ -234,13 +354,24 @@ Ordem dos itens (topo → base):
 </div>
 ```
 
+**Error State:**
+```tsx
+<div className="flex flex-col items-center justify-center py-12 text-center">
+  <AlertCircle className="w-16 h-16 text-red-500 mb-4" />
+  <p className="text-zinc-300 text-lg">{error}</p>
+  <Button variant="outline" className="mt-4" onClick={retry}>
+    Tentar novamente
+  </Button>
+</div>
+```
+
 ---
 
-## 7. Cores e Estilos
+## 8. Cores e Estilos
 
-### 7.1 Sidebar
+### 8.1 Sidebar
 
-**Background (expandida):**
+**Background:**
 ```tsx
 className="bg-zinc-900/95 border-r border-zinc-800"
 ```
@@ -256,7 +387,7 @@ className="bg-gradient-to-r from-purple-500/20 to-fuchsia-500/20
            border-l-4 border-purple-500 text-purple-400"
 ```
 
-### 7.2 DesktopHeader
+### 8.2 DesktopHeader
 
 **Background:**
 ```tsx
@@ -269,76 +400,116 @@ className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-fuchsia-400
            bg-clip-text text-transparent"
 ```
 
-### 7.3 Animações
+### 8.3 Animações
+
+**Easing function padrão:** `ease-in-out`
 
 **Transições da sidebar:**
 - Largura: `transition-all duration-300 ease-in-out`
-- Labels: `transition-opacity duration-200`
+- Labels: `transition-opacity duration-200 ease-in-out`
 
 **Hover effects:**
-- Cards: `hover:scale-[1.02] transition-transform duration-200`
-- Buttons: `active:scale-95 transition-transform`
+- Cards: `hover:scale-[1.02] transition-transform duration-200 ease-out`
+- Buttons: `active:scale-95 transition-transform duration-100 ease-out`
 
 ---
 
-## 8. Arquitetura de Arquivos
+## 9. Acessibilidade
 
-### 8.1 Novos Componentes
+### 9.1 Sidebar
+
+**ARIA Labels:**
+- Toggle button: `aria-label={collapsed ? "Expandir sidebar" : "Colapsar sidebar"}`
+- Nav: `<nav aria-label="Navegação principal">`
+- Links ativos: `aria-current="page"`
+
+**Keyboard Navigation:**
+- Tab order through nav items
+- Enter/Space para ativar links
+- Toggle button focável
+
+**Focus Management:**
+- Ao colapsar, foco permanece no toggle
+- Ao expandir, foco permanece no toggle
+
+### 9.2 Anúncios de Screen Reader
+
+**Mudança de estado da sidebar:**
+- Adicionar `aria-live="polite"` em um elemento que anuncia "Sidebar colapsada" ou "Sidebar expandida"
+
+---
+
+## 10. Arquitetura de Arquivos
+
+### 10.1 Novos Componentes
 
 ```
 src/components/layout/
+├── app-layout.tsx           # NOVO: Wrapper desktop/mobile
 ├── sidebar.tsx              # NOVO: Sidebar desktop collapsible
 ├── desktop-header.tsx       # NOVO: Header simplificado desktop
-├── app-header.tsx           # MODIFICAR: hide no desktop
+├── app-header.tsx           # MODIFICAR: hide no desktop, prop onMenuClick
 ├── bottom-navigation.tsx    # MODIFICAR: hide no desktop
 └── app-drawer.tsx           # SEM ALTERAÇÕES
 ```
 
-### 8.2 Layout Principal
+### 10.2 Páginas a Modificar
 
-**`src/app/(app)/app/layout.tsx`:**
-```tsx
-// Desktop: Sidebar + DesktopHeader + Content
-// Mobile: AppHeader + BottomNav + Content (drawer when open)
-```
+Todas as páginas em `src/app/(app)/app/` que usam `<AppHeader>` e `<BottomNavigation>`:
+- `page.tsx` (home)
+- `agendamentos/page.tsx`
+- `clientes/page.tsx`
+- `pets/page.tsx`
+- `pacotes/page.tsx`
+- `servicos/page.tsx`
+- `perfil/page.tsx`
+- `ajuda/page.tsx`
 
 ---
 
-## 9. Plano de Implementação
+## 11. Plano de Implementação
 
-### Fase 1: Sidebar Component
+### Fase 1: Criar AppLayout Wrapper
+- Criar `app-layout.tsx` com lógica desktop/mobile
+- Testar em uma página primeiro
+
+### Fase 2: Sidebar Component
 - Criar `sidebar.tsx` com estados expandido/colapsado
 - Implementar itens de navegação
 - Adicionar persistência de estado em localStorage
+- Adicionar tooltips
 
-### Fase 2: DesktopHeader Component
+### Fase 3: DesktopHeader Component
 - Criar `desktop-header.tsx` com logo + avatar dropdown
 - Implementar menu do usuário
 
-### Fase 3: Layout Responsivo
-- Modificar `app/layout.tsx` para alternar entre desktop/mobile
-- Atualizar `app-header.tsx` para hide no desktop
+### Fase 4: Modificar Componentes Existentes
+- Atualizar `app-header.tsx` para receber `onMenuClick` e hide no desktop
 - Atualizar `bottom-navigation.tsx` para hide no desktop
 
-### Fase 4: Unificação de Layouts
-- Aplicar padrão unificado em `/app/agendamentos`
-- Aplicar padrão unificado em `/app/clientes`
-- Aplicar padrão unificado em `/app/pets`
-- Aplicar padrão unificado em `/app/pacotes`
-- Aplicar padrão unificado em `/app/servicos`
+### Fase 5: Migração das Páginas
+- Substituir `AppHeader + BottomNavigation` por `AppLayout` em todas as páginas
+- Testar navegação
+
+### Fase 6: Unificação de Layouts
+- Aplicar padrão unificado em páginas de listagem
+- Verificar responsividade
 
 ---
 
-## 10. Critérios de Sucesso
+## 12. Critérios de Sucesso
 
 - [ ] Sidebar visível e funcional em desktop (≥ 1280px)
 - [ ] Sidebar colapsável com persistência de estado
-- [ ] Mobile completamente inalterado
+- [ ] Mobile completamente inalterado (visual e funcionalidade)
 - [ ] Todas as páginas de listagem com layout consistente
 - [ ] Transições suaves entre estados de sidebar
 - [ ] Navegação funcional em ambos os contextos
 - [ ] Sem regressões em funcionalidades existentes
+- [ ] Acessibilidade: keyboard navigation funcional
+- [ ] Z-index correto (sidebar acima de header)
+- [ ] Dropdown do header funciona corretamente
 
 ---
 
-**Assinatura:** Design aprovado pelo usuário. Pronto para implementação.
+**Assinatura:** Design revisado (v1) - Pendente aprovação final.
