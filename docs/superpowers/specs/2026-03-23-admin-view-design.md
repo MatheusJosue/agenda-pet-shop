@@ -1,7 +1,7 @@
 # Admin View - Design Document
 
 **Date:** 2026-03-23
-**Status:** Draft
+**Status:** Draft v1.1 (Addressing review feedback)
 **Author:** AI Design Assistant
 
 ---
@@ -157,111 +157,497 @@ Mantém o design system existente:
 
 ---
 
-## 5. Server Actions
+## 5. Type Definitions
 
-### 5.1 `src/lib/actions/admin.ts`
+### 5.1 `src/lib/types/admin.ts`
 
 ```typescript
-'use server'
-
-import { supabaseAdmin } from '@/lib/supabase/admin'
-
-// Dashboard metrics
-export async function getAdminDashboardStats() {
-  const [companiesCount, revenue, activeCompanies, clientsCount] = await Promise.all([
-    supabaseAdmin.from('companies').select('id', { count: 'exact' }),
-    supabaseAdmin.from('appointments')
-      .select('price')
-      .eq('status', 'completed'),
-    // ...
-  ])
-  return { companiesCount, revenue, activeCompanies, clientsCount }
+export interface AdminDashboardStats {
+  companiesCount: number
+  revenue: number
+  activeCompanies: number
+  clientsCount: number
+  monthlyAppointments: MonthlyAppointment[]
 }
 
-// Companies
-export async function getAllCompanies(filters?: { search?: string }) {
-  let query = supabaseAdmin.from('companies').select('*')
-  if (filters?.search) {
-    query = query.or(`name.ilike.%${filters.search}%,email.ilike.%${filters.search}%`)
-  }
-  return query.order('created_at', { ascending: false })
+export interface MonthlyAppointment {
+  month: string
+  count: number
 }
 
-export async function getCompanyById(id: string) {
-  return supabaseAdmin.from('companies').select('*').eq('id', id).single()
+export interface CompanyWithMetrics {
+  id: string
+  name: string
+  email: string
+  active: boolean
+  created_at: string
+  updated_at: string
+  metrics?: CompanyMetrics
 }
 
-export async function updateCompany(id: string, data: { name?: string; email?: string }) {
-  return supabaseAdmin.from('companies').update(data).eq('id', id)
+export interface CompanyMetrics {
+  clientsCount: number
+  petsCount: number
+  appointmentsToday: number
+  appointmentsThisMonth: number
+  revenue: number
 }
 
-export async function toggleCompanyStatus(id: string, active: boolean) {
-  // Use a separate field or soft delete pattern
+export interface InviteWithDetails {
+  id: string
+  code: string
+  role: 'company_admin' | 'company_user'
+  company_id: string
+  company_name?: string
+  expires_at: string
+  accepted_at: string | null
+  accepted_by: string | null
+  created_at: string
 }
 
-// Company details metrics
-export async function getCompanyMetrics(companyId: string) {
-  // Fetch scoped metrics for a specific company
+export type InviteStatus = 'pending' | 'used' | 'expired'
+
+export interface AdminActionResponse<T = unknown> {
+  data?: T
+  error?: string
 }
 ```
 
-### 5.2 `src/lib/actions/invites.ts`
+## 6. Validation Schemas
+
+### 6.1 `src/lib/validation/admin.ts`
+
+```typescript
+import { z } from 'zod'
+
+export const updateCompanySchema = z.object({
+  name: z.string().min(1, 'Nome é obrigatório').max(255, 'Nome muito longo').optional(),
+  email: z.string().email('Email inválido').optional()
+})
+
+export const createInviteSchema = z.object({
+  companyId: z.string().uuid('Empresa inválida'),
+  role: z.enum(['company_admin', 'company_user'], {
+    errorMap: () => ({ message: 'Role deve ser company_admin ou company_user' })
+  }),
+  expiresInDays: z.number().min(1, 'Mínimo 1 dia').max(365, 'Máximo 365 dias').default(365),
+  createNewCompany: z.boolean().default(false),
+  newCompanyName: z.string().min(1).optional(),
+  newCompanyEmail: z.string().email().optional()
+}).refine(
+  (data) => !data.createNewCompany || (data.newCompanyName && data.newCompanyEmail),
+  {
+    message: "Nome e email da empresa são obrigatórios ao criar nova empresa",
+    path: ["newCompanyName"]
+  }
+)
+```
+
+## 7. Server Actions
+
+### 7.1 `src/lib/actions/admin.ts`
 
 ```typescript
 'use server'
 
+import { revalidatePath } from 'next/cache'
 import { supabaseAdmin } from '@/lib/supabase/admin'
+import type { AdminActionResponse, AdminDashboardStats, CompanyWithMetrics, CompanyMetrics } from '@/lib/types/admin'
+import { updateCompanySchema } from '@/lib/validation/admin'
 
-export async function createInvite(data: {
-  companyId: string
-  role: 'company_admin' | 'company_user'
-  expiresInDays: number
-}) {
-  const code = generateInviteCode()
-  return supabaseAdmin.from('invites').insert({
-    code,
-    company_id: data.companyId,
-    role: data.role,
-    expires_at: new Date(Date.now() + data.expiresInDays * 24 * 60 * 60 * 1000)
-  })
+// Dashboard metrics
+export async function getAdminDashboardStats(): Promise<AdminActionResponse<AdminDashboardStats>> {
+  try {
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
+
+    const [companiesResult, revenueResult, activeCompaniesResult, clientsResult] = await Promise.all([
+      supabaseAdmin.from('companies').select('id', { count: 'exact', head: true }),
+      supabaseAdmin.from('appointments').select('price').eq('status', 'completed'),
+      supabaseAdmin.from('appointments')
+        .select('company_id', { head: true })
+        .gte('date', thirtyDaysAgo),
+      supabaseAdmin.from('clients').select('id', { count: 'exact', head: true })
+    ])
+
+    const companiesCount = companiesResult.count || 0
+    const revenue = revenueResult.data?.reduce((sum, a) => sum + Number(a.price), 0) || 0
+    const activeCompanies = activeCompaniesResult.count || 0
+    const clientsCount = clientsResult.count || 0
+
+    return {
+      data: {
+        companiesCount,
+        revenue,
+        activeCompanies,
+        clientsCount,
+        monthlyAppointments: [] // To be implemented with chart
+      }
+    }
+  } catch (error) {
+    console.error('Error loading admin stats:', error)
+    return { error: 'Erro ao carregar métricas do dashboard' }
+  }
 }
 
-export async function getInvites() {
-  return supabaseAdmin
-    .from('invites')
-    .select('*, companies(name)')
-    .order('created_at', { ascending: false })
+// Companies
+export async function getAllCompanies(filters?: { search?: string }): Promise<AdminActionResponse<CompanyWithMetrics[]>> {
+  try {
+    let query = supabaseAdmin
+      .from('companies')
+      .select('*')
+      .order('created_at', { ascending: false })
+
+    if (filters?.search) {
+      query = query.or(`name.ilike.%${filters.search}%,email.ilike.%${filters.search}%`)
+    }
+
+    const { data, error } = await query
+
+    if (error) throw error
+
+    return { data: data as CompanyWithMetrics[] }
+  } catch (error) {
+    console.error('Error loading companies:', error)
+    return { error: 'Erro ao carregar empresas' }
+  }
 }
+
+export async function getCompanyById(id: string): Promise<AdminActionResponse<CompanyWithMetrics>> {
+  try {
+    const { data, error } = await supabaseAdmin
+      .from('companies')
+      .select('*')
+      .eq('id', id)
+      .single()
+
+    if (error) throw error
+
+    return { data: data as CompanyWithMetrics }
+  } catch (error) {
+    console.error('Error loading company:', error)
+    return { error: 'Erro ao carregar empresa' }
+  }
+}
+
+export async function updateCompany(id: string, formData: FormData): Promise<AdminActionResponse<CompanyWithMetrics>> {
+  try {
+    const validatedFields = updateCompanySchema.safeParse({
+      name: formData.get('name'),
+      email: formData.get('email')
+    })
+
+    if (!validatedFields.success) {
+      return { error: validatedFields.error.errors[0]?.message || 'Dados inválidos' }
+    }
+
+    const { data, error } = await supabaseAdmin
+      .from('companies')
+      .update(validatedFields.data)
+      .eq('id', id)
+      .select()
+      .single()
+
+    if (error) throw error
+
+    revalidatePath('/admin/empresas')
+    revalidatePath('/admin/empresas/[id]')
+
+    return { data: data as CompanyWithMetrics }
+  } catch (error) {
+    console.error('Error updating company:', error)
+    return { error: 'Erro ao atualizar empresa' }
+  }
+}
+
+export async function toggleCompanyStatus(id: string, active: boolean): Promise<AdminActionResponse<CompanyWithMetrics>> {
+  try {
+    const { data, error } = await supabaseAdmin
+      .from('companies')
+      .update({ active })
+      .eq('id', id)
+      .select()
+      .single()
+
+    if (error) throw error
+
+    revalidatePath('/admin/empresas')
+    revalidatePath('/admin/empresas/[id]')
+    revalidatePath('/admin/dashboard')
+
+    return { data: data as CompanyWithMetrics }
+  } catch (error) {
+    console.error('Error toggling company status:', error)
+    return { error: 'Erro ao alterar status da empresa' }
+  }
+}
+
+// Company metrics
+export async function getCompanyMetrics(companyId: string): Promise<AdminActionResponse<CompanyMetrics>> {
+  try {
+    const today = new Date().toISOString().split('T')[0]
+    const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString()
+
+    const [clientsResult, petsResult, appointmentsResult] = await Promise.all([
+      supabaseAdmin.from('clients').select('id', { count: 'exact', head: true }).eq('company_id', companyId),
+      supabaseAdmin.from('pets').select('id', { count: 'exact', head: true }).eq('company_id', companyId),
+      supabaseAdmin.from('appointments')
+        .select('date, price, status')
+        .eq('company_id', companyId)
+    ])
+
+    const appointmentsToday = appointmentsResult.data?.filter(a => a.date === today).length || 0
+    const appointmentsThisMonth = appointmentsResult.data?.filter(a => a.date >= monthStart).length || 0
+    const revenue = appointmentsResult.data
+      ?.filter(a => a.status === 'completed')
+      .reduce((sum, a) => sum + Number(a.price), 0) || 0
+
+    return {
+      data: {
+        clientsCount: clientsResult.count || 0,
+        petsCount: petsResult.count || 0,
+        appointmentsToday,
+        appointmentsThisMonth,
+        revenue
+      }
+    }
+  } catch (error) {
+    console.error('Error loading company metrics:', error)
+    return { error: 'Erro ao carregar métricas da empresa' }
+  }
+}
+```
+
+### 7.2 `src/lib/actions/invites.ts`
+
+```typescript
+'use server'
+
+import { revalidatePath } from 'next/cache'
+import { supabaseAdmin } from '@/lib/supabase/admin'
+import type { AdminActionResponse, InviteWithDetails, InviteStatus } from '@/lib/types/admin'
+import { createInviteSchema } from '@/lib/validation/admin'
 
 function generateInviteCode(): string {
-  // Generate unique code: PREFIX-XXXX-YYYY
-  return `INVITE-${crypto.randomUUID().split('-')[0].toUpperCase()}-${Date.now().toString(36).toUpperCase()}`
+  const timestamp = Date.now().toString(36).toUpperCase()
+  const random = Math.random().toString(36).substring(2, 6).toUpperCase()
+  return `INVITE-${random}-${timestamp}`
+}
+
+function getInviteStatus(invite: InviteWithDetails): InviteStatus {
+  if (invite.accepted_at) return 'used'
+  if (new Date(invite.expires_at) < new Date()) return 'expired'
+  return 'pending'
+}
+
+export async function createInvite(formData: FormData): Promise<AdminActionResponse<InviteWithDetails>> {
+  try {
+    const validatedFields = createInviteSchema.safeParse({
+      companyId: formData.get('companyId'),
+      role: formData.get('role'),
+      expiresInDays: formData.get('expiresInDays'),
+      createNewCompany: formData.get('createNewCompany'),
+      newCompanyName: formData.get('newCompanyName'),
+      newCompanyEmail: formData.get('newCompanyEmail')
+    })
+
+    if (!validatedFields.success) {
+      return { error: validatedFields.error.errors[0]?.message || 'Dados inválidos' }
+    }
+
+    let companyId = validatedFields.data.companyId
+
+    // Create new company if requested
+    if (validatedFields.data.createNewCompany) {
+      const { data: newCompany, error: companyError } = await supabaseAdmin
+        .from('companies')
+        .insert({
+          name: validatedFields.data.newCompanyName!,
+          email: validatedFields.data.newCompanyEmail!,
+          active: true
+        })
+        .select()
+        .single()
+
+      if (companyError) throw companyError
+      companyId = newCompany.id
+    }
+
+    const expiresAt = new Date(Date.now() + validatedFields.data.expiresInDays * 24 * 60 * 60 * 1000).toISOString()
+
+    const { data, error } = await supabaseAdmin
+      .from('invites')
+      .insert({
+        code: generateInviteCode(),
+        company_id: companyId,
+        role: validatedFields.data.role,
+        expires_at: expiresAt
+      })
+      .select('*, companies(name)')
+      .single()
+
+    if (error) throw error
+
+    revalidatePath('/admin/convites')
+
+    return { data: data as InviteWithDetails }
+  } catch (error) {
+    console.error('Error creating invite:', error)
+    return { error: 'Erro ao criar convite' }
+  }
+}
+
+export async function getInvites(): Promise<AdminActionResponse<(InviteWithDetails & { status: InviteStatus })[]>> {
+  try {
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
+
+    const { data, error } = await supabaseAdmin
+      .from('invites')
+      .select('*, companies(name)')
+      .or(`accepted_at.is.null,expires_at.gte.${thirtyDaysAgo}`)
+      .order('created_at', { ascending: false })
+
+    if (error) throw error
+
+    const invitesWithStatus = (data as InviteWithDetails[]).map(invite => ({
+      ...invite,
+      status: getInviteStatus(invite)
+    }))
+
+    return { data: invitesWithStatus }
+  } catch (error) {
+    console.error('Error loading invites:', error)
+    return { error: 'Erro ao carregar convites' }
+  }
 }
 ```
 
 ---
 
-## 6. Components
+## 8. Components
 
-### 6.1 Admin Components
+### 8.1 Admin Components
 
 ```
 src/components/admin/
-├── AdminSidebar.tsx       # Sidebar navigation
-├── MetricCard.tsx         # Reusable metric card
-├── CompaniesTable.tsx     # Companies list table
-├── CompanyDetailHeader.tsx
-├── InvitesTable.tsx       # Invites list table
-└── CreateInviteForm.tsx
+├── AdminSidebar.tsx              # Sidebar (desktop) / drawer (mobile)
+├── AdminHeader.tsx               # Mobile header with hamburger menu
+├── MetricCard.tsx                # Reusable metric card
+├── CompaniesTable.tsx            # Companies list with filters
+├── CompanyDetailHeader.tsx       # Company detail page header
+├── InvitesTable.tsx              # Invites list
+├── CreateInviteForm.tsx          # Generate new invite form
+└── MonthlyAppointmentsChart.tsx  # Bar chart (custom CSS)
 ```
 
-### 6.2 Shared UI Components
+### 8.2 Chart Component (Custom CSS Grid)
 
-Reuse existing components from `src/components/ui/`:
+Sem dependências externas - usa CSS Grid:
+
+```tsx
+// MonthlyAppointmentsChart.tsx
+interface ChartData {
+  month: string
+  count: number
+}
+
+export function MonthlyAppointmentsChart({ data }: { data: ChartData[] }) {
+  const maxCount = Math.max(...data.map(d => d.count), 1)
+
+  return (
+    <div className="flex items-end gap-2 h-48">
+      {data.map((item) => (
+        <div key={item.month} className="flex-1 flex flex-col items-center group">
+          <div
+            className="w-full bg-gradient-to-t from-pink-500 to-purple-500 rounded-t-lg transition-all group-hover:opacity-80"
+            style={{ height: `${(item.count / maxCount) * 100}%` }}
+          />
+          <span className="text-xs mt-2 text-gray-600">{item.month}</span>
+        </div>
+      ))}
+    </div>
+  )
+}
+```
+
+**Data Query (in `getAdminDashboardStats`):**
+```typescript
+// Last 6 months aggregation
+const monthlyData = await supabaseAdmin.rpc('get_monthly_appointments', { months: 6 })
+```
+
+### 8.3 Mobile Drawer
+
+Custom implementation com Framer Motion:
+
+```tsx
+// AdminSidebar.tsx (excerpt)
+'use client'
+
+import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { X } from 'lucide-react'
+
+export function AdminSidebar() {
+  const [isOpen, setIsOpen] = useState(false)
+
+  return (
+    <>
+      {/* Desktop sidebar */}
+      <aside className="hidden md:fixed md:left-0 md:w-64 md:h-screen bg-white/90 backdrop-blur-xl border-r border-purple-200/50">
+        {/* Sidebar content */}
+      </aside>
+
+      {/* Mobile drawer overlay */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 z-50 md:hidden"
+            onClick={() => setIsOpen(false)}
+          >
+            <motion.div
+              initial={{ x: '-100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '-100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="fixed left-0 top-0 h-full w-72 bg-white shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setIsOpen(false)}
+                className="absolute top-4 right-4 p-2"
+              >
+                <X size={24} />
+              </button>
+              {/* Sidebar content */}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  )
+}
+```
+
+### 8.4 Loading States
+
+Spinner pattern existente:
+
+```tsx
+<div className="flex items-center justify-center h-64">
+  <div className="w-10 h-10 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin" />
+</div>
+```
+
+### 8.5 Shared UI Components
+
+Reutilizar componentes existentes de `src/components/ui/`:
 - `Button.tsx`
 - `Input.tsx`
 - `Select.tsx`
-- `Modal.tsx`
+- Toast via React Toastify (já configurado)
 
 ---
 
@@ -289,9 +675,29 @@ O schema já suporta a visão admin:
 - `users` - com roles (admin, company_admin, company_user)
 - `invites` - códigos de convite
 
-### 8.2 No Schema Changes Required
+### 8.2 Required Schema Changes
 
-A visão admin não requer alterações no schema. Usa as tabelas existentes.
+**Migration: `008_add_company_active_field.sql`**
+
+Adicionar campo `active` na tabela `companies` para suportar ativação/desativação:
+
+```sql
+-- Add active field to companies table
+ALTER TABLE companies ADD COLUMN IF NOT EXISTS active BOOLEAN DEFAULT TRUE;
+
+-- Add index for active companies queries
+CREATE INDEX IF NOT EXISTS idx_companies_active ON companies(active);
+
+-- Update existing companies to be active
+UPDATE companies SET active = true WHERE active IS NULL;
+```
+
+### 8.3 Invite Status (Derived Field)
+
+O status dos convites é **derivado** dos campos existentes (sem adicionar coluna):
+- **Pendente**: `accepted_at IS NULL AND expires_at > NOW()`
+- **Usado**: `accepted_at IS NOT NULL`
+- **Expirado**: `accepted_at IS NULL AND expires_at < NOW()`
 
 ---
 
@@ -338,3 +744,26 @@ No new environment variables required. Uses existing:
 
 **Document Version:** 1.0
 **Last Updated:** 2026-03-23
+
+
+
+---
+
+**Document Version:** 1.1
+**Last Updated:** 2026-03-23
+
+### Changelog
+- v1.1: Addressed spec review feedback
+  - Added TypeScript type definitions section
+  - Added Zod validation schemas
+  - Fixed SQL query syntax for Supabase client
+  - Added complete error handling to server actions
+  - Added revalidatePath calls to mutations
+  - Specified custom CSS grid chart (no external library)
+  - Added mobile drawer implementation details
+  - Added loading states pattern
+  - Added migration for company active field
+  - Clarified invite status as derived field
+  - Added Lucide icon specifications
+- v1.0: Initial design document
+
