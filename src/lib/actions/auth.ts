@@ -83,7 +83,6 @@ export async function register(formData: FormData) {
       .from('users')
       .insert({
         id: authData.user.id,
-        name,
         email,
         company_id: invite.company_id,
         role: invite.role
