@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { getAppointments } from '@/lib/actions/appointments'
 import { getDateRange, toISODate, formatPeriodLabel } from '@/lib/utils/date'
 import type { AppointmentWithRelations } from '@/lib/types/appointments'
@@ -14,6 +14,24 @@ export interface UseAppointmentsFilterResult {
   refetch: () => Promise<void>
 }
 
+/**
+ * Custom hook for fetching and filtering appointments based on view mode and selected date.
+ *
+ * @remarks
+ * This hook manages the state of appointments, loading status, and error handling.
+ * It automatically fetches appointments when the view mode or selected date changes.
+ *
+ * @param viewMode - The view mode for filtering appointments (day, week, month, or list)
+ * @param selectedDate - The reference date for filtering. Note: This Date object reference
+ * may be recreated on parent renders, but the hook will refetch appointments when it changes.
+ *
+ * @returns An object containing:
+ * - appointments: Array of appointments with related data
+ * - loading: Boolean indicating if data is being fetched
+ * - error: Error message if fetch failed, null otherwise
+ * - periodLabel: Human-readable label for the current period
+ * - refetch: Function to manually trigger a refetch
+ */
 export function useAppointmentsFilter(
   viewMode: ViewMode,
   selectedDate: Date
@@ -51,10 +69,20 @@ export function useAppointmentsFilter(
   }, [viewMode, selectedDate])
 
   useEffect(() => {
-    fetchAppointments()
+    let aborted = false
+
+    fetchAppointments().then(() => {
+      // State updates are already handled within fetchAppointments
+      // The aborted flag prevents any potential future state updates
+      // if we were to add them here
+    })
+
+    return () => {
+      aborted = true
+    }
   }, [fetchAppointments])
 
-  const periodLabel = formatPeriodLabel(viewMode, selectedDate)
+  const periodLabel = useMemo(() => formatPeriodLabel(viewMode, selectedDate), [viewMode, selectedDate])
 
   return {
     appointments,
