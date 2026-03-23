@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { getAppointments } from '@/lib/actions/appointments'
 import { getDateRange, toISODate, formatPeriodLabel } from '@/lib/utils/date'
 import type { AppointmentWithRelations } from '@/lib/types/appointments'
@@ -39,10 +39,18 @@ export function useAppointmentsFilter(
   const [appointments, setAppointments] = useState<AppointmentWithRelations[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
+  const isAbortedRef = useRef(false)
 
   const fetchAppointments = useCallback(async () => {
-    setLoading(true)
-    setError(null)
+    // Reset at start of fetch
+    isAbortedRef.current = false
+
+    if (!isAbortedRef.current) {
+      setLoading(true)
+    }
+    if (!isAbortedRef.current) {
+      setError(null)
+    }
 
     try {
       const dateRange = getDateRange(viewMode, selectedDate)
@@ -54,6 +62,9 @@ export function useAppointmentsFilter(
         endDate
       })
 
+      // Check aborted before state updates
+      if (isAbortedRef.current) return
+
       if (result.error) {
         setError(result.error)
         setAppointments([])
@@ -61,24 +72,20 @@ export function useAppointmentsFilter(
         setAppointments(result.data || [])
       }
     } catch (err) {
+      if (isAbortedRef.current) return
       setError('Erro ao carregar agendamentos')
       setAppointments([])
     } finally {
-      setLoading(false)
+      if (!isAbortedRef.current) {
+        setLoading(false)
+      }
     }
   }, [viewMode, selectedDate])
 
   useEffect(() => {
-    let aborted = false
-
-    fetchAppointments().then(() => {
-      // State updates are already handled within fetchAppointments
-      // The aborted flag prevents any potential future state updates
-      // if we were to add them here
-    })
-
+    fetchAppointments()
     return () => {
-      aborted = true
+      isAbortedRef.current = true
     }
   }, [fetchAppointments])
 
