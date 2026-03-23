@@ -1,5 +1,7 @@
+export * from './admin'
 export * from './auth'
 export * from './appointments'
 export * from './clients'
+export * from './packages'
 export * from './pets'
 export * from './services'
