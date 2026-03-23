@@ -280,13 +280,38 @@ export async function getAdminDashboardStats(): Promise<AdminActionResponse<Admi
         revenue,
         activeCompanies,
         clientsCount,
-        monthlyAppointments: [] // To be implemented with chart
+        monthlyAppointments: await getMonthlyAppointments()
       }
     }
   } catch (error) {
     console.error('Error loading admin stats:', error)
     return { error: 'Erro ao carregar métricas do dashboard' }
   }
+}
+
+// Helper: Get monthly appointments for last 6 months
+async function getMonthlyAppointments(): Promise<MonthlyAppointment[]> {
+  const months: MonthlyAppointment[] = []
+  const now = new Date()
+
+  for (let i = 5; i >= 0; i--) {
+    const date = new Date(now.getFullYear(), now.getMonth() - i, 1)
+    const monthStart = new Date(date.getFullYear(), date.getMonth(), 1).toISOString()
+    const monthEnd = new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59).toISOString()
+
+    const { count } = await supabaseAdmin
+      .from('appointments')
+      .select('id', { count: 'exact', head: true })
+      .gte('date', monthStart)
+      .lte('date', monthEnd)
+
+    months.push({
+      month: date.toLocaleDateString('pt-BR', { month: 'short' }),
+      count: count || 0
+    })
+  }
+
+  return months
 }
 
 // Companies
@@ -570,10 +595,7 @@ export function MonthlyAppointmentsChart({ data }: { data: ChartData[] }) {
 ```
 
 **Data Query (in `getAdminDashboardStats`):**
-```typescript
-// Last 6 months aggregation
-const monthlyData = await supabaseAdmin.rpc('get_monthly_appointments', { months: 6 })
-```
+> **Data Source:** A função `getMonthlyAppointments()` em `admin.ts` retorna um array de `{ month, count }` para os últimos 6 meses.
 
 ### 8.3 Mobile Drawer
 
@@ -698,6 +720,8 @@ O status dos convites é **derivado** dos campos existentes (sem adicionar colun
 - **Pendente**: `accepted_at IS NULL AND expires_at > NOW()`
 - **Usado**: `accepted_at IS NOT NULL`
 - **Expirado**: `accepted_at IS NULL AND expires_at < NOW()`
+
+> **Nota:** Os campos `accepted_at` e `accepted_by` já existem na migration `004_fix_invites_schema.sql`.
 
 ---
 
