@@ -8,6 +8,7 @@ export const appointmentSchema = z.object({
   time: z.string().regex(/^\d{2}:\d{2}$/, 'Horário inválido'),
   useCredit: z.boolean().default(false),
   clientPlanId: z.string().uuid().optional(),
+  petPackageId: z.string().uuid().optional(),
   notes: z.string().max(500, 'Notas devem ter no máximo 500 caracteres').optional()
 })
 
