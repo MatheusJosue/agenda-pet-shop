@@ -58,7 +58,7 @@ export default function PerfilPage() {
     return (
       <AppLayout companyName={companyName} user={{ name, email }}>
         <AppHeader companyName={companyName} user={{ name, email }} />
-        <div className="min-h-screen xl:min-h-[87vh] bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent xl:pb-0 pb-20">
+        <div className="h-[calc(100dvh-60px-64px)] xl:min-h-[87vh] bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent xl:overflow-auto overflow-y-auto">
           <div className="flex items-center justify-center py-20">
             <div className="w-10 h-10 border-4 border-purple-500/30 border-t-purple-500 rounded-full animate-spin" />
           </div>
@@ -70,7 +70,7 @@ export default function PerfilPage() {
   return (
     <AppLayout companyName={companyName} user={{ name, email }}>
       <AppHeader companyName={companyName} user={{ name, email }} />
-      <div className="min-h-screen xl:min-h-[87vh] bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent xl:pb-0 pb-20">
+      <div className="h-[calc(100dvh-60px-64px)] xl:min-h-[87vh] bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent xl:overflow-auto overflow-y-auto">
 
       <main className="max-w-4xl mx-auto px-4 py-6 space-y-6">
         {/* Header */}

@@ -66,7 +66,7 @@ export function PetsPageContent() {
 
   return (
     <AppLayout companyName={companyName} user={{ name: user?.user_metadata?.name, email: user?.email }}>
-      <div className="min-h-screen xl:min-h-[87vh] bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent relative overflow-hidden xl:pb-0 pb-20">
+      <div className="h-[calc(100dvh-60px-64px)] xl:min-h-[87vh] bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent relative overflow-hidden xl:overflow-auto overflow-y-auto">
         {/* Animated background decoration */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
