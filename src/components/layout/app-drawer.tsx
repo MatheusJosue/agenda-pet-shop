@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { logout } from '@/lib/actions/auth'
 import { User, HelpCircle, LogOut, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { GlassCard } from '@/components/ui/glass-card'
 
 interface AppDrawerProps {
   isOpen: boolean
@@ -110,7 +111,7 @@ export function AppDrawer({ isOpen, onClose, companyName, user }: AppDrawerProps
           </nav>
 
           {/* User Info & Logout */}
-          <div className="p-4 border-t border-white/10 space-y-3">
+          <div className="p-4 border-t border-white/10 space-y-3 pb-24">
             <div className="flex items-center gap-3 px-3 py-2 bg-white/5 rounded-xl border border-white/10">
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white text-sm font-bold shadow-md">
                 {getInitials(user?.name)}
@@ -125,16 +126,18 @@ export function AppDrawer({ isOpen, onClose, companyName, user }: AppDrawerProps
               </div>
             </div>
 
-            <button
-              onClick={handleLogout}
-              className="w-full flex items-center gap-3 px-4 py-3 rounded-xl
-                       text-purple-200/70
-                       hover:bg-red-500/20 hover:text-red-300
-                       transition-all text-sm font-medium"
-            >
-              <LogOut size={20} />
-              <span>Sair</span>
-            </button>
+            <GlassCard variant="default" className="p-1">
+              <button
+                onClick={handleLogout}
+                className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl
+                         text-red-300/80
+                         hover:bg-red-500/20 hover:text-red-200
+                         transition-all text-sm font-medium"
+              >
+                <LogOut size={20} />
+                <span>Sair</span>
+              </button>
+            </GlassCard>
           </div>
         </div>
       </div>
