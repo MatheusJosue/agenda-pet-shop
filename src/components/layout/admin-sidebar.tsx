@@ -4,13 +4,9 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
-  Home,
-  Calendar,
-  Users,
-  Package,
-  Scissors,
-  UserCircle,
-  HelpCircle,
+  LayoutDashboard,
+  Building,
+  Ticket,
   ChevronsLeft,
   ChevronsRight,
   LogOut,
@@ -18,22 +14,15 @@ import {
 import { cn } from "@/lib/utils";
 import { logout } from "@/lib/actions/auth";
 
-const STORAGE_KEY = "agenda-pet-shop:sidebar-collapsed";
+const STORAGE_KEY = "agenda-pet-shop:admin-sidebar-collapsed";
 
-const mainNavItems = [
-  { href: "/app", icon: Home, label: "Início" },
-  { href: "/app/agendamentos", icon: Calendar, label: "Agenda" },
-  { href: "/app/clientes", icon: Users, label: "Clientes" },
-  { href: "/app/pacotes", icon: Package, label: "Pacotes" },
-  { href: "/app/servicos", icon: Scissors, label: "Serviços" },
+const adminNavItems = [
+  { href: "/admin/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+  { href: "/admin/empresas", icon: Building, label: "Empresas" },
+  { href: "/admin/convites", icon: Ticket, label: "Convites" },
 ];
 
-const baseNavItems = [
-  { href: "/app/perfil", icon: UserCircle, label: "Perfil" },
-  { href: "/app/ajuda", icon: HelpCircle, label: "Ajuda" },
-];
-
-export function Sidebar() {
+export function AdminSidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(() => {
@@ -44,13 +33,11 @@ export function Sidebar() {
     return false;
   });
 
-  // Save to localStorage when collapsed state changes
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, String(collapsed));
   }, [collapsed]);
 
   const toggleCollapsed = () => setCollapsed(!collapsed);
-
   const width = collapsed ? "w-20" : "w-64";
 
   async function handleLogout() {
@@ -58,21 +45,14 @@ export function Sidebar() {
     router.push("/login");
   }
 
-  function getInitials(name?: string): string {
-    if (!name) return "U";
-    const parts = name.trim().split(" ");
-    if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
-    return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
-  }
-
-  // Get user data from localStorage (saved during login)
+  // Get user data from localStorage
   const getUserData = () => {
     if (typeof window !== "undefined") {
-      const name = localStorage.getItem("user_name") || "";
-      const email = localStorage.getItem("user_email") || "";
+      const name = localStorage.getItem("user_name") || "Admin";
+      const email = localStorage.getItem("user_email") || "admin@system.com";
       return { name, email };
     }
-    return { name: "", email: "" };
+    return { name: "Admin", email: "" };
   };
 
   const userData = getUserData();
@@ -80,19 +60,19 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        "hidden xl:flex flex-col fixed left-0 top-0 bottom-0 bg-gradient-to-br from-purple-950 via-fuchsia-950/30 to-zinc-950 backdrop-blur-md border-r border-white/10 transition-all duration-300 ease-in-out z-50",
+        "hidden xl:flex flex-col fixed left-0 top-0 bottom-0 bg-gradient-to-br from-indigo-950 via-purple-950/50 to-zinc-950 backdrop-blur-md border-r border-white/10 transition-all duration-300 ease-in-out z-50",
         width,
       )}
     >
       {/* Header com Logo + Toggle */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
         <div className="flex items-center gap-3 min-w-0">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-purple-500/30 flex-shrink-0">
-            <span className="text-lg">🐾</span>
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center shadow-lg shadow-indigo-500/30 flex-shrink-0">
+            <LayoutDashboard size={22} className="text-white" />
           </div>
           {!collapsed && (
             <span className="text-lg font-bold text-white whitespace-nowrap">
-              Pet Shop
+              Admin Panel
             </span>
           )}
         </div>
@@ -110,27 +90,10 @@ export function Sidebar() {
       {/* Navigation */}
       <nav
         className="flex-1 overflow-y-auto px-3 py-4"
-        aria-label="Navegação principal"
+        aria-label="Navegação admin"
       >
         <ul className="space-y-1">
-          {mainNavItems.map((item) => (
-            <li key={item.href}>
-              <NavItem
-                href={item.href}
-                icon={item.icon}
-                label={item.label}
-                active={pathname === item.href}
-                collapsed={collapsed}
-              />
-            </li>
-          ))}
-        </ul>
-
-        {/* Divider */}
-        <div className="my-4 border-t border-white/10" />
-
-        <ul className="space-y-1">
-          {baseNavItems.map((item) => (
+          {adminNavItems.map((item) => (
             <li key={item.href}>
               <NavItem
                 href={item.href}
@@ -148,15 +111,15 @@ export function Sidebar() {
       <div className="p-3 border-t border-white/10">
         <div className="flex items-center gap-3 px-2 py-2">
           {/* Avatar */}
-          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white text-sm font-bold shadow-lg shadow-purple-500/30 flex-shrink-0">
-            {getInitials(userData.name)}
+          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white text-sm font-bold shadow-lg shadow-indigo-500/30 flex-shrink-0">
+            AD
           </div>
 
           {/* User Info - only when expanded */}
           {!collapsed && (
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-white truncate">
-                {userData.name || "Usuário"}
+                {userData.name}
               </p>
               <p className="text-xs text-purple-200/60 truncate">{userData.email}</p>
             </div>
@@ -200,7 +163,7 @@ function NavItem({
         className={cn(
           "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 relative",
           active
-            ? "bg-gradient-to-r from-purple-500/20 to-fuchsia-500/20 border-l-4 border-purple-400 text-white"
+            ? "bg-gradient-to-r from-indigo-500/20 to-purple-500/20 border-l-4 border-indigo-400 text-white"
             : "text-purple-200/60 hover:text-white hover:bg-white/10",
           collapsed ? "justify-center" : "justify-start",
         )}

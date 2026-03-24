@@ -1,90 +1,79 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { User, LogOut } from 'lucide-react'
-import { logout } from '@/lib/actions/auth'
+import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
+import { Bell, Settings } from "lucide-react";
+import { useHeaderAction } from "./header-context";
 
 interface DesktopHeaderProps {
-  user: {
-    name?: string
-    email?: string
-  }
+  user?: {
+    name?: string;
+    email?: string;
+  };
+  sidebarCollapsed?: boolean;
 }
 
-function getInitials(name?: string): string {
-  if (!name) return 'U'
-  const parts = name.trim().split(' ')
-  if (parts.length === 1) return parts[0].charAt(0).toUpperCase()
-  return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase()
+function getPageTitle(pathname: string): { title: string; icon: string } {
+  const routes: Record<string, { title: string; icon: string }> = {
+    "/app": { title: "Início", icon: "🏠" },
+    "/app/agendamentos": { title: "Agendamentos", icon: "📅" },
+    "/app/clientes": { title: "Clientes", icon: "👥" },
+    "/app/pets": { title: "Pets", icon: "🐾" },
+    "/app/pacotes": { title: "Pacotes", icon: "📦" },
+    "/app/servicos": { title: "Serviços", icon: "✂️" },
+    "/app/perfil": { title: "Perfil", icon: "👤" },
+    "/app/ajuda": { title: "Ajuda", icon: "❓" },
+  };
+
+  // Check for exact match first
+  if (routes[pathname]) return routes[pathname];
+
+  // Check for partial matches (detail pages, etc.)
+  for (const [path, data] of Object.entries(routes)) {
+    if (pathname.startsWith(path + "/")) return data;
+  }
+
+  return { title: "Pet Shop", icon: "🐾" };
 }
 
 export function DesktopHeader({ user }: DesktopHeaderProps) {
-  const [dropdownOpen, setDropdownOpen] = useState(false)
-  const router = useRouter()
+  const pathname = usePathname();
+  const [pageTitle, setPageTitle] = useState(getPageTitle(pathname));
+  const { action } = useHeaderAction();
 
-  async function handleLogout() {
-    await logout()
-    router.push('/login')
-  }
+  useEffect(() => {
+    setPageTitle(getPageTitle(pathname));
+  }, [pathname]);
 
   return (
-    <header className="hidden xl:flex sticky top-0 z-40 h-16 w-full bg-zinc-900/80 backdrop-blur-xl border-b border-zinc-800">
-      <div className="flex-1 ml-64 flex items-center justify-between px-6">
-        {/* Logo */}
-        <Link
-          href="/app"
-          className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-fuchsia-400 bg-clip-text text-transparent"
-        >
-          Pet Shop
-        </Link>
-
-        {/* User Avatar + Dropdown */}
-        <div className="relative">
-          <button
-            onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-zinc-800/50 transition-colors"
-          >
-            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white text-sm font-bold shadow-md shadow-purple-500/30">
-              {getInitials(user?.name)}
+    <header className="hidden xl:flex sticky top-0 z-40 w-full bg-gradient-to-br from-purple-950 via-fuchsia-950/30 to-zinc-950 backdrop-blur-md border-b border-white/10">
+      <div className="flex-1 flex items-center justify-center px-6 py-3">
+        <div className="flex items-center justify-between w-full max-w-12xl">
+          {/* Left: Page Title */}
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-purple-500/30">
+              <span className="text-lg">{pageTitle.icon}</span>
             </div>
-          </button>
+            <h1 className="text-xl font-bold text-white">{pageTitle.title}</h1>
+          </div>
 
-          {/* Dropdown Menu */}
-          {dropdownOpen && (
-            <>
-              {/* Backdrop */}
-              <div
-                className="fixed inset-0 z-50"
-                onClick={() => setDropdownOpen(false)}
-              />
+          {/* Right: Actions */}
+          <div className="flex items-center gap-2">
+            {/* Page Action (e.g., Add button) */}
+            {action && <div className="flex-shrink-0">{action}</div>}
 
-              {/* Menu */}
-              <div className="absolute right-0 top-full mt-2 z-[60] w-48 bg-zinc-900 rounded-xl border border-zinc-700 shadow-xl overflow-hidden">
-                <Link
-                  href="/app/perfil"
-                  className="flex items-center gap-3 px-4 py-3 text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors"
-                  onClick={() => setDropdownOpen(false)}
-                >
-                  <User size={18} />
-                  <span>Perfil</span>
-                </Link>
-                <button
-                  onClick={() => {
-                    handleLogout()
-                    setDropdownOpen(false)
-                  }}
-                  className="w-full flex items-center gap-3 px-4 py-3 text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors"
-                >
-                  <LogOut size={18} />
-                  <span>Sair</span>
-                </button>
-              </div>
-            </>
-          )}
+            {/* Notifications (placeholder) */}
+            <button className="w-10 h-10 flex items-center justify-center rounded-xl text-purple-200/60 hover:text-white hover:bg-white/10 transition-colors">
+              <Bell size={20} />
+            </button>
+
+            {/* Settings (placeholder) */}
+            <button className="w-10 h-10 flex items-center justify-center rounded-xl text-purple-200/60 hover:text-white hover:bg-white/10 transition-colors">
+              <Settings size={20} />
+            </button>
+          </div>
         </div>
       </div>
     </header>
-  )
+  );
 }

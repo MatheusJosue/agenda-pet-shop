@@ -70,6 +70,17 @@ export async function middleware(request: NextRequest) {
     if (!session) {
       return NextResponse.redirect(new URL('/login', request.url))
     }
+
+    // Check for impersonation - admin can impersonate companies
+    const impersonateCompanyId = request.cookies.get('impersonate_company_id')?.value
+    const userRole = session.user?.user_metadata?.role
+
+    if (impersonateCompanyId && userRole === 'admin') {
+      // Admin impersonating a company - add headers for the app to know
+      response.headers.set('x-impersonating', 'true')
+      response.headers.set('x-impersonate-company-id', impersonateCompanyId)
+    }
+
     return response
   }
 

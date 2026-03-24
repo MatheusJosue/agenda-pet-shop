@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { AppHeader } from '@/components/layout/app-header'
 import { BottomNavigation } from '@/components/layout/bottom-navigation'
+import { AppLayout } from '@/components/layout/app-layout'
 import { Button } from '@/components/ui/button'
 import { GlassCard } from '@/components/ui/glass-card'
 import { User, Mail, Building2, Save, ArrowLeft } from 'lucide-react'
@@ -55,20 +56,23 @@ export default function PerfilPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 pb-20">
+      <AppLayout companyName={companyName} user={{ name, email }}>
         <AppHeader companyName={companyName} user={{ name, email }} />
-        <div className="flex items-center justify-center py-20">
-          <div className="w-10 h-10 border-4 border-purple-500/30 border-t-purple-500 rounded-full animate-spin" />
+        <div className="min-h-screen xl:min-h-[87vh] bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent xl:pb-0 pb-20">
+          <div className="flex items-center justify-center py-20">
+            <div className="w-10 h-10 border-4 border-purple-500/30 border-t-purple-500 rounded-full animate-spin" />
+          </div>
         </div>
-      </div>
+      </AppLayout>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 pb-20">
+    <AppLayout companyName={companyName} user={{ name, email }}>
       <AppHeader companyName={companyName} user={{ name, email }} />
+      <div className="min-h-screen xl:min-h-[87vh] bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent xl:pb-0 pb-20">
 
-      <main className="max-w-lg mx-auto px-4 py-6 space-y-6">
+      <main className="max-w-4xl mx-auto px-4 py-6 space-y-6">
         {/* Header */}
         <div className="flex items-center gap-3 mb-6">
           <Button
@@ -186,6 +190,7 @@ export default function PerfilPage() {
       </main>
 
       <BottomNavigation />
-    </div>
+      </div>
+    </AppLayout>
   )
 }

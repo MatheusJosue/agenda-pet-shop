@@ -2,8 +2,7 @@ import Link from 'next/link'
 import { logout } from '@/lib/actions/auth'
 import { Button } from '@/components/ui/button'
 import { GlassCard } from '@/components/ui/glass-card'
-import { Icons } from './bottom-navigation'
-import { PawPrint, LogOut } from 'lucide-react'
+import { PawPrint, LogOut, ChevronLeft } from 'lucide-react'
 
 interface CompactHeaderProps {
   title?: string
@@ -35,7 +34,7 @@ export function CompactHeader({
               href={backHref}
               className="flex items-center justify-center w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-950/30 hover:bg-purple-200 dark:hover:bg-purple-900/50 transition-all hover:scale-105 active:scale-95 flex-shrink-0 group"
             >
-              <Icons.ChevronLeft
+              <ChevronLeft
                 size={20}
                 className="text-purple-600 dark:text-purple-400 group-hover:-translate-x-0.5 transition-transform"
               />

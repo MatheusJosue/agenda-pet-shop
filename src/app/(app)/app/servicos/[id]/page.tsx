@@ -7,8 +7,18 @@ import { getServiceById, updateService, deleteService, checkServiceAppointments 
 import { GlassCard } from '@/components/ui/glass-card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Pencil, Trash2 } from 'lucide-react'
+import { AppHeader } from '@/components/layout/app-header'
+import { AppLayout } from '@/components/layout/app-layout'
+import { SetHeaderAction } from '@/components/layout/set-header-action'
+import { BottomNavigation } from '@/components/layout/bottom-navigation'
+import { Pencil, Trash2, ArrowLeft } from 'lucide-react'
 import type { Service } from '@/lib/types/services'
+
+const sizeEmojis = {
+  small: '🐱',
+  medium: '🐕',
+  large: '🦮'
+}
 
 export default function ServicoDetailPage() {
   const router = useRouter()
@@ -21,6 +31,8 @@ export default function ServicoDetailPage() {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [appointmentCount, setAppointmentCount] = useState(0)
+  const [companyName, setCompanyName] = useState('Agenda Pet Shop')
+  const [user, setUser] = useState<{ user_metadata?: { name?: string }; email?: string } | null>(null)
   const [formData, setFormData] = useState({
     name: '',
     price_small: '',
@@ -28,6 +40,22 @@ export default function ServicoDetailPage() {
     price_large: '',
     duration_minutes: '60',
   })
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const { getAppStats } = await import('@/lib/actions/app')
+        const result = await getAppStats()
+        if (result.data) {
+          setCompanyName(result.data.companyName || 'Agenda Pet Shop')
+          setUser(result.data.user)
+        }
+      } catch (error) {
+        console.error('Error loading data:', error)
+      }
+    }
+    loadData()
+  }, [])
 
   useEffect(() => {
     loadService()
@@ -118,310 +146,322 @@ export default function ServicoDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 relative overflow-hidden">
-        {/* Animated background decoration */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-fuchsia-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/5 rounded-full blur-3xl" />
+      <AppLayout companyName={companyName} user={{ name: user?.user_metadata?.name, email: user?.email }}>
+        <div className="min-h-screen xl:min-h-[87vh] bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent relative overflow-hidden xl:pb-0 pb-20">
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
+            <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-fuchsia-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+          </div>
+          <AppHeader
+            companyName={companyName}
+            user={{ name: user?.user_metadata?.name, email: user?.email }}
+            title="Serviço"
+            subtitle="Carregando..."
+            icon="✂️"
+          />
+          <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
+            <p className="text-white/60">Carregando...</p>
+          </div>
+          <BottomNavigation />
         </div>
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative">
-          <p className="text-white/60">Carregando...</p>
-        </div>
-      </div>
+      </AppLayout>
     )
   }
 
   if (!service || error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 relative overflow-hidden">
-        {/* Animated background decoration */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-fuchsia-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/5 rounded-full blur-3xl" />
+      <AppLayout companyName={companyName} user={{ name: user?.user_metadata?.name, email: user?.email }}>
+        <div className="min-h-screen xl:min-h-[87vh] bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent relative overflow-hidden xl:pb-0 pb-20">
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
+            <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-fuchsia-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+          </div>
+          <AppHeader
+            companyName={companyName}
+            user={{ name: user?.user_metadata?.name, email: user?.email }}
+            title="Serviço"
+            subtitle="Erro"
+            icon="✂️"
+            action={
+              <Link href="/app/servicos">
+                <Button variant="ghost" size="sm" className="p-2">
+                  <ArrowLeft size={20} />
+                </Button>
+              </Link>
+            }
+          />
+          <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
+            <GlassCard variant="default" className="p-8 text-center">
+              <p className="text-red-400 mb-4">{error || 'Serviço não encontrado'}</p>
+              <Link href="/app/servicos">
+                <Button variant="secondary">Voltar</Button>
+              </Link>
+            </GlassCard>
+          </div>
+          <BottomNavigation />
         </div>
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative">
-          <GlassCard variant="default" className="p-8 text-center">
-            <p className="text-red-400 mb-4">{error || 'Serviço não encontrado'}</p>
-            <Link href="/app/servicos">
-              <Button variant="secondary">Voltar</Button>
-            </Link>
-          </GlassCard>
-        </div>
-      </div>
+      </AppLayout>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 relative overflow-hidden">
-      {/* Animated background decoration */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-fuchsia-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/5 rounded-full blur-3xl" />
-      </div>
-
-      {/* Header */}
-      <header className="border-b border-white/10 backdrop-blur-md bg-white/5 relative">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
-          <Link
-            href="/app/servicos"
-            className="inline-flex items-center gap-3 px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 hover:text-white transition-all group"
-          >
-            <span className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center group-hover:bg-white/15 transition-colors">
-              ←
-            </span>
-            <span className="font-medium">Voltar para Serviços</span>
-          </Link>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
-        {/* Title Section with Icon */}
-        <div className="mb-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <div className="flex items-center justify-between gap-4 mb-4">
-            <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500 to-fuchsia-500 flex items-center justify-center text-2xl shadow-lg shadow-purple-500/30">
-                ✂️
-              </div>
-              <div>
-                <h1 className="text-3xl font-bold text-white mb-1" style={{ fontFamily: 'var(--font-outfit), sans-serif' }}>
-                  {service.name}
-                </h1>
-                <p className="text-purple-200/60">
-                  {editing ? 'Editando' : 'Detalhes'} do serviço
-                </p>
-              </div>
-            </div>
+    <AppLayout companyName={companyName} user={{ name: user?.user_metadata?.name, email: user?.email }}>
+      <SetHeaderAction
+        action={
+          !editing && (
             <div className="flex gap-2">
-              {editing ? (
-                <>
-                  <Button
-                    variant="secondary"
-                    size="md"
-                    onClick={() => {
-                      setEditing(false)
-                      setFormData({
-                        name: service.name,
-                        price_small: service.price_small.toString(),
-                        price_medium: service.price_medium.toString(),
-                        price_large: service.price_large.toString(),
-                        duration_minutes: service.duration_minutes.toString(),
-                      })
-                      setError(null)
-                    }}
-                    disabled={saving}
-                  >
-                    Cancelar
-                  </Button>
-                  <Button
-                    variant="primary"
-                    size="md"
-                    onClick={handleSave}
-                    disabled={saving}
-                  >
-                    {saving ? 'Salvando...' : 'Salvar'}
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Button
-                    variant="secondary"
-                    size="md"
-                    onClick={() => setEditing(true)}
-                    disabled={saving}
-                  >
-                    <Pencil size={18} />
-                  </Button>
-                  <Button
-                    variant="danger"
-                    size="md"
-                    onClick={handleDelete}
-                    disabled={saving || appointmentCount > 0}
-                    title={appointmentCount > 0 ? `${appointmentCount} agendamento(s) futuro(s)` : undefined}
-                  >
-                    <Trash2 size={18} />
-                  </Button>
-                </>
-              )}
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => setEditing(true)}
+                disabled={saving}
+              >
+                <Pencil size={18} />
+              </Button>
+              <Button
+                variant="danger"
+                size="sm"
+                onClick={handleDelete}
+                disabled={saving || appointmentCount > 0}
+                title={appointmentCount > 0 ? `${appointmentCount} agendamento(s) futuro(s)` : undefined}
+              >
+                <Trash2 size={18} />
+              </Button>
             </div>
-          </div>
+          )
+        }
+      />
+
+      <div className="min-h-screen xl:min-h-[87vh] bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent relative overflow-hidden xl:pb-0 pb-20">
+        {/* Animated background decoration */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-fuchsia-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
         </div>
 
-        {error && (
-          <GlassCard variant="default" className="p-4 mb-6 bg-red-500/20 border-red-500/50 animate-in fade-in slide-in-from-top-2">
-            <p className="text-red-200">⚠️ {error}</p>
-          </GlassCard>
-        )}
-
-        <GlassCard variant="default" className="p-8 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-100">
-          {editing ? (
-            <form onSubmit={(e) => { e.preventDefault(); handleSave(); }} className="space-y-7">
-              {/* Name */}
-              <div className="animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '150ms' }}>
-                <label htmlFor="name" className="block text-purple-100/90 text-sm font-semibold mb-2.5 flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">✂️</span>
-                  Nome do Serviço *
-                </label>
-                <Input
-                  id="name"
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) => handleChange('name', e.target.value)}
-                  required
-                  className="w-full"
-                />
+        <AppHeader
+          companyName={companyName}
+          user={{ name: user?.user_metadata?.name, email: user?.email }}
+          title={service.name}
+          subtitle={editing ? 'Editando' : 'Detalhes do serviço'}
+          icon="✂️"
+          action={
+            editing ? (
+              <div className="flex gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setEditing(false)
+                    setFormData({
+                      name: service.name,
+                      price_small: service.price_small.toString(),
+                      price_medium: service.price_medium.toString(),
+                      price_large: service.price_large.toString(),
+                      duration_minutes: service.duration_minutes.toString(),
+                    })
+                    setError(null)
+                  }}
+                  disabled={saving}
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={handleSave}
+                  disabled={saving}
+                >
+                  {saving ? 'Salvando...' : 'Salvar'}
+                </Button>
               </div>
+            ) : (
+              <Link href="/app/servicos">
+                <Button variant="ghost" size="sm" className="p-2">
+                  <ArrowLeft size={20} />
+                </Button>
+              </Link>
+            )
+          }
+        />
 
-              {/* Prices */}
-              <div className="space-y-4 animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '200ms' }}>
-                <h3 className="text-purple-100/90 text-sm font-semibold flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">💰</span>
-                  Preços *
-                </h3>
+        {/* Main Content */}
+        <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
+          {error && (
+            <GlassCard variant="default" className="p-4 mb-6 bg-red-500/20 border-red-500/50 animate-in fade-in slide-in-from-top-2">
+              <p className="text-red-200">⚠️ {error}</p>
+            </GlassCard>
+          )}
 
-                <div className="animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '250ms' }}>
-                  <label htmlFor="price_small" className="block text-purple-100/90 text-sm font-semibold mb-2.5 flex items-center gap-2">
-                    <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">🐱</span>
-                    Porte Pequeno
+          <GlassCard variant="default" className="p-8 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-100">
+            {editing ? (
+              <form onSubmit={(e) => { e.preventDefault(); handleSave(); }} className="space-y-7">
+                {/* Name */}
+                <div className="animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '150ms' }}>
+                  <label htmlFor="name" className="block text-purple-100/90 text-sm font-semibold mb-2.5 flex items-center gap-2">
+                    <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">✂️</span>
+                    Nome do Serviço *
                   </label>
-                  <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-purple-200/50 font-medium">R$</span>
-                    <Input
-                      id="price_small"
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      value={formData.price_small}
-                      onChange={(e) => handleChange('price_small', e.target.value)}
-                      required
-                      className="w-full pl-12"
-                    />
-                  </div>
+                  <Input
+                    id="name"
+                    type="text"
+                    value={formData.name}
+                    onChange={(e) => handleChange('name', e.target.value)}
+                    required
+                    className="w-full"
+                  />
                 </div>
 
-                <div className="animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '300ms' }}>
-                  <label htmlFor="price_medium" className="block text-purple-100/90 text-sm font-semibold mb-2.5 flex items-center gap-2">
-                    <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">🐕</span>
-                    Porte Médio
-                  </label>
-                  <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-purple-200/50 font-medium">R$</span>
-                    <Input
-                      id="price_medium"
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      value={formData.price_medium}
-                      onChange={(e) => handleChange('price_medium', e.target.value)}
-                      required
-                      className="w-full pl-12"
-                    />
-                  </div>
-                </div>
+                {/* Prices */}
+                <div className="space-y-4 animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '200ms' }}>
+                  <h3 className="text-purple-100/90 text-sm font-semibold flex items-center gap-2">
+                    <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">💰</span>
+                    Preços *
+                  </h3>
 
-                <div className="animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '350ms' }}>
-                  <label htmlFor="price_large" className="block text-purple-100/90 text-sm font-semibold mb-2.5 flex items-center gap-2">
-                    <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">🦮</span>
-                    Porte Grande
-                  </label>
-                  <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-purple-200/50 font-medium">R$</span>
-                    <Input
-                      id="price_large"
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      value={formData.price_large}
-                      onChange={(e) => handleChange('price_large', e.target.value)}
-                      required
-                      className="w-full pl-12"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Duration */}
-              <div className="animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '400ms' }}>
-                <label htmlFor="duration_minutes" className="block text-purple-100/90 text-sm font-semibold mb-2.5 flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">⏱️</span>
-                  Duração (minutos)
-                </label>
-                <Input
-                  id="duration_minutes"
-                  type="number"
-                  min="1"
-                  value={formData.duration_minutes}
-                  onChange={(e) => handleChange('duration_minutes', e.target.value)}
-                  className="w-full"
-                />
-              </div>
-            </form>
-          ) : (
-            <div className="space-y-6">
-              <div className="animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '150ms' }}>
-                <h2 className="text-purple-200/60 text-sm font-semibold mb-1 flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">✂️</span>
-                  Nome
-                </h2>
-                <p className="text-2xl font-semibold text-white">{service.name}</p>
-              </div>
-
-              <div className="animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '200ms' }}>
-                <h2 className="text-purple-200/60 text-sm font-semibold mb-3 flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">💰</span>
-                  Preços
-                </h2>
-                <div className="space-y-2">
-                  <div className="flex justify-between p-3 bg-white/5 rounded-lg">
-                    <span className="text-white/80 flex items-center gap-2">
+                  <div className="animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '250ms' }}>
+                    <label htmlFor="price_small" className="block text-purple-100/90 text-sm font-semibold mb-2.5 flex items-center gap-2">
                       <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">🐱</span>
                       Porte Pequeno
-                    </span>
-                    <span className="text-white font-semibold">
-                      R$ {service.price_small.toFixed(2)}
-                    </span>
+                    </label>
+                    <div className="relative">
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-purple-200/50 font-medium">R$</span>
+                      <Input
+                        id="price_small"
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        value={formData.price_small}
+                        onChange={(e) => handleChange('price_small', e.target.value)}
+                        required
+                        className="w-full pl-12"
+                      />
+                    </div>
                   </div>
-                  <div className="flex justify-between p-3 bg-white/5 rounded-lg">
-                    <span className="text-white/80 flex items-center gap-2">
+
+                  <div className="animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '300ms' }}>
+                    <label htmlFor="price_medium" className="block text-purple-100/90 text-sm font-semibold mb-2.5 flex items-center gap-2">
                       <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">🐕</span>
                       Porte Médio
-                    </span>
-                    <span className="text-white font-semibold">
-                      R$ {service.price_medium.toFixed(2)}
-                    </span>
+                    </label>
+                    <div className="relative">
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-purple-200/50 font-medium">R$</span>
+                      <Input
+                        id="price_medium"
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        value={formData.price_medium}
+                        onChange={(e) => handleChange('price_medium', e.target.value)}
+                        required
+                        className="w-full pl-12"
+                      />
+                    </div>
                   </div>
-                  <div className="flex justify-between p-3 bg-white/5 rounded-lg">
-                    <span className="text-white/80 flex items-center gap-2">
+
+                  <div className="animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '350ms' }}>
+                    <label htmlFor="price_large" className="block text-purple-100/90 text-sm font-semibold mb-2.5 flex items-center gap-2">
                       <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">🦮</span>
                       Porte Grande
-                    </span>
-                    <span className="text-white font-semibold">
-                      R$ {service.price_large.toFixed(2)}
-                    </span>
+                    </label>
+                    <div className="relative">
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-purple-200/50 font-medium">R$</span>
+                      <Input
+                        id="price_large"
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        value={formData.price_large}
+                        onChange={(e) => handleChange('price_large', e.target.value)}
+                        required
+                        className="w-full pl-12"
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '250ms' }}>
-                <h2 className="text-purple-200/60 text-sm font-semibold mb-1 flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">⏱️</span>
-                  Duração
-                </h2>
-                <p className="text-white">{service.duration_minutes} minutos</p>
-              </div>
+                {/* Duration */}
+                <div className="animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '400ms' }}>
+                  <label htmlFor="duration_minutes" className="block text-purple-100/90 text-sm font-semibold mb-2.5 flex items-center gap-2">
+                    <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">⏱️</span>
+                    Duração (minutos)
+                  </label>
+                  <Input
+                    id="duration_minutes"
+                    type="number"
+                    min="1"
+                    value={formData.duration_minutes}
+                    onChange={(e) => handleChange('duration_minutes', e.target.value)}
+                    className="w-full"
+                  />
+                </div>
+              </form>
+            ) : (
+              <div className="space-y-6">
+                <div className="animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '150ms' }}>
+                  <h2 className="text-purple-200/60 text-sm font-semibold mb-1 flex items-center gap-2">
+                    <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">✂️</span>
+                    Nome
+                  </h2>
+                  <p className="text-2xl font-semibold text-white">{service.name}</p>
+                </div>
 
-              <div className="pt-4 border-t border-white/10 animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '300ms' }}>
-                <p className="text-purple-200/40 text-xs">
-                  Cadastrado em {new Date(service.created_at).toLocaleDateString('pt-BR')}
-                </p>
+                <div className="animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '200ms' }}>
+                  <h2 className="text-purple-200/60 text-sm font-semibold mb-3 flex items-center gap-2">
+                    <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">💰</span>
+                    Preços
+                  </h2>
+                  <div className="space-y-2">
+                    <div className="flex justify-between p-3 bg-white/5 rounded-lg">
+                      <span className="text-white/80 flex items-center gap-2">
+                        <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">🐱</span>
+                        Porte Pequeno
+                      </span>
+                      <span className="text-white font-semibold">
+                        R$ {service.price_small.toFixed(2)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between p-3 bg-white/5 rounded-lg">
+                      <span className="text-white/80 flex items-center gap-2">
+                        <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">🐕</span>
+                        Porte Médio
+                      </span>
+                      <span className="text-white font-semibold">
+                        R$ {service.price_medium.toFixed(2)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between p-3 bg-white/5 rounded-lg">
+                      <span className="text-white/80 flex items-center gap-2">
+                        <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">🦮</span>
+                        Porte Grande
+                      </span>
+                      <span className="text-white font-semibold">
+                        R$ {service.price_large.toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '250ms' }}>
+                  <h2 className="text-purple-200/60 text-sm font-semibold mb-1 flex items-center gap-2">
+                    <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">⏱️</span>
+                    Duração
+                  </h2>
+                  <p className="text-white">{service.duration_minutes} minutos</p>
+                </div>
+
+                <div className="pt-4 border-t border-white/10 animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '300ms' }}>
+                  <p className="text-purple-200/40 text-xs">
+                    Cadastrado em {new Date(service.created_at).toLocaleDateString('pt-BR')}
+                  </p>
+                </div>
               </div>
-            </div>
-          )}
-        </GlassCard>
-      </main>
-    </div>
+            )}
+          </GlassCard>
+        </main>
+
+        <BottomNavigation />
+      </div>
+    </AppLayout>
   )
 }

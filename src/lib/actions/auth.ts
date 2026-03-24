@@ -68,7 +68,7 @@ export async function register(formData: FormData) {
     email,
     password,
     email_confirm: true,
-    user_metadata: { name }
+    user_metadata: { name, role: invite.role }
   })
 
   if (authError || !authData.user) {

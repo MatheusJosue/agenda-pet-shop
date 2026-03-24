@@ -13,16 +13,16 @@ export async function getAdminDashboardStats(): Promise<AdminActionResponse<Admi
   try {
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
 
-    const [companiesResult, revenueResult, activeCompaniesResult, clientsResult] = await Promise.all([
+    const [companiesResult, activeCompaniesResult, clientsResult] = await Promise.all([
       supabaseAdmin.from('companies').select('id', { count: 'exact', head: true }),
-      supabaseAdmin.from('appointments').select('price').eq('status', 'completed'),
       supabaseAdmin.from('companies').select('id', { count: 'exact', head: true }).eq('active', true),
       supabaseAdmin.from('clients').select('id', { count: 'exact', head: true })
     ])
 
     const companiesCount = companiesResult.count || 0
-    const revenue = revenueResult.data?.reduce((sum, a) => sum + Number(a.price), 0) || 0
     const activeCompanies = activeCompaniesResult.count || 0
+    // Revenue = active companies × R$ 50 per month
+    const revenue = activeCompanies * 50
     const clientsCount = clientsResult.count || 0
 
     return {
@@ -210,5 +210,54 @@ export async function getCompanyMetrics(companyId: string): Promise<AdminActionR
   } catch (error) {
     console.error('Error loading company metrics:', error)
     return { error: 'Erro ao carregar métricas da empresa' }
+  }
+}
+
+/**
+ * Start impersonating a company
+ * Sets a cookie to indicate admin is viewing as this company
+ */
+export async function startImpersonation(companyId: string): Promise<AdminActionResponse<{ companyId: string; companyName: string }>> {
+  try {
+    const { data: company, error } = await supabaseAdmin
+      .from('companies')
+      .select('id, name')
+      .eq('id', companyId)
+      .single()
+
+    if (error || !company) {
+      return { error: 'Empresa não encontrada' }
+    }
+
+    // This will be handled by cookies in the client component
+    return {
+      data: {
+        companyId: company.id,
+        companyName: company.name
+      }
+    }
+  } catch (error) {
+    console.error('Error starting impersonation:', error)
+    return { error: 'Erro ao iniciar personificação' }
+  }
+}
+
+/**
+ * Get company info for impersonation
+ */
+export async function getCompanyForImpersonation(companyId: string): Promise<AdminActionResponse<{ id: string; name: string }>> {
+  try {
+    const { data, error } = await supabaseAdmin
+      .from('companies')
+      .select('id, name')
+      .eq('id', companyId)
+      .single()
+
+    if (error) throw error
+
+    return { data: data as { id: string; name: string } }
+  } catch (error) {
+    console.error('Error loading company for impersonation:', error)
+    return { error: 'Erro ao carregar empresa' }
   }
 }

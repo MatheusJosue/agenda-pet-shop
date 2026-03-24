@@ -4,8 +4,9 @@ import { useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { getPets } from '@/lib/actions/pets'
-import { CompactHeader } from '@/components/layout/compact-header'
+import { AppHeader } from '@/components/layout/app-header'
 import { BottomNavigation } from '@/components/layout/bottom-navigation'
+import { AppLayout } from '@/components/layout/app-layout'
 import { GlassCard } from '@/components/ui/glass-card'
 import { Button } from '@/components/ui/button'
 import { AnimatedIcon } from '@/components/ui/animated-icon'
@@ -30,6 +31,24 @@ export function PetsPageContent() {
   const clientId = searchParams.get('client')
   const [pets, setPets] = useState<PetWithClient[]>([])
   const [loading, setLoading] = useState(true)
+  const [companyName, setCompanyName] = useState('Agenda Pet Shop')
+  const [user, setUser] = useState<{ user_metadata?: { name?: string }; email?: string } | null>(null)
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const { getAppStats } = await import('@/lib/actions/app')
+        const result = await getAppStats()
+        if (result.data) {
+          setCompanyName(result.data.companyName || 'Agenda Pet Shop')
+          setUser(result.data.user)
+        }
+      } catch (error) {
+        console.error('Error loading data:', error)
+      }
+    }
+    loadData()
+  }, [])
 
   useEffect(() => {
     async function loadPets() {
@@ -46,44 +65,34 @@ export function PetsPageContent() {
   }, [clientId])
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 relative overflow-hidden pb-20">
-      {/* Animated background decoration */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-fuchsia-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/5 rounded-full blur-3xl" />
-      </div>
+    <AppLayout companyName={companyName} user={{ name: user?.user_metadata?.name, email: user?.email }}>
+      <div className="min-h-screen xl:min-h-[87vh] bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent relative overflow-hidden xl:pb-0 pb-20">
+        {/* Animated background decoration */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-fuchsia-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/5 rounded-full blur-3xl" />
+        </div>
 
-      {/* Header */}
-      <header className="border-b border-white/10 backdrop-blur-md bg-white/5 relative">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500 to-fuchsia-500 flex items-center justify-center text-xl shadow-lg shadow-purple-500/30">
-                🐾
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-white" style={{ fontFamily: 'var(--font-outfit), sans-serif' }}>
-                  Pets
-                </h1>
-                <p className="text-purple-200/60 text-sm">
-                  {pets?.length || 0} pet{pets?.length !== 1 ? 's' : ''}
-                </p>
-              </div>
-            </div>
+        {/* Header */}
+        <AppHeader
+          companyName={companyName}
+          user={{ name: user?.user_metadata?.name, email: user?.email }}
+          title="Pets"
+          subtitle={`${pets?.length || 0} pet${pets?.length !== 1 ? 's' : ''}`}
+          icon="🐾"
+          action={
             <Link href="/app/pets/novo">
-              <Button variant="primary" size="md" className="rounded-full gap-2 shadow-lg shadow-purple-500/30">
-                <Plus size={18} />
-                <span className="hidden sm:inline">Novo Pet</span>
-                <span className="sm:hidden">Novo</span>
+              <Button variant="primary" size="sm" className="rounded-full gap-1">
+                <Plus size={16} />
+                Novo
               </Button>
             </Link>
-          </div>
-        </div>
-      </header>
+          }
+        />
 
       {/* Main Content */}
-      <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
         {loading ? (
           <div className="flex items-center justify-center py-12">
             <div className="w-10 h-10 border-4 border-purple-500 border-t-transparent rounded-full animate-spin" />
@@ -153,6 +162,7 @@ export function PetsPageContent() {
       </main>
 
       <BottomNavigation />
-    </div>
+      </div>
+    </AppLayout>
   )
 }

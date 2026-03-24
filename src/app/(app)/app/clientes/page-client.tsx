@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { getClients } from '@/lib/actions/clients'
 import { AppHeader } from '@/components/layout/app-header'
 import { BottomNavigation } from '@/components/layout/bottom-navigation'
+import { AppLayout } from '@/components/layout/app-layout'
 import { GlassCard } from '@/components/ui/glass-card'
 import { Button } from '@/components/ui/button'
 import { AnimatedIcon } from '@/components/ui/animated-icon'
@@ -53,15 +54,16 @@ export function ClientesPageContent() {
   }, [search])
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 relative overflow-hidden pb-20">
-      {/* Animated background decoration */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-fuchsia-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/5 rounded-full blur-3xl" />
-      </div>
+    <AppLayout companyName={companyName} user={{ name: user?.user_metadata?.name, email: user?.email }}>
+      <div className="min-h-screen xl:min-h-[87vh] bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent relative overflow-hidden xl:pb-0 pb-20">
+        {/* Animated background decoration */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-fuchsia-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/5 rounded-full blur-3xl" />
+        </div>
 
-      <AppHeader
+        <AppHeader
         companyName={companyName}
         user={{ name: user?.user_metadata?.name, email: user?.email }}
         title="Clientes"
@@ -77,7 +79,7 @@ export function ClientesPageContent() {
         }
       />
 
-      <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
         {/* Search */}
         <form className="mb-6 relative animate-in fade-in slide-in-from-bottom-2 duration-300">
           <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-purple-200/50" />
@@ -165,6 +167,7 @@ export function ClientesPageContent() {
       </main>
 
       <BottomNavigation />
-    </div>
+      </div>
+    </AppLayout>
   )
 }

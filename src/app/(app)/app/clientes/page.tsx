@@ -1,5 +1,6 @@
 import { Suspense } from 'react'
 import { ClientesPageContent } from './page-client'
+import { AppLayout } from '@/components/layout/app-layout'
 import { AppHeader } from '@/components/layout/app-header'
 
 export default function ClientesPage() {
@@ -12,14 +13,7 @@ export default function ClientesPage() {
 
 function ClientesLoading() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 relative overflow-hidden pb-20">
-      {/* Animated background decoration */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-fuchsia-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/5 rounded-full blur-3xl" />
-      </div>
-
+    <AppLayout companyName="Agenda Pet Shop" user={{}}>
       <AppHeader
         companyName="Agenda Pet Shop"
         user={{}}
@@ -27,12 +21,20 @@ function ClientesLoading() {
         subtitle="Carregando..."
         icon="👥"
       />
+      <div className="min-h-screen xl:min-h-0 bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent relative overflow-hidden xl:pb-0 pb-20">
+        {/* Animated background decoration */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-fuchsia-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/5 rounded-full blur-3xl" />
+        </div>
 
-      <div className="max-w-lg mx-auto px-4 py-6 relative">
-        <div className="flex items-center justify-center py-12">
-          <div className="w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full animate-spin" />
+        <div className="max-w-7xl mx-auto px-4 py-6 relative">
+          <div className="flex items-center justify-center py-12">
+            <div className="w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full animate-spin" />
+          </div>
         </div>
       </div>
-    </div>
+    </AppLayout>
   )
 }

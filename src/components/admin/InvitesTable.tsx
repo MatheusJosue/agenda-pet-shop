@@ -13,15 +13,21 @@ interface InvitesTableProps {
 }
 
 const statusStyles = {
-  pending: 'bg-blue-500/20 text-blue-300',
-  used: 'bg-green-500/20 text-green-300',
-  expired: 'bg-gray-500/20 text-gray-300',
+  pending: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
+  used: 'bg-green-500/20 text-green-300 border-green-500/30',
+  expired: 'bg-red-500/20 text-red-300 border-red-500/30',
 }
 
 const statusLabels = {
   pending: 'Pendente',
   used: 'Usado',
   expired: 'Expirado',
+}
+
+const roleLabels = {
+  admin: 'System Admin',
+  company_admin: 'Admin Empresa',
+  company_user: 'Usuário',
 }
 
 export function InvitesTable({ invites }: InvitesTableProps) {
@@ -45,12 +51,12 @@ export function InvitesTable({ invites }: InvitesTableProps) {
       <table className="w-full">
         <thead>
           <tr className="border-b border-white/10">
-            <th className="text-left p-4 text-purple-200 font-medium">Código</th>
-            <th className="text-left p-4 text-purple-200 font-medium">Role</th>
-            <th className="text-left p-4 text-purple-200 font-medium">Empresa</th>
-            <th className="text-left p-4 text-purple-200 font-medium">Status</th>
-            <th className="text-left p-4 text-purple-200 font-medium">Expira em</th>
-            <th className="text-left p-4 text-purple-200 font-medium">Aceito por</th>
+            <th className="text-left p-4 text-purple-200/80 font-medium text-sm uppercase tracking-wide">Código</th>
+            <th className="text-left p-4 text-purple-200/80 font-medium text-sm uppercase tracking-wide">Tipo</th>
+            <th className="text-left p-4 text-purple-200/80 font-medium text-sm uppercase tracking-wide">Empresa</th>
+            <th className="text-left p-4 text-purple-200/80 font-medium text-sm uppercase tracking-wide">Status</th>
+            <th className="text-left p-4 text-purple-200/80 font-medium text-sm uppercase tracking-wide">Expira em</th>
+            <th className="text-right p-4 text-purple-200/80 font-medium text-sm uppercase tracking-wide">Ações</th>
           </tr>
         </thead>
         <tbody>
@@ -58,39 +64,47 @@ export function InvitesTable({ invites }: InvitesTableProps) {
             <tr
               key={invite.id}
               className={cn(
-                'border-b border-white/5',
-                isExpiringSoon(invite) && 'bg-yellow-500/10'
+                'border-b border-white/5 hover:bg-white/5 transition-colors',
+                isExpiringSoon(invite) && 'bg-amber-500/10'
               )}
             >
               <td className="p-4">
-                <div className="flex items-center gap-2">
-                  <code className="text-purple-300 font-mono text-sm">{invite.code}</code>
-                  <button
-                    onClick={() => handleCopy(invite.code)}
-                    className="p-1 rounded hover:bg-white/10 text-gray-400 hover:text-white"
-                    title="Copiar código"
-                  >
-                    {copied === invite.code ? <Check size={16} /> : <Copy size={16} />}
-                  </button>
-                </div>
+                <code className="text-purple-300 font-mono text-sm bg-purple-500/10 px-2 py-1 rounded">
+                  {invite.code}
+                </code>
               </td>
-              <td className="p-4 text-gray-300 capitalize">{invite.role.replace('_', ' ')}</td>
-              <td className="p-4 text-white">{invite.company_name || '-'}</td>
+              <td className="p-4 text-gray-300 text-sm">
+                {roleLabels[invite.role as keyof typeof roleLabels] || invite.role}
+              </td>
+              <td className="p-4 text-white text-sm">{invite.company_name || '-'}</td>
               <td className="p-4">
-                <span className={cn('px-3 py-1 rounded-full text-xs font-medium', statusStyles[invite.status])}>
+                <span className={cn(
+                  'px-3 py-1 rounded-full text-xs font-medium border',
+                  statusStyles[invite.status]
+                )}>
                   {statusLabels[invite.status]}
                 </span>
               </td>
-              <td className="p-4 text-gray-300">
+              <td className="p-4 text-gray-300 text-sm">
                 {format(new Date(invite.expires_at), 'dd/MM/yyyy', { locale: ptBR })}
               </td>
-              <td className="p-4 text-gray-300">{invite.accepted_by ? 'Sim' : '-'}</td>
+              <td className="p-4">
+                <div className="flex items-center justify-end gap-2">
+                  <button
+                    onClick={() => handleCopy(invite.code)}
+                    className="p-2 rounded-lg hover:bg-white/10 text-purple-300 hover:text-white transition-colors"
+                    title="Copiar código"
+                  >
+                    {copied === invite.code ? <Check size={18} /> : <Copy size={18} />}
+                  </button>
+                </div>
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
       {invites.length === 0 && (
-        <div className="text-center py-12 text-gray-400">
+        <div className="text-center py-12 text-purple-200/60">
           Nenhum convite encontrado
         </div>
       )}

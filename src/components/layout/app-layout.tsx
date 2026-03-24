@@ -1,8 +1,9 @@
 'use client'
 
-import { ReactNode } from 'react'
+import { ReactNode, useState, useEffect } from 'react'
 import { Sidebar } from './sidebar'
 import { DesktopHeader } from './desktop-header'
+import { HeaderProvider } from './header-context'
 
 interface AppLayoutProps {
   children: ReactNode
@@ -14,15 +15,47 @@ interface AppLayoutProps {
 }
 
 export function AppLayout({ children, companyName, user }: AppLayoutProps) {
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+
+  useEffect(() => {
+    const saved = localStorage.getItem('agenda-pet-shop:sidebar-collapsed')
+    if (saved !== null) {
+      setSidebarCollapsed(saved === 'true')
+    }
+  }, [])
+
+  // Sincronizar com mudanças no localStorage
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const saved = localStorage.getItem('agenda-pet-shop:sidebar-collapsed')
+      if (saved !== null) {
+        setSidebarCollapsed(saved === 'true')
+      }
+    }
+
+    window.addEventListener('storage', handleStorageChange)
+    // Também checar em intervalos curtos para mudanças na mesma aba
+    const interval = setInterval(handleStorageChange, 100)
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange)
+      clearInterval(interval)
+    }
+  }, [])
+
+  const marginClass = sidebarCollapsed ? 'ml-20' : 'ml-64'
+
   return (
-    <>
+    <HeaderProvider>
       {/* Desktop Layout */}
-      <div className="hidden xl:flex min-h-screen">
+      <div className="hidden xl:flex h-screen">
         <Sidebar />
-        <div className="flex-1 flex flex-col">
-          <DesktopHeader user={user} />
-          <main className="flex-1 overflow-auto">
-            {children}
+        <div className={`flex-1 flex flex-col transition-all duration-300 ${marginClass}`}>
+          <DesktopHeader user={user} sidebarCollapsed={sidebarCollapsed} />
+          <main className="flex-1 overflow-auto bg-gradient-to-br from-zinc-950 via-purple-950/20 to-zinc-950">
+            <div className="h-full px-6 py-8">
+              {children}
+            </div>
           </main>
         </div>
       </div>
@@ -31,6 +64,6 @@ export function AppLayout({ children, companyName, user }: AppLayoutProps) {
       <div className="xl:hidden">
         {children}
       </div>
-    </>
+    </HeaderProvider>
   )
 }
