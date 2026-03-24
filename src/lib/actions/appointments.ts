@@ -200,10 +200,10 @@ export async function createAppointment(input: AppointmentInput): Promise<Appoin
     return { error: 'Pet não pertence ao cliente informado' }
   }
 
-  // Get service and calculate price
+  // Get service price
   const { data: service } = await supabase
     .from('services')
-    .select('price_small, price_medium, price_large')
+    .select('price')
     .eq('id', input.serviceId)
     .eq('company_id', companyId)
     .eq('active', true)
@@ -213,13 +213,7 @@ export async function createAppointment(input: AppointmentInput): Promise<Appoin
     return { error: 'Serviço não encontrado' }
   }
 
-  // Calculate price based on pet size
-  const priceMap: Record<'small' | 'medium' | 'large', number> = {
-    small: service.price_small,
-    medium: service.price_medium,
-    large: service.price_large
-  }
-  const price = priceMap[pet.size as keyof typeof priceMap]
+  const price = service.price
 
   // Check if using pet package credit
   let finalPrice = price
@@ -366,17 +360,12 @@ export async function updateAppointment(id: string, input: Partial<AppointmentIn
 
     const { data: service } = await supabase
       .from('services')
-      .select('price_small, price_medium, price_large')
+      .select('price')
       .eq('id', serviceId)
       .single()
 
     if (pet && service) {
-      const priceMap: Record<'small' | 'medium' | 'large', number> = {
-        small: service.price_small,
-        medium: service.price_medium,
-        large: service.price_large
-      }
-      updateData.price = priceMap[pet.size as keyof typeof priceMap]
+      updateData.price = service.price
       updateData.pet_id = petId
       updateData.service_id = serviceId
     }

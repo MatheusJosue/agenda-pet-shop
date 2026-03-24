@@ -90,25 +90,9 @@ export async function getServiceById(id: string): Promise<ServiceResponse> {
 }
 
 /**
- * Calculate price based on pet size
+ * Get service price
  */
-function calculatePrice(
-  priceSmall: number,
-  priceMedium: number,
-  priceLarge: number,
-  size: 'small' | 'medium' | 'large'
-): number {
-  switch (size) {
-    case 'small': return priceSmall
-    case 'medium': return priceMedium
-    case 'large': return priceLarge
-  }
-}
-
-/**
- * Get service price for a specific pet size
- */
-export async function getServicePrice(serviceId: string, petSize: 'small' | 'medium' | 'large'): Promise<{ data?: number, error?: string }> {
+export async function getServicePrice(serviceId: string): Promise<{ data?: number, error?: string }> {
   const companyId = await getCurrentCompanyId()
 
   if (!companyId) {
@@ -119,7 +103,7 @@ export async function getServicePrice(serviceId: string, petSize: 'small' | 'med
 
   const { data, error } = await supabase
     .from('services')
-    .select('price_small, price_medium, price_large')
+    .select('price')
     .eq('id', serviceId)
     .eq('company_id', companyId)
     .eq('active', true)
@@ -129,14 +113,7 @@ export async function getServicePrice(serviceId: string, petSize: 'small' | 'med
     return { error: 'Serviço não encontrado' }
   }
 
-  const price = calculatePrice(
-    data.price_small,
-    data.price_medium,
-    data.price_large,
-    petSize
-  )
-
-  return { data: price }
+  return { data: data.price }
 }
 
 /**
@@ -154,9 +131,7 @@ export async function createService(input: ServiceInput): Promise<ServiceRespons
   // Validate input
   const validatedFields = serviceSchema.safeParse({
     name: input.name,
-    priceSmall: input.price_small,
-    priceMedium: input.price_medium,
-    priceLarge: input.price_large,
+    price: input.price,
     durationMinutes: input.duration_minutes || 60
   })
 
@@ -169,9 +144,7 @@ export async function createService(input: ServiceInput): Promise<ServiceRespons
     .insert({
       company_id: companyId,
       name: validatedFields.data.name,
-      price_small: validatedFields.data.priceSmall,
-      price_medium: validatedFields.data.priceMedium,
-      price_large: validatedFields.data.priceLarge,
+      price: validatedFields.data.price,
       duration_minutes: validatedFields.data.durationMinutes,
     })
     .select()
@@ -212,9 +185,7 @@ export async function updateService(id: string, input: Partial<ServiceInput>): P
   // Validate input
   const validatedFields = serviceSchema.safeParse({
     name: input.name || '',
-    priceSmall: input.price_small || 0,
-    priceMedium: input.price_medium || 0,
-    priceLarge: input.price_large || 0,
+    price: input.price || 0,
     durationMinutes: input.duration_minutes || 60
   })
 
@@ -224,9 +195,7 @@ export async function updateService(id: string, input: Partial<ServiceInput>): P
 
   const updateData: any = {
     name: validatedFields.data.name,
-    price_small: validatedFields.data.priceSmall,
-    price_medium: validatedFields.data.priceMedium,
-    price_large: validatedFields.data.priceLarge,
+    price: validatedFields.data.price,
     duration_minutes: validatedFields.data.durationMinutes,
   }
 

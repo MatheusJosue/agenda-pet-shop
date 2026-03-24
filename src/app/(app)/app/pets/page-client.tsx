@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { getPets } from '@/lib/actions/pets'
 import { AppHeader } from '@/components/layout/app-header'
+import { SetHeaderAction } from '@/components/layout/set-header-action'
 import { BottomNavigation } from '@/components/layout/bottom-navigation'
 import { AppLayout } from '@/components/layout/app-layout'
 import { GlassCard } from '@/components/ui/glass-card'
@@ -66,6 +67,18 @@ export function PetsPageContent() {
 
   return (
     <AppLayout companyName={companyName} user={{ name: user?.user_metadata?.name, email: user?.email }}>
+      {/* Desktop header action */}
+      <SetHeaderAction
+        action={
+          <Link href="/app/pets/novo">
+            <Button variant="primary" size="sm" className="rounded-full">
+              <PawPrint size={16} className="mr-2" />
+              Novo
+            </Button>
+          </Link>
+        }
+      />
+
       <div className="h-[calc(100dvh-60px-64px)] xl:min-h-[87vh] bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent relative overflow-hidden xl:overflow-auto overflow-y-auto">
         {/* Animated background decoration */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -83,8 +96,8 @@ export function PetsPageContent() {
           icon="🐾"
           action={
             <Link href="/app/pets/novo">
-              <Button variant="primary" size="sm" className="rounded-full gap-1">
-                <Plus size={16} />
+              <Button variant="primary" size="sm" className="rounded-full">
+                <PawPrint size={16} className="mr-2" />
                 Novo
               </Button>
             </Link>

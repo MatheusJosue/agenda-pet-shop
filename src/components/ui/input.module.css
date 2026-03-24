@@ -52,6 +52,7 @@
   color: rgba(255, 255, 255, 0.5);
   pointer-events: none;
   transition: color 0.2s;
+  z-index: 10;
 }
 
 :global(.light-input) .leftIcon,
@@ -74,12 +75,31 @@
   color: rgba(255, 255, 255, 0.8);
 }
 
-.leftIcon {
+/* Size-based icon positioning */
+.size-sm .leftIcon {
   left: 12px;
 }
 
-.rightIcon {
+.size-md .leftIcon {
+  left: 14px;
+}
+
+.size-lg .leftIcon {
+  left: 18px;
+}
+
+.size-sm .rightIcon {
   right: 12px;
+  pointer-events: auto;
+}
+
+.size-md .rightIcon {
+  right: 14px;
+  pointer-events: auto;
+}
+
+.size-lg .rightIcon {
+  right: 18px;
   pointer-events: auto;
 }
 
@@ -123,12 +143,62 @@
   outline: none;
 }
 
+/* Icon spacing for input text */
+/* Left icon only */
+.size-sm .input.hasLeftIcon:not(.hasRightIcon) {
+  padding-left: 44px;
+  padding-right: 12px;
+}
+
+.size-md .input.hasLeftIcon:not(.hasRightIcon) {
+  padding-left: 48px;
+  padding-right: 16px;
+}
+
+.size-lg .input.hasLeftIcon:not(.hasRightIcon) {
+  padding-left: 56px;
+  padding-right: 20px;
+}
+
+/* Right icon only */
+.size-sm .input.hasRightIcon:not(.hasLeftIcon) {
+  padding-right: 44px;
+  padding-left: 12px;
+}
+
+.size-md .input.hasRightIcon:not(.hasLeftIcon) {
+  padding-right: 48px;
+  padding-left: 16px;
+}
+
+.size-lg .input.hasRightIcon:not(.hasLeftIcon) {
+  padding-right: 56px;
+  padding-left: 20px;
+}
+
+/* Both icons */
+.size-sm .input.hasLeftIcon.hasRightIcon {
+  padding-left: 44px;
+  padding-right: 44px;
+}
+
+.size-md .input.hasLeftIcon.hasRightIcon {
+  padding-left: 48px;
+  padding-right: 48px;
+}
+
+.size-lg .input.hasLeftIcon.hasRightIcon {
+  padding-left: 56px;
+  padding-right: 56px;
+}
+
+/* Fallback for browsers without :has() support */
 .hasLeftIcon {
-  padding-left: 40px;
+  padding-left: 48px;
 }
 
 .hasRightIcon {
-  padding-right: 40px;
+  padding-right: 48px;
 }
 
 /* Sizes */
@@ -139,14 +209,6 @@
 .size-sm .input {
   padding: 8px 12px;
   font-size: 14px;
-}
-
-.size-sm .leftIcon {
-  left: 10px;
-}
-
-.size-sm .rightIcon {
-  right: 10px;
 }
 
 .size-md {
@@ -165,14 +227,6 @@
 .size-lg .input {
   padding: 16px 20px;
   font-size: 16px;
-}
-
-.size-lg .leftIcon {
-  left: 16px;
-}
-
-.size-lg .rightIcon {
-  right: 16px;
 }
 
 /* Variants */

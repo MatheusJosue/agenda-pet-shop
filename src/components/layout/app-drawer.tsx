@@ -54,12 +54,7 @@ export function AppDrawer({ isOpen, onClose, companyName, user }: AppDrawerProps
 
       {/* Drawer - opens from LEFT with gradient background */}
       <div
-        className={`
-          fixed top-0 left-0 h-full w-[85%] max-w-sm
-          bg-gradient-to-br from-purple-950 via-fuchsia-950 to-indigo-950 z-50
-          shadow-2xl transition-transform duration-300 ease-out
-          ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-        `}
+        className={`fixed top-0 left-0 h-full w-[85%] max-w-sm bg-gradient-to-br from-purple-950 via-fuchsia-950 to-indigo-950 z-50 shadow-2xl transition-transform duration-300 ease-out ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
       >
         <div className="flex flex-col h-full">
           {/* Header with close button */}
@@ -96,11 +91,7 @@ export function AppDrawer({ isOpen, onClose, companyName, user }: AppDrawerProps
                 <li key={item.href}>
                   <button
                     onClick={() => navigate(item.href)}
-                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl
-                             text-purple-100/80
-                             hover:bg-white/10
-                             hover:text-white
-                             transition-all text-sm"
+                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-purple-100/80 hover:bg-white/10 hover:text-white transition-all text-sm"
                   >
                     <item.icon size={20} />
                     <span className="font-medium">{item.label}</span>
@@ -129,10 +120,7 @@ export function AppDrawer({ isOpen, onClose, companyName, user }: AppDrawerProps
             <GlassCard variant="default" className="p-1">
               <button
                 onClick={handleLogout}
-                className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl
-                         text-red-300/80
-                         hover:bg-red-500/20 hover:text-red-200
-                         transition-all text-sm font-medium"
+                className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl text-red-300/80 hover:bg-red-500/20 hover:text-red-200 transition-all text-sm font-medium"
               >
                 <LogOut size={20} />
                 <span>Sair</span>

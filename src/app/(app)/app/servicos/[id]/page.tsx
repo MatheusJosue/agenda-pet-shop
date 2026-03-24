@@ -11,7 +11,7 @@ import { AppHeader } from '@/components/layout/app-header'
 import { AppLayout } from '@/components/layout/app-layout'
 import { SetHeaderAction } from '@/components/layout/set-header-action'
 import { BottomNavigation } from '@/components/layout/bottom-navigation'
-import { Pencil, Trash2, ArrowLeft } from 'lucide-react'
+import { Pencil, Trash2, ArrowLeft, DollarSign } from 'lucide-react'
 import type { Service } from '@/lib/types/services'
 
 const sizeEmojis = {
@@ -35,9 +35,7 @@ export default function ServicoDetailPage() {
   const [user, setUser] = useState<{ user_metadata?: { name?: string }; email?: string } | null>(null)
   const [formData, setFormData] = useState({
     name: '',
-    price_small: '',
-    price_medium: '',
-    price_large: '',
+    price: '',
     duration_minutes: '60',
   })
 
@@ -72,9 +70,7 @@ export default function ServicoDetailPage() {
       setService(result.data)
       setFormData({
         name: result.data.name,
-        price_small: result.data.price_small.toString(),
-        price_medium: result.data.price_medium.toString(),
-        price_large: result.data.price_large.toString(),
+        price: result.data.price.toString(),
         duration_minutes: result.data.duration_minutes.toString(),
       })
     }
@@ -93,9 +89,7 @@ export default function ServicoDetailPage() {
     try {
       const result = await updateService(serviceId, {
         name: formData.name,
-        price_small: parseFloat(formData.price_small),
-        price_medium: parseFloat(formData.price_medium),
-        price_large: parseFloat(formData.price_large),
+        price: parseFloat(formData.price),
         duration_minutes: parseInt(formData.duration_minutes),
       })
 
@@ -255,9 +249,7 @@ export default function ServicoDetailPage() {
                     setEditing(false)
                     setFormData({
                       name: service.name,
-                      price_small: service.price_small.toString(),
-                      price_medium: service.price_medium.toString(),
-                      price_large: service.price_large.toString(),
+                      price: service.price.toString(),
                       duration_minutes: service.duration_minutes.toString(),
                     })
                     setError(null)
@@ -312,71 +304,24 @@ export default function ServicoDetailPage() {
                   />
                 </div>
 
-                {/* Prices */}
-                <div className="space-y-4 animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '200ms' }}>
-                  <h3 className="text-purple-100/90 text-sm font-semibold flex items-center gap-2">
+                {/* Price */}
+                <div className="animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '200ms' }}>
+                  <label htmlFor="price" className="block text-purple-100/90 text-sm font-semibold mb-2.5 flex items-center gap-2">
                     <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">💰</span>
-                    Preços *
-                  </h3>
-
-                  <div className="animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '250ms' }}>
-                    <label htmlFor="price_small" className="block text-purple-100/90 text-sm font-semibold mb-2.5 flex items-center gap-2">
-                      <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">🐱</span>
-                      Porte Pequeno
-                    </label>
-                    <div className="relative">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-purple-200/50 font-medium">R$</span>
-                      <Input
-                        id="price_small"
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        value={formData.price_small}
-                        onChange={(e) => handleChange('price_small', e.target.value)}
-                        required
-                        className="w-full pl-12"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '300ms' }}>
-                    <label htmlFor="price_medium" className="block text-purple-100/90 text-sm font-semibold mb-2.5 flex items-center gap-2">
-                      <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">🐕</span>
-                      Porte Médio
-                    </label>
-                    <div className="relative">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-purple-200/50 font-medium">R$</span>
-                      <Input
-                        id="price_medium"
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        value={formData.price_medium}
-                        onChange={(e) => handleChange('price_medium', e.target.value)}
-                        required
-                        className="w-full pl-12"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '350ms' }}>
-                    <label htmlFor="price_large" className="block text-purple-100/90 text-sm font-semibold mb-2.5 flex items-center gap-2">
-                      <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">🦮</span>
-                      Porte Grande
-                    </label>
-                    <div className="relative">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-purple-200/50 font-medium">R$</span>
-                      <Input
-                        id="price_large"
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        value={formData.price_large}
-                        onChange={(e) => handleChange('price_large', e.target.value)}
-                        required
-                        className="w-full pl-12"
-                      />
-                    </div>
+                    Preço *
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-purple-200/50 font-medium">R$</span>
+                    <Input
+                      id="price"
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={formData.price}
+                      onChange={(e) => handleChange('price', e.target.value)}
+                      required
+                      className="w-full pl-12"
+                    />
                   </div>
                 </div>
 
@@ -407,39 +352,11 @@ export default function ServicoDetailPage() {
                 </div>
 
                 <div className="animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '200ms' }}>
-                  <h2 className="text-purple-200/60 text-sm font-semibold mb-3 flex items-center gap-2">
+                  <h2 className="text-purple-200/60 text-sm font-semibold mb-1 flex items-center gap-2">
                     <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">💰</span>
-                    Preços
+                    Preço
                   </h2>
-                  <div className="space-y-2">
-                    <div className="flex justify-between p-3 bg-white/5 rounded-lg">
-                      <span className="text-white/80 flex items-center gap-2">
-                        <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">🐱</span>
-                        Porte Pequeno
-                      </span>
-                      <span className="text-white font-semibold">
-                        R$ {service.price_small.toFixed(2)}
-                      </span>
-                    </div>
-                    <div className="flex justify-between p-3 bg-white/5 rounded-lg">
-                      <span className="text-white/80 flex items-center gap-2">
-                        <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">🐕</span>
-                        Porte Médio
-                      </span>
-                      <span className="text-white font-semibold">
-                        R$ {service.price_medium.toFixed(2)}
-                      </span>
-                    </div>
-                    <div className="flex justify-between p-3 bg-white/5 rounded-lg">
-                      <span className="text-white/80 flex items-center gap-2">
-                        <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">🦮</span>
-                        Porte Grande
-                      </span>
-                      <span className="text-white font-semibold">
-                        R$ {service.price_large.toFixed(2)}
-                      </span>
-                    </div>
-                  </div>
+                  <p className="text-2xl font-semibold text-white">R$ {service.price.toFixed(2)}</p>
                 </div>
 
                 <div className="animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '250ms' }}>

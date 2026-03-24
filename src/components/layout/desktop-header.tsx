@@ -17,10 +17,15 @@ function getPageTitle(pathname: string): { title: string; icon: string } {
   const routes: Record<string, { title: string; icon: string }> = {
     "/app": { title: "Início", icon: "🏠" },
     "/app/agendamentos": { title: "Agendamentos", icon: "📅" },
+    "/app/agendamentos/novo": { title: "Novo Agendamento", icon: "🐾" },
     "/app/clientes": { title: "Clientes", icon: "👥" },
+    "/app/clientes/novo": { title: "Novo Cliente", icon: "👤" },
     "/app/pets": { title: "Pets", icon: "🐾" },
+    "/app/pets/novo": { title: "Novo Pet", icon: "🐾" },
     "/app/pacotes": { title: "Pacotes", icon: "📦" },
+    "/app/pacotes/novo": { title: "Novo Tipo de Pacote", icon: "📦" },
     "/app/servicos": { title: "Serviços", icon: "✂️" },
+    "/app/servicos/novo": { title: "Novo Serviço", icon: "✨" },
     "/app/perfil": { title: "Perfil", icon: "👤" },
     "/app/ajuda": { title: "Ajuda", icon: "❓" },
   };

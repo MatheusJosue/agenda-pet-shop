@@ -2,9 +2,7 @@ export interface Service {
   id: string
   company_id: string
   name: string
-  price_small: number
-  price_medium: number
-  price_large: number
+  price: number
   duration_minutes: number
   active: boolean
   created_at: string
@@ -13,9 +11,7 @@ export interface Service {
 
 export type ServiceInput = {
   name: string
-  price_small: number
-  price_medium: number
-  price_large: number
+  price: number
   duration_minutes?: number
 }
 

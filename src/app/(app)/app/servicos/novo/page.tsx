@@ -4,10 +4,15 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createService } from '@/lib/actions/services'
+import { AppLayout } from '@/components/layout/app-layout'
+import { AppHeader } from '@/components/layout/app-header'
+import { SetHeaderAction } from '@/components/layout/set-header-action'
+import { BottomNavigation } from '@/components/layout/bottom-navigation'
 import { GlassCard } from '@/components/ui/glass-card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select } from '@/components/ui/select'
+import { ArrowLeft } from 'lucide-react'
 
 export default function NovoServicoPage() {
   const router = useRouter()
@@ -15,9 +20,7 @@ export default function NovoServicoPage() {
   const [error, setError] = useState<string | null>(null)
   const [formData, setFormData] = useState({
     name: '',
-    price_small: '',
-    price_medium: '',
-    price_large: '',
+    price: '',
     duration_minutes: '60',
   })
 
@@ -29,9 +32,7 @@ export default function NovoServicoPage() {
     try {
       const result = await createService({
         name: formData.name,
-        price_small: parseFloat(formData.price_small),
-        price_medium: parseFloat(formData.price_medium),
-        price_large: parseFloat(formData.price_large),
+        price: parseFloat(formData.price),
         duration_minutes: parseInt(formData.duration_minutes),
       })
 
@@ -52,46 +53,46 @@ export default function NovoServicoPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 relative overflow-hidden">
-      {/* Animated background decoration */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-fuchsia-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/5 rounded-full blur-3xl" />
-      </div>
-
-      {/* Header */}
-      <header className="border-b border-white/10 backdrop-blur-md bg-white/5 relative">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
-          <Link
-            href="/app/servicos"
-            className="inline-flex items-center gap-3 px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 hover:text-white transition-all group"
-          >
-            <span className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center group-hover:bg-white/15 transition-colors">
-              ←
-            </span>
-            <span className="font-medium">Voltar para Serviços</span>
+    <AppLayout companyName="Agenda Pet Shop" user={{}}>
+      {/* Desktop header action */}
+      <SetHeaderAction
+        action={
+          <Link href="/app/servicos">
+            <Button variant="secondary" size="sm" className="rounded-full gap-1">
+              <ArrowLeft size={16} />
+              Voltar
+            </Button>
           </Link>
-        </div>
-      </header>
+        }
+      />
 
-      {/* Main Content */}
-      <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
-        {/* Title Section with Icon */}
-        <div className="mb-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500 to-fuchsia-500 flex items-center justify-center text-2xl shadow-lg shadow-purple-500/30">
-              ✨
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold text-white mb-1" style={{ fontFamily: 'var(--font-outfit), sans-serif' }}>
-                Novo Serviço
-              </h1>
-              <p className="text-purple-200/60">Cadastre um novo serviço</p>
-            </div>
-          </div>
+      <AppHeader
+        companyName="Agenda Pet Shop"
+        user={{}}
+        title="Novo Serviço"
+        subtitle="Cadastre um novo serviço"
+        icon="✨"
+        action={
+          <Link href="/app/servicos">
+            <Button variant="secondary" size="sm" className="rounded-full gap-1">
+              <ArrowLeft size={16} />
+            </Button>
+          </Link>
+        }
+      />
+
+      <div className="h-[calc(100dvh-60px-64px)] xl:min-h-[87vh] bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent relative flex flex-col xl:block overflow-hidden">
+        {/* Animated background decoration */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-fuchsia-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/5 rounded-full blur-3xl" />
         </div>
 
+        {/* Scrollable content area */}
+        <div className="flex-1 overflow-y-auto xl:overflow-auto">
+          {/* Main Content */}
+          <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
         {error && (
           <GlassCard variant="default" className="p-4 mb-6 bg-red-500/20 border-red-500/50 animate-in fade-in slide-in-from-top-2">
             <p className="text-red-200">⚠️ {error}</p>
@@ -117,74 +118,25 @@ export default function NovoServicoPage() {
               />
             </div>
 
-            {/* Prices */}
-            <div className="space-y-4 animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '200ms' }}>
-              <h3 className="text-purple-100/90 text-sm font-semibold mb-4 flex items-center gap-2">
+            {/* Price */}
+            <div className="animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '200ms' }}>
+              <label htmlFor="price" className="block text-purple-100/90 text-sm font-semibold mb-2.5 flex items-center gap-2">
                 <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">💰</span>
-                Preços por Porte *
-              </h3>
-
-              <div>
-                <label htmlFor="price_small" className="block text-purple-100/90 text-sm font-semibold mb-2.5 flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">🐱</span>
-                  Porte Pequeno
-                </label>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-purple-200/50 font-medium">R$</span>
-                  <Input
-                    id="price_small"
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    value={formData.price_small}
-                    onChange={(e) => handleChange('price_small', e.target.value)}
-                    placeholder="0.00"
-                    required
-                    className="w-full pl-12"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label htmlFor="price_medium" className="block text-purple-100/90 text-sm font-semibold mb-2.5 flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">🐕</span>
-                  Porte Médio
-                </label>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-purple-200/50 font-medium">R$</span>
-                  <Input
-                    id="price_medium"
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    value={formData.price_medium}
-                    onChange={(e) => handleChange('price_medium', e.target.value)}
-                    placeholder="0.00"
-                    required
-                    className="w-full pl-12"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label htmlFor="price_large" className="block text-purple-100/90 text-sm font-semibold mb-2.5 flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">🦮</span>
-                  Porte Grande
-                </label>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-purple-200/50 font-medium">R$</span>
-                  <Input
-                    id="price_large"
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    value={formData.price_large}
-                    onChange={(e) => handleChange('price_large', e.target.value)}
-                    placeholder="0.00"
-                    required
-                    className="w-full pl-12"
-                  />
-                </div>
+                Preço *
+              </label>
+              <div className="relative">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-purple-200/50 font-medium">R$</span>
+                <Input
+                  id="price"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={formData.price}
+                  onChange={(e) => handleChange('price', e.target.value)}
+                  placeholder="0.00"
+                  required
+                  className="w-full pl-12"
+                />
               </div>
             </div>
 
@@ -230,6 +182,10 @@ export default function NovoServicoPage() {
           </form>
         </GlassCard>
       </main>
-    </div>
+        </div>
+
+      <BottomNavigation />
+      </div>
+    </AppLayout>
   )
 }

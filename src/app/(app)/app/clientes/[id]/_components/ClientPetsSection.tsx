@@ -249,7 +249,7 @@ export function ClientPetsSection({ clientId }: ClientPetsSectionProps) {
           {pets.map((pet) => (
             <GlassCard key={pet.id} variant="default" className="p-4 hover:bg-white/[0.08] transition-colors">
               <div className="flex justify-between items-start gap-4">
-                <Link href={`/app/pets/${pet.id}`} className="flex-1 hover:opacity-80 transition-opacity">
+                <Link href={`/app/clientes/${clientId}/pets/${pet.id}`} className="flex-1 hover:opacity-80 transition-opacity">
                   <div className="flex items-center gap-3 mb-2">
                     <h3 className="text-lg font-semibold text-white">{pet.name}</h3>
                     <span className={`px-2 py-1 rounded-md text-xs font-medium ${SIZE_COLORS[pet.size]}`}>
@@ -264,7 +264,7 @@ export function ClientPetsSection({ clientId }: ClientPetsSectionProps) {
                   )}
                 </Link>
                 <div className="flex gap-2">
-                  <Link href={`/app/pets/${pet.id}`}>
+                  <Link href={`/app/clientes/${clientId}/pets/${pet.id}`}>
                     <Button
                       variant="secondary"
                       size="sm"

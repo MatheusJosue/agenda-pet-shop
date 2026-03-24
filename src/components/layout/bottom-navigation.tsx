@@ -16,10 +16,6 @@ const tabs = [
 export function BottomNavigation() {
   const pathname = usePathname()
 
-  // Don't show on nested pages (detail pages, new pages, etc.)
-  const shouldHide = pathname.match(/\/(novo|[a-f0-9-]{36}|editar)$/)
-  if (shouldHide) return null
-
   return (
     <nav className="flex xl:hidden fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-br from-purple-950 via-fuchsia-950/30 to-zinc-950 backdrop-blur-md border-t border-white/10 safe-area-inset-bottom">
       <div className="flex items-center w-full h-16">

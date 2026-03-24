@@ -7,13 +7,28 @@ import { createAppointment } from '@/lib/actions/appointments'
 import { getClients } from '@/lib/actions/clients'
 import { getPets } from '@/lib/actions/pets'
 import { getServices, getServicePrice } from '@/lib/actions/services'
+import { AppLayout } from '@/components/layout/app-layout'
+import { AppHeader } from '@/components/layout/app-header'
+import { SetHeaderAction } from '@/components/layout/set-header-action'
+import { BottomNavigation } from '@/components/layout/bottom-navigation'
 import { GlassCard } from '@/components/ui/glass-card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select } from '@/components/ui/select'
+import { ArrowLeft } from 'lucide-react'
 import type { Client } from '@/lib/types/clients'
-import type { PetWithClient } from '@/lib/types/pets'
 import type { Service } from '@/lib/types/services'
+
+interface PetWithClient {
+  id: string
+  name: string
+  size: 'small' | 'medium' | 'large'
+}
+
+interface SelectedService {
+  serviceId: string
+  price: number
+}
 
 const sizeLabels = {
   small: 'Pequeno',
@@ -32,14 +47,12 @@ export default function NovoAgendamentoPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [clients, setClients] = useState<Client[]>([])
-  const [pets, setPets] = useState<PetWithClient[]>([])
   const [services, setServices] = useState<Service[]>([])
   const [filteredPets, setFilteredPets] = useState<PetWithClient[]>([])
-  const [suggestedPrice, setSuggestedPrice] = useState<number | null>(null)
+  const [selectedServices, setSelectedServices] = useState<SelectedService[]>([])
   const [formData, setFormData] = useState({
     clientId: '',
     petId: '',
-    serviceId: '',
     date: '',
     time: '',
     price: '',
@@ -60,12 +73,19 @@ export default function NovoAgendamentoPage() {
   }, [formData.clientId])
 
   useEffect(() => {
-    if (formData.petId && formData.serviceId) {
-      loadSuggestedPrice()
+    if (formData.petId && selectedServices.length > 0) {
+      calculateTotalPrice()
     } else {
-      setSuggestedPrice(null)
+      setFormData(prev => ({ ...prev, price: '' }))
     }
-  }, [formData.petId, formData.serviceId])
+  }, [formData.petId, selectedServices])
+
+  useEffect(() => {
+    // Clear selected services when pet changes
+    if (!formData.petId) {
+      setSelectedServices([])
+    }
+  }, [formData.petId])
 
   const loadData = async () => {
     const [clientsResult, servicesResult] = await Promise.all([
@@ -80,20 +100,38 @@ export default function NovoAgendamentoPage() {
     const result = await getPets(clientId)
     if (result.data) {
       setFilteredPets(result.data)
-      setPets(result.data)
     }
   }
 
-  const loadSuggestedPrice = async () => {
-    const pet = pets.find(p => p.id === formData.petId)
-    if (!pet) return
-
-    const result = await getServicePrice(formData.serviceId, pet.size)
-    if (result.data) {
-      const price = result.data
-      setSuggestedPrice(price)
-      setFormData(prev => ({ ...prev, price: price.toString() }))
+  const calculateTotalPrice = async () => {
+    let total = 0
+    for (const selected of selectedServices) {
+      const result = await getServicePrice(selected.serviceId)
+      if (result.data) {
+        total += result.data
+      }
     }
+
+    setFormData(prev => ({ ...prev, price: total.toFixed(2) }))
+  }
+
+  const toggleService = async (serviceId: string) => {
+    if (!formData.petId) return
+
+    const existingIndex = selectedServices.findIndex(s => s.serviceId === serviceId)
+    let newSelectedServices: SelectedService[]
+
+    if (existingIndex >= 0) {
+      // Remove service
+      newSelectedServices = selectedServices.filter(s => s.serviceId !== serviceId)
+    } else {
+      // Add service with price
+      const result = await getServicePrice(serviceId)
+      const price = result.data || 0
+      newSelectedServices = [...selectedServices, { serviceId, price }]
+    }
+
+    setSelectedServices(newSelectedServices)
   }
 
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
@@ -101,20 +139,24 @@ export default function NovoAgendamentoPage() {
     setLoading(true)
     setError(null)
 
-    if (!formData.clientId || !formData.petId || !formData.serviceId) {
+    if (!formData.clientId || !formData.petId || selectedServices.length === 0) {
       setError('Preencha todos os campos obrigatórios')
       setLoading(false)
       return
     }
 
     try {
+      // Use the first selected service as the primary service
+      const primaryServiceId = selectedServices[0].serviceId
+      const totalPrice = parseFloat(formData.price)
+
       const result = await createAppointment({
         clientId: formData.clientId,
         petId: formData.petId,
-        serviceId: formData.serviceId,
+        serviceId: primaryServiceId,
         date: new Date(formData.date),
         time: formData.time,
-        price: parseFloat(formData.price),
+        price: totalPrice,
         notes: formData.notes || undefined,
       })
 
@@ -140,46 +182,46 @@ export default function NovoAgendamentoPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 relative overflow-hidden">
-      {/* Animated background decoration */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-fuchsia-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/5 rounded-full blur-3xl" />
-      </div>
-
-      {/* Header */}
-      <header className="border-b border-white/10 backdrop-blur-md bg-white/5 relative">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
-          <Link
-            href="/app/agendamentos"
-            className="inline-flex items-center gap-3 px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 hover:text-white transition-all group"
-          >
-            <span className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center group-hover:bg-white/15 transition-colors">
-              ←
-            </span>
-            <span className="font-medium">Voltar para Agendamentos</span>
+    <AppLayout companyName="Agenda Pet Shop" user={{}}>
+      {/* Desktop header action */}
+      <SetHeaderAction
+        action={
+          <Link href="/app/agendamentos">
+            <Button variant="secondary" size="sm" className="rounded-full gap-1">
+              <ArrowLeft size={16} />
+              Voltar
+            </Button>
           </Link>
-        </div>
-      </header>
+        }
+      />
 
-      {/* Main Content */}
-      <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
-        {/* Title Section with Icon */}
-        <div className="mb-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500 to-fuchsia-500 flex items-center justify-center text-2xl shadow-lg shadow-purple-500/30">
-              🐾
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold text-white mb-1" style={{ fontFamily: 'var(--font-outfit), sans-serif' }}>
-                Novo Agendamento
-              </h1>
-              <p className="text-purple-200/60">Agende um novo serviço para seu pet</p>
-            </div>
-          </div>
+      <AppHeader
+        companyName="Agenda Pet Shop"
+        user={{}}
+        title="Novo Agendamento"
+        subtitle="Agende um novo serviço para seu pet"
+        icon="🐾"
+        action={
+          <Link href="/app/agendamentos">
+            <Button variant="secondary" size="sm" className="rounded-full gap-1">
+              <ArrowLeft size={16} />
+            </Button>
+          </Link>
+        }
+      />
+
+      <div className="h-[calc(100dvh-60px-64px)] xl:min-h-[87vh] bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent relative flex flex-col xl:block overflow-hidden">
+        {/* Animated background decoration */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-fuchsia-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/5 rounded-full blur-3xl" />
         </div>
 
+        {/* Scrollable content area */}
+        <div className="flex-1 overflow-y-auto xl:overflow-auto">
+          {/* Main Content */}
+          <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
         {error && (
           <GlassCard variant="default" className="p-4 mb-6 bg-red-500/20 border-red-500/50 animate-in fade-in slide-in-from-top-2">
             <p className="text-red-200">⚠️ {error}</p>
@@ -234,25 +276,58 @@ export default function NovoAgendamentoPage() {
               />
             </div>
 
-            {/* Service */}
+            {/* Services - Multi Select */}
             <div className="animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '250ms' }}>
-              <Select
-                id="serviceId"
-                label={
-                  <span className="flex items-center gap-2">
-                    <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">✨</span>
-                    Serviço
-                  </span>
-                }
-                value={formData.serviceId}
-                onChange={(value) => handleChange('serviceId', value)}
-                placeholder="Selecione o serviço"
-                options={[
-                  { value: '', label: 'Selecione o serviço' },
-                  ...services.map((service) => ({ value: service.id, label: service.name }))
-                ]}
-                required
-              />
+              <label className="block text-purple-100/90 text-sm font-semibold mb-3 flex items-center gap-2">
+                <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">✨</span>
+                Serviços *
+              </label>
+              <div className="grid grid-cols-2 gap-3">
+                {services.map((service) => {
+                  const isSelected = selectedServices.some(s => s.serviceId === service.id)
+                  return (
+                    <button
+                      key={service.id}
+                      type="button"
+                      disabled={!formData.petId}
+                      onClick={() => toggleService(service.id)}
+                      className={`
+                        relative p-4 rounded-xl border-2 transition-all duration-200 text-left
+                        ${isSelected
+                          ? 'bg-purple-500/30 border-purple-400 text-white'
+                          : 'bg-white/5 border-white/10 text-purple-100/70 hover:bg-white/10 hover:border-white/20'
+                        }
+                        ${!formData.petId ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+                      `}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="font-medium">{service.name}</span>
+                        {isSelected && (
+                          <span className="w-5 h-5 rounded-full bg-purple-400 flex items-center justify-center text-xs">✓</span>
+                        )}
+                      </div>
+                    </button>
+                  )
+                })}
+              </div>
+              {!formData.petId && (
+                <p className="mt-2 text-xs text-purple-200/50">Selecione um pet primeiro para ver os preços</p>
+              )}
+              {selectedServices.length > 0 && formData.petId && (
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {selectedServices.map((selected) => {
+                    const service = services.find(s => s.id === selected.serviceId)
+                    return (
+                      <span
+                        key={selected.serviceId}
+                        className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-purple-500/20 text-purple-200 text-sm"
+                      >
+                        {service?.name} - R$ {selected.price.toFixed(2)}
+                      </span>
+                    )
+                  })}
+                </div>
+              )}
             </div>
 
             {/* Date & Time */}
@@ -289,11 +364,11 @@ export default function NovoAgendamentoPage() {
               </div>
             </div>
 
-            {/* Price */}
+            {/* Price - Disabled, auto-calculated */}
             <div className="animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '350ms' }}>
               <label htmlFor="price" className="block text-purple-100/90 text-sm font-semibold mb-2.5 flex items-center gap-2">
                 <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">💰</span>
-                Preço *
+                Preço Total *
               </label>
               <div className="relative">
                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-purple-200/50 font-medium">R$</span>
@@ -305,19 +380,19 @@ export default function NovoAgendamentoPage() {
                   value={formData.price}
                   onChange={(e) => handleChange('price', e.target.value)}
                   placeholder="0.00"
+                  disabled
                   required
-                  className="w-full pl-12"
+                  className="w-full pl-12 disabled:opacity-70 disabled:cursor-not-allowed"
                 />
-                {suggestedPrice !== null && formData.price !== suggestedPrice.toString() && (
-                  <button
-                    type="button"
-                    onClick={() => handleChange('price', suggestedPrice.toString())}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-xs px-3 py-1.5 rounded-lg bg-purple-500/20 text-purple-300 hover:bg-purple-500/30 transition-colors"
-                  >
-                    Usar R$ {suggestedPrice.toFixed(2)}
-                  </button>
+                {selectedServices.length > 0 && (
+                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-purple-300/70">
+                    Calculado ({selectedServices.length} serviço{selectedServices.length > 1 ? 's' : ''})
+                  </span>
                 )}
               </div>
+              {!formData.price && (
+                <p className="mt-2 text-xs text-purple-200/50">O preço será calculado automaticamente com base nos serviços selecionados e porte do pet</p>
+              )}
             </div>
 
             {/* Notes */}
@@ -361,6 +436,10 @@ export default function NovoAgendamentoPage() {
           </form>
         </GlassCard>
       </main>
-    </div>
+        </div>
+
+      <BottomNavigation />
+      </div>
+    </AppLayout>
   )
 }

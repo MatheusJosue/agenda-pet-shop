@@ -10,20 +10,8 @@ import { GlassCard } from '@/components/ui/glass-card'
 import { Button } from '@/components/ui/button'
 import { AnimatedIcon } from '@/components/ui/animated-icon'
 import { motion } from 'framer-motion'
-import { Scissors, Clock, Cat, Dog, Dog as DogLarge, Plus, ChevronRight, Sparkles } from 'lucide-react'
+import { Scissors, Clock, Plus, ChevronRight, Sparkles } from 'lucide-react'
 import type { Service } from '@/lib/types/services'
-
-const sizeLabels = {
-  small: 'Pequeno',
-  medium: 'Médio',
-  large: 'Grande'
-}
-
-const sizeIcons = {
-  small: Cat,
-  medium: Dog,
-  large: DogLarge
-}
 
 export default function ServicosPage() {
   const [services, setServices] = useState<Service[]>([])
@@ -68,8 +56,8 @@ export default function ServicosPage() {
       <SetHeaderAction
         action={
           <Link href="/app/servicos/novo">
-            <Button variant="primary" size="sm" className="rounded-full gap-1">
-              <Plus size={16} />
+            <Button variant="primary" size="sm" className="rounded-full">
+              <Scissors size={16} className="mr-2" />
               Novo
             </Button>
           </Link>
@@ -92,8 +80,8 @@ export default function ServicosPage() {
         icon="✂️"
         action={
           <Link href="/app/servicos/novo">
-            <Button variant="primary" size="sm" className="rounded-full gap-1">
-              <Plus size={16} />
+            <Button variant="primary" size="sm" className="rounded-full">
+              <Scissors size={16} className="mr-2" />
               Novo
             </Button>
           </Link>
@@ -124,9 +112,7 @@ export default function ServicosPage() {
           </GlassCard>
         ) : (
           <div className="space-y-3">
-            {services.map((service, index) => {
-              const MediumIcon = sizeIcons.medium
-              return (
+            {services.map((service, index) => (
                 <motion.div
                   key={service.id}
                   initial={{ opacity: 0, y: 20 }}
@@ -160,14 +146,11 @@ export default function ServicosPage() {
                         {/* Prices */}
                         <div className="text-right flex-shrink-0">
                           <p className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-fuchsia-400">
-                            {service.price_medium > 0
-                              ? `R$ ${service.price_medium.toFixed(0)}`
+                            {service.price > 0
+                              ? `R$ ${service.price.toFixed(0)}`
                               : 'Sob consulta'}
                           </p>
-                          <p className="text-xs text-purple-300/60 flex items-center justify-end gap-1">
-                            <MediumIcon size={12} />
-                            médio
-                          </p>
+                          <p className="text-xs text-purple-300/60">por serviço</p>
                         </div>
 
                         {/* Arrow */}
@@ -176,8 +159,7 @@ export default function ServicosPage() {
                     </GlassCard>
                   </Link>
                 </motion.div>
-              )
-            })}
+            ))}
           </div>
         )}
       </main>
