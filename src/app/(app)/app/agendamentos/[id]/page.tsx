@@ -10,7 +10,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { AppHeader } from '@/components/layout/app-header'
 import { AppLayout } from '@/components/layout/app-layout'
-import { SetHeaderAction } from '@/components/layout/set-header-action'
 import { BottomNavigation } from '@/components/layout/bottom-navigation'
 import type { AppointmentWithRelations } from '@/lib/types/appointments'
 
@@ -187,9 +186,6 @@ export default function AgendamentoDetailPage() {
           <AppHeader
             companyName={companyName}
             user={{ name: user?.user_metadata?.name, email: user?.email }}
-            title="Agendamento"
-            subtitle="Carregando..."
-            icon="📅"
           />
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
             <p className="text-purple-200/60">Carregando...</p>
@@ -211,18 +207,25 @@ export default function AgendamentoDetailPage() {
           <AppHeader
             companyName={companyName}
             user={{ name: user?.user_metadata?.name, email: user?.email }}
-            title="Agendamento"
-            subtitle="Erro"
-            icon="📅"
-            action={
-              <Link href="/app/agendamentos">
-                <Button variant="ghost" size="sm" className="p-2">
-                  <ArrowLeft size={20} />
-                </Button>
-              </Link>
-            }
           />
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
+            {/* Inline header for error state */}
+            <div className="mb-6">
+              <div className="flex items-center gap-3">
+                <Link href="/app/agendamentos">
+                  <Button variant="ghost" size="sm" className="p-2">
+                    <ArrowLeft size={20} />
+                  </Button>
+                </Link>
+                <div>
+                  <h1 className="text-2xl font-bold text-white flex items-center gap-3">
+                    <span className="text-3xl">📅</span>
+                    Agendamento
+                  </h1>
+                  <p className="text-purple-200/60 text-sm">Erro</p>
+                </div>
+              </div>
+            </div>
             <GlassCard variant="default" className="p-8 text-center">
               <p className="text-red-200 mb-4">⚠️ {error || 'Agendamento não encontrado'}</p>
               <Link href="/app/agendamentos">
@@ -238,33 +241,6 @@ export default function AgendamentoDetailPage() {
 
   return (
     <AppLayout companyName={companyName} user={{ name: user?.user_metadata?.name, email: user?.email }}>
-      <SetHeaderAction
-        action={
-          !editing && appointment.status === 'scheduled' && (
-            <div className="flex gap-2">
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => setEditing(true)}
-                disabled={saving}
-                className="rounded-lg"
-              >
-                <Pencil size={16} />
-              </Button>
-              <Button
-                variant="danger"
-                size="sm"
-                onClick={handleDelete}
-                disabled={saving}
-                className="rounded-lg"
-              >
-                <Trash2 size={16} />
-              </Button>
-            </div>
-          )
-        }
-      />
-
       <div className="min-h-screen xl:min-h-[87vh] bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent relative overflow-hidden xl:pb-0 pb-20">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
@@ -274,49 +250,83 @@ export default function AgendamentoDetailPage() {
         <AppHeader
           companyName={companyName}
           user={{ name: user?.user_metadata?.name, email: user?.email }}
-          title={`${formatDate(appointment.date)} • ${appointment.time}`}
-          subtitle={`Agendamento - ${statusLabels[appointment.status]}`}
-          icon="📅"
-          action={
-            editing ? (
-              <div className="flex gap-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    setEditing(false)
-                    setFormData({
-                      date: appointment.date,
-                      time: appointment.time,
-                      price: appointment.price.toString(),
-                      notes: appointment.notes || '',
-                    })
-                    setError(null)
-                  }}
-                  disabled={saving}
-                >
-                  Cancelar
-                </Button>
-                <Button
-                  variant="primary"
-                  size="sm"
-                  onClick={handleSave}
-                  disabled={saving}
-                >
-                  {saving ? 'Salvando...' : 'Salvar'}
-                </Button>
-              </div>
-            ) : (
-              <Link href="/app/agendamentos">
-                <Button variant="ghost" size="sm" className="p-2">
-                  <ArrowLeft size={20} />
-                </Button>
-              </Link>
-            )
-          }
         />
 
         <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 relative">
+          {/* Inline Page Header */}
+          <div className="mb-6">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <Link href="/app/agendamentos">
+                  <Button variant="ghost" size="sm" className="p-2">
+                    <ArrowLeft size={20} />
+                  </Button>
+                </Link>
+                <div>
+                  <h1 className="text-2xl font-bold text-white flex items-center gap-3">
+                    <span className="text-3xl">📅</span>
+                    {formatDate(appointment.date)} • {appointment.time}
+                  </h1>
+                  <p className="text-purple-200/60 text-sm">
+                    Agendamento - {statusLabels[appointment.status]}
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                {editing ? (
+                  <>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setEditing(false)
+                        setFormData({
+                          date: appointment.date,
+                          time: appointment.time,
+                          price: appointment.price.toString(),
+                          notes: appointment.notes || '',
+                        })
+                        setError(null)
+                      }}
+                      disabled={saving}
+                    >
+                      Cancelar
+                    </Button>
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      onClick={handleSave}
+                      disabled={saving}
+                    >
+                      {saving ? 'Salvando...' : 'Salvar'}
+                    </Button>
+                  </>
+                ) : appointment.status === 'scheduled' ? (
+                  <>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => setEditing(true)}
+                      disabled={saving}
+                      className="rounded-lg"
+                    >
+                      <Pencil size={16} />
+                    </Button>
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      onClick={handleDelete}
+                      disabled={saving}
+                      className="rounded-lg"
+                    >
+                      <Trash2 size={16} />
+                    </Button>
+                  </>
+                ) : null}
+              </div>
+            </div>
+          </div>
+
           {error && (
             <GlassCard variant="default" className="p-3 mb-4 bg-red-500/20 border-red-500/50 animate-in fade-in slide-in-from-top-2">
               <p className="text-red-200 text-sm">⚠️ {error}</p>

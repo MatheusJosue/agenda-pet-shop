@@ -14,7 +14,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AppHeader } from "@/components/layout/app-header";
 import { AppLayout } from "@/components/layout/app-layout";
-import { SetHeaderAction } from "@/components/layout/set-header-action";
 import { BottomNavigation } from "@/components/layout/bottom-navigation";
 import { Pencil, Trash2, ArrowLeft } from "lucide-react";
 import { formatPhone } from "@/lib/utils/phone";
@@ -189,9 +188,6 @@ export default function ClienteDetailPage() {
           <AppHeader
             companyName={companyName}
             user={{ name: user?.user_metadata?.name, email: user?.email }}
-            title="Cliente"
-            subtitle="Carregando..."
-            icon="👤"
           />
           <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
             <div className="flex items-center justify-center py-12">
@@ -221,18 +217,25 @@ export default function ClienteDetailPage() {
           <AppHeader
             companyName={companyName}
             user={{ name: user?.user_metadata?.name, email: user?.email }}
-            title="Cliente"
-            subtitle="Erro"
-            icon="👤"
-            action={
-              <Link href="/app/clientes">
-                <Button variant="ghost" size="sm" className="p-2">
-                  <ArrowLeft size={20} />
-                </Button>
-              </Link>
-            }
           />
           <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
+            {/* Inline header for error state */}
+            <div className="mb-6">
+              <div className="flex items-center gap-3">
+                <Link href="/app/clientes">
+                  <Button variant="ghost" size="sm" className="p-2">
+                    <ArrowLeft size={20} />
+                  </Button>
+                </Link>
+                <div>
+                  <h1 className="text-2xl font-bold text-white flex items-center gap-3">
+                    <span className="text-3xl">👤</span>
+                    Cliente
+                  </h1>
+                  <p className="text-purple-200/60 text-sm">Erro</p>
+                </div>
+              </div>
+            </div>
             <GlassCard variant="default" className="p-8 text-center">
               <p className="text-red-400 mb-4">
                 {error || "Cliente não encontrado"}
@@ -253,31 +256,6 @@ export default function ClienteDetailPage() {
       companyName={companyName}
       user={{ name: user?.user_metadata?.name, email: user?.email }}
     >
-      <SetHeaderAction
-        action={
-          !editing && (
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={() => setEditing(true)}
-                disabled={saving}
-                className="p-2 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-colors disabled:opacity-50"
-              >
-                <Pencil size={18} />
-              </button>
-              <button
-                type="button"
-                onClick={handleDelete}
-                disabled={saving}
-                className="p-2 rounded-lg text-red-400/60 hover:text-red-400 hover:bg-red-500/10 transition-colors disabled:opacity-50"
-              >
-                <Trash2 size={18} />
-              </button>
-            </div>
-          )
-        }
-      />
-
       <div className="min-h-screen xl:min-h-[87vh] bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent relative overflow-hidden xl:pb-0 pb-20">
         {/* Animated background decoration */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -291,50 +269,82 @@ export default function ClienteDetailPage() {
         <AppHeader
           companyName={companyName}
           user={{ name: user?.user_metadata?.name, email: user?.email }}
-          title={client.name}
-          subtitle={editing ? "Editando" : "Detalhes do cliente"}
-          icon="👤"
-          action={
-            editing ? (
-              <div className="flex gap-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    setEditing(false);
-                    setFormData({
-                      name: client.name,
-                      phone: formatPhone(client.phone),
-                      email: client.email || "",
-                      notes: client.notes || "",
-                    });
-                    setError(null);
-                  }}
-                  disabled={saving}
-                >
-                  Cancelar
-                </Button>
-                <Button
-                  variant="primary"
-                  size="sm"
-                  onClick={handleSave}
-                  disabled={saving}
-                >
-                  {saving ? "Salvando..." : "Salvar"}
-                </Button>
-              </div>
-            ) : (
-              <Link href="/app/clientes">
-                <Button variant="ghost" size="sm" className="p-2">
-                  <ArrowLeft size={20} />
-                </Button>
-              </Link>
-            )
-          }
         />
 
         {/* Main Content */}
         <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
+          {/* Inline Page Header */}
+          <div className="mb-6">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <Link href="/app/clientes">
+                  <Button variant="ghost" size="sm" className="p-2">
+                    <ArrowLeft size={20} />
+                  </Button>
+                </Link>
+                <div>
+                  <h1 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-3">
+                    <span className="text-3xl">👤</span>
+                    {client.name}
+                  </h1>
+                  <p className="text-purple-200/60 text-sm">
+                    {editing ? "Editando" : "Detalhes do cliente"}
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                {editing ? (
+                  <>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setEditing(false);
+                        setFormData({
+                          name: client.name,
+                          phone: formatPhone(client.phone),
+                          email: client.email || "",
+                          notes: client.notes || "",
+                        });
+                        setError(null);
+                      }}
+                      disabled={saving}
+                    >
+                      Cancelar
+                    </Button>
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      onClick={handleSave}
+                      disabled={saving}
+                    >
+                      {saving ? "Salvando..." : "Salvar"}
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => setEditing(true)}
+                      disabled={saving}
+                      className="p-2 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-colors disabled:opacity-50"
+                    >
+                      <Pencil size={18} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleDelete}
+                      disabled={saving}
+                      className="p-2 rounded-lg text-red-400/60 hover:text-red-400 hover:bg-red-500/10 transition-colors disabled:opacity-50"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+
           {error && (
             <GlassCard
               variant="default"
@@ -457,17 +467,6 @@ export default function ClienteDetailPage() {
               </form>
             ) : (
               <>
-                <div className="flex justify-end mb-4">
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    onClick={() => setEditing(true)}
-                    disabled={saving}
-                  >
-                    <Pencil size={16} className="me-3" />
-                    Editar Cliente
-                  </Button>
-                </div>
                 <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
                   <div>
                     <h2 className="text-purple-200/60 text-sm font-semibold mb-2 flex items-center gap-2">

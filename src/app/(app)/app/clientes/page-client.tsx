@@ -5,7 +5,6 @@ import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { getClients } from '@/lib/actions/clients'
 import { AppHeader } from '@/components/layout/app-header'
-import { SetHeaderAction } from '@/components/layout/set-header-action'
 import { BottomNavigation } from '@/components/layout/bottom-navigation'
 import { AppLayout } from '@/components/layout/app-layout'
 import { GlassCard } from '@/components/ui/glass-card'
@@ -56,18 +55,6 @@ export function ClientesPageContent() {
 
   return (
     <AppLayout companyName={companyName} user={{ name: user?.user_metadata?.name, email: user?.email }}>
-      {/* Desktop header action */}
-      <SetHeaderAction
-        action={
-          <Link href="/app/clientes/novo">
-            <Button variant="primary" size="sm" className="rounded-full">
-              <UserPlus size={16} className="mr-2" />
-              Novo
-            </Button>
-          </Link>
-        }
-      />
-
       <div className="h-[calc(100dvh-60px-64px)] xl:min-h-[87vh] bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent relative overflow-hidden xl:overflow-auto overflow-y-auto">
         {/* Animated background decoration */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -76,23 +63,34 @@ export function ClientesPageContent() {
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/5 rounded-full blur-3xl" />
         </div>
 
+        {/* Mobile Header */}
         <AppHeader
-        companyName={companyName}
-        user={{ name: user?.user_metadata?.name, email: user?.email }}
-        title="Clientes"
-        subtitle={`${clients?.length || 0} cliente${clients?.length !== 1 ? 's' : ''}`}
-        icon="👥"
-        action={
-          <Link href="/app/clientes/novo">
-            <Button variant="primary" size="sm" className="rounded-full">
-              <UserPlus size={16} className="mr-2" />
-              Novo
-            </Button>
-          </Link>
-        }
-      />
+          companyName={companyName}
+          user={{ name: user?.user_metadata?.name, email: user?.email }}
+        />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
+        {/* Page Header - Inline */}
+        <div className="mb-6">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-3">
+                <span className="text-3xl">👥</span>
+                Clientes
+              </h1>
+              <p className="text-purple-200/60 mt-1">
+                {clients?.length || 0} cliente{clients?.length !== 1 ? 's' : ''}
+              </p>
+            </div>
+            <Link href="/app/clientes/novo">
+              <Button variant="primary" size="sm" className="rounded-full">
+                <UserPlus size={16} className="mr-2" />
+                Novo
+              </Button>
+            </Link>
+          </div>
+        </div>
+
         {/* Search */}
         <form className="mb-6 relative animate-in fade-in slide-in-from-bottom-2 duration-300">
           <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-purple-200/50" />

@@ -4,7 +4,6 @@ import { useState, useCallback, useEffect } from 'react'
 import Link from 'next/link'
 import { BottomNavigation } from '@/components/layout/bottom-navigation'
 import { AppHeader } from '@/components/layout/app-header'
-import { SetHeaderAction } from '@/components/layout/set-header-action'
 import { AppLayout } from '@/components/layout/app-layout'
 import { GlassCard } from '@/components/ui/glass-card'
 import { Button } from '@/components/ui/button'
@@ -12,7 +11,7 @@ import { ViewModeSelector } from '@/components/agendamentos'
 import { useAppointmentsFilter } from '@/hooks/useAppointmentsFilter'
 import { navigateDate, type ViewMode } from '@/lib/utils/date'
 import { motion } from 'framer-motion'
-import { Cat, Dog, Dog as DogLarge, Clock, User, Scissors, ChevronRight, CalendarX, Plus, Calendar } from 'lucide-react'
+import { Cat, Dog, Dog as DogLarge, Clock, User, Scissors, ChevronRight, CalendarX, Calendar } from 'lucide-react'
 import type { AppointmentWithRelations } from '@/lib/types/appointments'
 
 const statusLabels = {
@@ -76,18 +75,6 @@ export default function AgendamentosPage() {
 
   return (
     <AppLayout companyName={companyName} user={{ name: user?.user_metadata?.name, email: user?.email }}>
-      {/* Desktop header action */}
-      <SetHeaderAction
-        action={
-          <Link href="/app/agendamentos/novo">
-            <Button variant="primary" size="sm" className="rounded-full">
-              <Calendar size={16} className="mr-2" />
-              Novo
-            </Button>
-          </Link>
-        }
-      />
-
       <div className="h-[calc(100dvh-60px-64px)] xl:min-h-[87vh] bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent relative overflow-hidden xl:overflow-auto overflow-y-auto">
         {/* Animated background decoration */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -96,128 +83,138 @@ export default function AgendamentosPage() {
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/5 rounded-full blur-3xl" />
         </div>
 
-      {/* Header */}
-      <AppHeader
-        companyName={companyName}
-        user={{ name: user?.user_metadata?.name, email: user?.email }}
-        title="Agendamentos"
-        subtitle={`${appointments?.length || 0} agendamento${appointments?.length !== 1 ? 's' : ''}`}
-        icon="📅"
-        action={
-          <Link href="/app/agendamentos/novo">
-            <Button variant="primary" size="sm" className="rounded-full">
-              <Calendar size={16} className="mr-2" />
-              Novo
-            </Button>
-          </Link>
-        }
-      />
-
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative">
-        {/* View Mode Selector */}
-        <ViewModeSelector
-          viewMode={viewMode}
-          selectedDate={selectedDate}
-          periodLabel={periodLabel}
-          onViewModeChange={handleViewModeChange}
-          onPrevious={handlePrevious}
-          onNext={handleNext}
-          loading={loading}
+        {/* Mobile Header */}
+        <AppHeader
+          companyName={companyName}
+          user={{ name: user?.user_metadata?.name, email: user?.email }}
         />
 
-        {/* Content */}
-        {loading ? (
-          <div className="flex items-center justify-center py-12">
-            <div className="w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full animate-spin" />
-          </div>
-        ) : error ? (
-          <GlassCard variant="default" className="p-4 bg-red-500/20 border-red-500/50">
-            <p className="text-red-200">⚠️ {error}</p>
-          </GlassCard>
-        ) : !appointments || appointments.length === 0 ? (
-          <GlassCard variant="default" className="p-12 text-center animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-purple-500/20 flex items-center justify-center">
-              <CalendarX size={32} className="text-purple-300" />
+        {/* Main Content */}
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative">
+          {/* Page Header - Inline */}
+          <div className="mb-6">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <h1 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-3">
+                  <span className="text-3xl">📅</span>
+                  Agendamentos
+                </h1>
+                <p className="text-purple-200/60 mt-1">
+                  {appointments?.length || 0} agendamento{appointments?.length !== 1 ? 's' : ''}
+                </p>
+              </div>
+              <Link href="/app/agendamentos/novo">
+                <Button variant="primary" size="sm" className="rounded-full">
+                  <Calendar size={16} className="mr-2" />
+                  Novo
+                </Button>
+              </Link>
             </div>
-            <p className="text-purple-200/60">Nenhum agendamento para este período</p>
-          </GlassCard>
-        ) : (
-          <div className="space-y-4">
-            {appointments.map((appointment: AppointmentWithRelations, index) => {
-              const SizeIcon = sizeIcons[appointment.pet.size]
-              return (
-                <motion.div
-                  key={appointment.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                  className="animate-in fade-in slide-in-from-bottom-4 duration-500"
-                  style={{ animationDelay: `${index * 50}ms` }}
-                >
-                  <Link href={`/app/agendamentos/${appointment.id}`}>
-                    <GlassCard
-                      variant="default"
-                      className="p-5 hover:scale-[1.01] hover:bg-white/10 transition-all cursor-pointer group"
-                    >
-                      <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-                        {/* Date */}
-                        <div className="text-center min-w-[70px] sm:min-w-[70px]">
-                          <div className="text-2xl font-bold text-purple-300">
-                            {formatDate(appointment.date).split('/')[0]}
-                          </div>
-                          <div className="text-xs text-purple-200/50">
-                            {formatDate(appointment.date).split('/')[1]}/{formatDate(appointment.date).split('/')[2]}
-                          </div>
-                        </div>
-
-                        {/* Content */}
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-2">
-                            <SizeIcon size={20} className="text-purple-400 flex-shrink-0" />
-                            <span className="font-semibold text-white truncate">{appointment.pet.name}</span>
-                          </div>
-                          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-purple-200/60">
-                            <span className="flex items-center gap-1">
-                              <User size={14} />
-                              {appointment.client.name}
-                            </span>
-                            <span>•</span>
-                            <span className="flex items-center gap-1">
-                              <Clock size={14} />
-                              {appointment.time}
-                            </span>
-                            <span>•</span>
-                            <span className="flex items-center gap-1">
-                              <Scissors size={14} />
-                              {appointment.service.name}
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* Status & Price */}
-                        <div className="text-right flex-shrink-0 flex sm:flex-col items-center sm:items-end justify-between sm:justify-start gap-3 sm:gap-0">
-                          <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium border ${statusStyles[appointment.status]}`}>
-                            {statusLabels[appointment.status]}
-                          </span>
-                          <div className="flex items-center sm:flex-col gap-3 sm:gap-1">
-                            <p className="text-lg font-bold text-purple-300">
-                              R$ {appointment.price.toFixed(2)}
-                            </p>
-                            <ChevronRight size={18} className="text-purple-300/50 group-hover:translate-x-1 group-hover:text-purple-300 transition-all sm:mt-1" />
-                          </div>
-                        </div>
-                      </div>
-                    </GlassCard>
-                  </Link>
-                </motion.div>
-              )
-            })}
           </div>
-        )}
-      </main>
 
-      <BottomNavigation />
+          {/* View Mode Selector */}
+          <ViewModeSelector
+            viewMode={viewMode}
+            selectedDate={selectedDate}
+            periodLabel={periodLabel}
+            onViewModeChange={handleViewModeChange}
+            onPrevious={handlePrevious}
+            onNext={handleNext}
+            loading={loading}
+          />
+
+          {/* Content */}
+          {loading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full animate-spin" />
+            </div>
+          ) : error ? (
+            <GlassCard variant="default" className="p-4 bg-red-500/20 border-red-500/50">
+              <p className="text-red-200">⚠️ {error}</p>
+            </GlassCard>
+          ) : !appointments || appointments.length === 0 ? (
+            <GlassCard variant="default" className="p-12 text-center animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-purple-500/20 flex items-center justify-center">
+                <CalendarX size={32} className="text-purple-300" />
+              </div>
+              <p className="text-purple-200/60">Nenhum agendamento para este período</p>
+            </GlassCard>
+          ) : (
+            <div className="space-y-4">
+              {appointments.map((appointment: AppointmentWithRelations, index) => {
+                const SizeIcon = sizeIcons[appointment.pet.size]
+                return (
+                  <motion.div
+                    key={appointment.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                    className="animate-in fade-in slide-in-from-bottom-4 duration-500"
+                    style={{ animationDelay: `${index * 50}ms` }}
+                  >
+                    <Link href={`/app/agendamentos/${appointment.id}`}>
+                      <GlassCard
+                        variant="default"
+                        className="p-5 hover:scale-[1.01] hover:bg-white/10 transition-all cursor-pointer group"
+                      >
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                          {/* Date */}
+                          <div className="text-center min-w-[70px] sm:min-w-[70px]">
+                            <div className="text-2xl font-bold text-purple-300">
+                              {formatDate(appointment.date).split('/')[0]}
+                            </div>
+                            <div className="text-xs text-purple-200/50">
+                              {formatDate(appointment.date).split('/')[1]}/{formatDate(appointment.date).split('/')[2]}
+                            </div>
+                          </div>
+
+                          {/* Content */}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-2">
+                              <SizeIcon size={20} className="text-purple-400 flex-shrink-0" />
+                              <span className="font-semibold text-white truncate">{appointment.pet.name}</span>
+                            </div>
+                            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-purple-200/60">
+                              <span className="flex items-center gap-1">
+                                <User size={14} />
+                                {appointment.client.name}
+                              </span>
+                              <span>•</span>
+                              <span className="flex items-center gap-1">
+                                <Clock size={14} />
+                                {appointment.time}
+                              </span>
+                              <span>•</span>
+                              <span className="flex items-center gap-1">
+                                <Scissors size={14} />
+                                {appointment.service.name}
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Status & Price */}
+                          <div className="text-right flex-shrink-0 flex sm:flex-col items-center sm:items-end justify-between sm:justify-start gap-3 sm:gap-0">
+                            <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium border ${statusStyles[appointment.status]}`}>
+                              {statusLabels[appointment.status]}
+                            </span>
+                            <div className="flex items-center sm:flex-col gap-3 sm:gap-1">
+                              <p className="text-lg font-bold text-purple-300">
+                                R$ {appointment.price.toFixed(2)}
+                              </p>
+                              <ChevronRight size={18} className="text-purple-300/50 group-hover:translate-x-1 group-hover:text-purple-300 transition-all sm:mt-1" />
+                            </div>
+                          </div>
+                        </div>
+                      </GlassCard>
+                    </Link>
+                  </motion.div>
+                )
+              })}
+            </div>
+          )}
+        </main>
+
+        <BottomNavigation />
       </div>
     </AppLayout>
   )

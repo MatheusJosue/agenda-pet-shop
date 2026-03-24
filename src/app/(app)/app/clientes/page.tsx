@@ -1,7 +1,6 @@
 import { Suspense } from 'react'
 import { ClientesPageContent } from './page-client'
 import { AppLayout } from '@/components/layout/app-layout'
-import { AppHeader } from '@/components/layout/app-header'
 
 export default function ClientesPage() {
   return (
@@ -14,13 +13,6 @@ export default function ClientesPage() {
 function ClientesLoading() {
   return (
     <AppLayout companyName="Agenda Pet Shop" user={{}}>
-      <AppHeader
-        companyName="Agenda Pet Shop"
-        user={{}}
-        title="Clientes"
-        subtitle="Carregando..."
-        icon="👥"
-      />
       <div className="h-[calc(100dvh-60px-64px)] xl:min-h-0 bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent relative overflow-hidden xl:overflow-auto overflow-y-auto">
         {/* Animated background decoration */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">

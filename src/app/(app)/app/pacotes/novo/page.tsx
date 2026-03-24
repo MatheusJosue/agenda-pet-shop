@@ -6,7 +6,6 @@ import Link from "next/link";
 import { createPackageType } from "@/lib/actions/packages";
 import { AppLayout } from "@/components/layout/app-layout";
 import { AppHeader } from "@/components/layout/app-header";
-import { SetHeaderAction } from "@/components/layout/set-header-action";
 import { BottomNavigation } from "@/components/layout/bottom-navigation";
 import { GlassCard } from "@/components/ui/glass-card";
 import { Button } from "@/components/ui/button";
@@ -69,31 +68,9 @@ export default function NovoTipoPacotePage() {
 
   return (
     <AppLayout companyName="Agenda Pet Shop" user={{}}>
-      {/* Desktop header action */}
-      <SetHeaderAction
-        action={
-          <Link href="/app/pacotes">
-            <Button variant="secondary" size="sm" className="rounded-full gap-1">
-              <ArrowLeft size={16} />
-              Voltar
-            </Button>
-          </Link>
-        }
-      />
-
       <AppHeader
         companyName="Agenda Pet Shop"
         user={{}}
-        title="Novo Tipo de Pacote"
-        subtitle="Cadastre um novo tipo de pacote"
-        icon="📦"
-        action={
-          <Link href="/app/pacotes">
-            <Button variant="secondary" size="sm" className="rounded-full gap-1">
-              <ArrowLeft size={16} />
-            </Button>
-          </Link>
-        }
       />
 
       <div className="h-[calc(100dvh-60px-64px)] xl:min-h-[87vh] bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent relative flex flex-col xl:block overflow-hidden">
@@ -107,10 +84,33 @@ export default function NovoTipoPacotePage() {
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/5 rounded-full blur-3xl" />
         </div>
 
+        {/* Mobile Header */}
+        <AppHeader
+          companyName="Agenda Pet Shop"
+          user={{}}
+        />
+
         {/* Scrollable content area */}
         <div className="flex-1 overflow-y-auto xl:overflow-auto">
           {/* Main Content */}
           <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
+            {/* Page Header - Inline */}
+            <div className="mb-6">
+              <div className="flex items-center gap-3">
+                <Link href="/app/pacotes">
+                  <Button variant="ghost" size="sm" className="p-2">
+                    <ArrowLeft size={20} />
+                  </Button>
+                </Link>
+                <div>
+                  <h1 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-3">
+                    <span className="text-3xl">📦</span>
+                    Novo Tipo de Pacote
+                  </h1>
+                </div>
+              </div>
+            </div>
+
         {error && (
           <GlassCard
             variant="default"

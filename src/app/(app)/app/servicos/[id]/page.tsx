@@ -9,7 +9,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { AppHeader } from '@/components/layout/app-header'
 import { AppLayout } from '@/components/layout/app-layout'
-import { SetHeaderAction } from '@/components/layout/set-header-action'
 import { BottomNavigation } from '@/components/layout/bottom-navigation'
 import { Pencil, Trash2, ArrowLeft, DollarSign } from 'lucide-react'
 import type { Service } from '@/lib/types/services'
@@ -149,9 +148,6 @@ export default function ServicoDetailPage() {
           <AppHeader
             companyName={companyName}
             user={{ name: user?.user_metadata?.name, email: user?.email }}
-            title="Serviço"
-            subtitle="Carregando..."
-            icon="✂️"
           />
           <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
             <p className="text-white/60">Carregando...</p>
@@ -173,18 +169,25 @@ export default function ServicoDetailPage() {
           <AppHeader
             companyName={companyName}
             user={{ name: user?.user_metadata?.name, email: user?.email }}
-            title="Serviço"
-            subtitle="Erro"
-            icon="✂️"
-            action={
-              <Link href="/app/servicos">
-                <Button variant="ghost" size="sm" className="p-2">
-                  <ArrowLeft size={20} />
-                </Button>
-              </Link>
-            }
           />
           <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
+            {/* Inline header for error state */}
+            <div className="mb-6">
+              <div className="flex items-center gap-3">
+                <Link href="/app/servicos">
+                  <Button variant="ghost" size="sm" className="p-2">
+                    <ArrowLeft size={20} />
+                  </Button>
+                </Link>
+                <div>
+                  <h1 className="text-2xl font-bold text-white flex items-center gap-3">
+                    <span className="text-3xl">✂️</span>
+                    Serviço
+                  </h1>
+                  <p className="text-purple-200/60 text-sm">Erro</p>
+                </div>
+              </div>
+            </div>
             <GlassCard variant="default" className="p-8 text-center">
               <p className="text-red-400 mb-4">{error || 'Serviço não encontrado'}</p>
               <Link href="/app/servicos">
@@ -200,32 +203,6 @@ export default function ServicoDetailPage() {
 
   return (
     <AppLayout companyName={companyName} user={{ name: user?.user_metadata?.name, email: user?.email }}>
-      <SetHeaderAction
-        action={
-          !editing && (
-            <div className="flex gap-2">
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => setEditing(true)}
-                disabled={saving}
-              >
-                <Pencil size={18} />
-              </Button>
-              <Button
-                variant="danger"
-                size="sm"
-                onClick={handleDelete}
-                disabled={saving || appointmentCount > 0}
-                title={appointmentCount > 0 ? `${appointmentCount} agendamento(s) futuro(s)` : undefined}
-              >
-                <Trash2 size={18} />
-              </Button>
-            </div>
-          )
-        }
-      />
-
       <div className="min-h-screen xl:min-h-[87vh] bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent relative overflow-hidden xl:pb-0 pb-20">
         {/* Animated background decoration */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -236,49 +213,82 @@ export default function ServicoDetailPage() {
         <AppHeader
           companyName={companyName}
           user={{ name: user?.user_metadata?.name, email: user?.email }}
-          title={service.name}
-          subtitle={editing ? 'Editando' : 'Detalhes do serviço'}
-          icon="✂️"
-          action={
-            editing ? (
-              <div className="flex gap-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    setEditing(false)
-                    setFormData({
-                      name: service.name,
-                      price: service.price.toString(),
-                      duration_minutes: service.duration_minutes.toString(),
-                    })
-                    setError(null)
-                  }}
-                  disabled={saving}
-                >
-                  Cancelar
-                </Button>
-                <Button
-                  variant="primary"
-                  size="sm"
-                  onClick={handleSave}
-                  disabled={saving}
-                >
-                  {saving ? 'Salvando...' : 'Salvar'}
-                </Button>
-              </div>
-            ) : (
-              <Link href="/app/servicos">
-                <Button variant="ghost" size="sm" className="p-2">
-                  <ArrowLeft size={20} />
-                </Button>
-              </Link>
-            )
-          }
         />
 
         {/* Main Content */}
         <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
+          {/* Inline Page Header */}
+          <div className="mb-6">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <Link href="/app/servicos">
+                  <Button variant="ghost" size="sm" className="p-2">
+                    <ArrowLeft size={20} />
+                  </Button>
+                </Link>
+                <div>
+                  <h1 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-3">
+                    <span className="text-3xl">✂️</span>
+                    {service.name}
+                  </h1>
+                  <p className="text-purple-200/60 text-sm">
+                    {editing ? 'Editando' : 'Detalhes do serviço'}
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                {editing ? (
+                  <>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setEditing(false)
+                        setFormData({
+                          name: service.name,
+                          price: service.price.toString(),
+                          duration_minutes: service.duration_minutes.toString(),
+                        })
+                        setError(null)
+                      }}
+                      disabled={saving}
+                    >
+                      Cancelar
+                    </Button>
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      onClick={handleSave}
+                      disabled={saving}
+                    >
+                      {saving ? 'Salvando...' : 'Salvar'}
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => setEditing(true)}
+                      disabled={saving}
+                    >
+                      <Pencil size={18} />
+                    </Button>
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      onClick={handleDelete}
+                      disabled={saving || appointmentCount > 0}
+                      title={appointmentCount > 0 ? `${appointmentCount} agendamento(s) futuro(s)` : undefined}
+                    >
+                      <Trash2 size={18} />
+                    </Button>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+
           {error && (
             <GlassCard variant="default" className="p-4 mb-6 bg-red-500/20 border-red-500/50 animate-in fade-in slide-in-from-top-2">
               <p className="text-red-200">⚠️ {error}</p>

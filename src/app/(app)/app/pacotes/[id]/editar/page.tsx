@@ -159,20 +159,27 @@ export default function EditarTipoPacotePage() {
         <AppHeader
           companyName={companyName}
           user={{ name: user?.user_metadata?.name, email: user?.email }}
-          title="Editar Tipo de Pacote"
-          subtitle="Altere as informações do tipo de pacote"
-          icon="✏️"
-          action={
-            <Link href="/app/pacotes">
-              <Button variant="ghost" size="sm" className="p-2">
-                <ArrowLeft size={20} />
-              </Button>
-            </Link>
-          }
         />
 
         {/* Main Content */}
         <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
+          {/* Inline Page Header */}
+          <div className="mb-6">
+            <div className="flex items-center gap-3">
+              <Link href="/app/pacotes">
+                <Button variant="ghost" size="sm" className="p-2">
+                  <ArrowLeft size={20} />
+                </Button>
+              </Link>
+              <div>
+                <h1 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-3">
+                  <span className="text-3xl">✏️</span>
+                  {packageType?.name || 'Editar Tipo de Pacote'}
+                </h1>
+                <p className="text-purple-200/60 text-sm">Altere as informações do tipo de pacote</p>
+              </div>
+            </div>
+          </div>
           {error && (
             <GlassCard variant="default" className="p-4 mb-6 bg-red-500/20 border-red-500/50 animate-in fade-in slide-in-from-top-2">
               <p className="text-red-200">⚠️ {error}</p>

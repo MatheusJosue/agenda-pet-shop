@@ -6,7 +6,6 @@ import Link from 'next/link'
 import { createService } from '@/lib/actions/services'
 import { AppLayout } from '@/components/layout/app-layout'
 import { AppHeader } from '@/components/layout/app-header'
-import { SetHeaderAction } from '@/components/layout/set-header-action'
 import { BottomNavigation } from '@/components/layout/bottom-navigation'
 import { GlassCard } from '@/components/ui/glass-card'
 import { Button } from '@/components/ui/button'
@@ -54,31 +53,9 @@ export default function NovoServicoPage() {
 
   return (
     <AppLayout companyName="Agenda Pet Shop" user={{}}>
-      {/* Desktop header action */}
-      <SetHeaderAction
-        action={
-          <Link href="/app/servicos">
-            <Button variant="secondary" size="sm" className="rounded-full gap-1">
-              <ArrowLeft size={16} />
-              Voltar
-            </Button>
-          </Link>
-        }
-      />
-
       <AppHeader
         companyName="Agenda Pet Shop"
         user={{}}
-        title="Novo Serviço"
-        subtitle="Cadastre um novo serviço"
-        icon="✨"
-        action={
-          <Link href="/app/servicos">
-            <Button variant="secondary" size="sm" className="rounded-full gap-1">
-              <ArrowLeft size={16} />
-            </Button>
-          </Link>
-        }
       />
 
       <div className="h-[calc(100dvh-60px-64px)] xl:min-h-[87vh] bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent relative flex flex-col xl:block overflow-hidden">
@@ -89,10 +66,33 @@ export default function NovoServicoPage() {
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/5 rounded-full blur-3xl" />
         </div>
 
+        {/* Mobile Header */}
+        <AppHeader
+          companyName="Agenda Pet Shop"
+          user={{}}
+        />
+
         {/* Scrollable content area */}
         <div className="flex-1 overflow-y-auto xl:overflow-auto">
           {/* Main Content */}
           <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
+            {/* Page Header - Inline */}
+            <div className="mb-6">
+              <div className="flex items-center gap-3">
+                <Link href="/app/servicos">
+                  <Button variant="ghost" size="sm" className="p-2">
+                    <ArrowLeft size={20} />
+                  </Button>
+                </Link>
+                <div>
+                  <h1 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-3">
+                    <span className="text-3xl">✨</span>
+                    Novo Serviço
+                  </h1>
+                </div>
+              </div>
+            </div>
+
         {error && (
           <GlassCard variant="default" className="p-4 mb-6 bg-red-500/20 border-red-500/50 animate-in fade-in slide-in-from-top-2">
             <p className="text-red-200">⚠️ {error}</p>

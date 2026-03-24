@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { AppHeader } from "@/components/layout/app-header";
-import { SetHeaderAction } from "@/components/layout/set-header-action";
 import { BottomNavigation } from "@/components/layout/bottom-navigation";
 import { AppLayout } from "@/components/layout/app-layout";
 import { GlassCard } from "@/components/ui/glass-card";
@@ -99,18 +98,6 @@ export default function PacotesPage() {
 
   return (
     <AppLayout companyName={companyName} user={{ name: user?.user_metadata?.name, email: user?.email }}>
-      {/* Desktop header action */}
-      <SetHeaderAction
-        action={
-          <Link href="/app/pacotes/novo">
-            <Button variant="primary" size="sm" className="rounded-full">
-              <Package size={16} className="mr-2" />
-              Novo
-            </Button>
-          </Link>
-        }
-      />
-
       <div className="h-[calc(100dvh-60px-64px)] xl:min-h-[87vh] bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent relative overflow-hidden xl:overflow-auto overflow-y-auto">
         {/* Animated background decoration */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -122,24 +109,35 @@ export default function PacotesPage() {
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/5 rounded-full blur-3xl" />
         </div>
 
+        {/* Mobile Header */}
         <AppHeader
         companyName={companyName}
         user={{ name: user?.user_metadata?.name, email: user?.email }}
-        title="Pacotes"
-        subtitle={`${packageTypes?.length || 0} tipo${packageTypes?.length !== 1 ? "s" : ""}`}
-        icon="📦"
-        action={
-          <Link href="/app/pacotes/novo">
-            <Button variant="primary" size="sm" className="rounded-full">
-              <Package size={16} className="mr-2" />
-              Novo
-            </Button>
-          </Link>
-        }
       />
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
+        {/* Page Header - Inline */}
+        <div className="mb-6">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-3">
+                <span className="text-3xl">📦</span>
+                Pacotes
+              </h1>
+              <p className="text-purple-200/60 mt-1">
+                {packageTypes?.length || 0} tipo{packageTypes?.length !== 1 ? "s" : ""}
+              </p>
+            </div>
+            <Link href="/app/pacotes/novo">
+              <Button variant="primary" size="sm" className="rounded-full">
+                <Package size={16} className="mr-2" />
+                Novo
+              </Button>
+            </Link>
+          </div>
+        </div>
+
         {loading ? (
           <div className="flex items-center justify-center py-12">
             <div className="w-10 h-10 border-4 border-purple-500 border-t-transparent rounded-full animate-spin" />

@@ -3,7 +3,6 @@
 import { ReactNode, useState, useEffect } from 'react'
 import { Sidebar } from './sidebar'
 import { DesktopHeader } from './desktop-header'
-import { HeaderProvider } from './header-context'
 
 interface AppLayoutProps {
   children: ReactNode
@@ -46,12 +45,12 @@ export function AppLayout({ children, companyName, user }: AppLayoutProps) {
   const marginClass = sidebarCollapsed ? 'ml-20' : 'ml-64'
 
   return (
-    <HeaderProvider>
+    <>
       {/* Desktop Layout */}
       <div className="hidden xl:flex h-screen">
         <Sidebar />
         <div className={`flex-1 flex flex-col transition-all duration-300 ${marginClass}`}>
-          <DesktopHeader user={user} sidebarCollapsed={sidebarCollapsed} />
+          <DesktopHeader user={user} sidebarCollapsed={sidebarCollapsed} companyName={companyName} />
           <main className="flex-1 overflow-auto bg-gradient-to-br from-zinc-950 via-purple-950/20 to-zinc-950">
             <div className="h-full px-6 py-8">
               {children}
@@ -64,6 +63,6 @@ export function AppLayout({ children, companyName, user }: AppLayoutProps) {
       <div className="xl:hidden">
         {children}
       </div>
-    </HeaderProvider>
+    </>
   )
 }
