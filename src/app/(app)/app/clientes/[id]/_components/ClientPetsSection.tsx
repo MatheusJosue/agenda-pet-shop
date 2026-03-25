@@ -1,64 +1,64 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import Link from 'next/link'
-import Swal from 'sweetalert2'
-import { Trash2, Eye, Pencil } from 'lucide-react'
-import { getPets, createPet, deletePet } from '@/lib/actions/pets'
-import { GlassCard } from '@/components/ui/glass-card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import type { PetWithClient } from '@/lib/types/pets'
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import Swal from "sweetalert2";
+import { Trash2, Eye, Pencil } from "lucide-react";
+import { getPets, createPet, deletePet } from "@/lib/actions/pets";
+import { GlassCard } from "@/components/ui/glass-card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import type { PetWithClient } from "@/lib/types/pets";
 
 const SIZE_LABELS = {
-  small: 'P',
-  medium: 'M',
-  large: 'G'
-}
+  small: "P",
+  medium: "M",
+  large: "G",
+};
 
 const SIZE_COLORS = {
-  small: 'bg-green-500/20 text-green-200',
-  medium: 'bg-yellow-500/20 text-yellow-200',
-  large: 'bg-red-500/20 text-red-200'
-}
+  small: "bg-green-500/20 text-green-200",
+  medium: "bg-yellow-500/20 text-yellow-200",
+  large: "bg-red-500/20 text-red-200",
+};
 
 interface ClientPetsSectionProps {
-  clientId: string
+  clientId: string;
 }
 
 export function ClientPetsSection({ clientId }: ClientPetsSectionProps) {
-  const [pets, setPets] = useState<PetWithClient[]>([])
-  const [loading, setLoading] = useState(true)
-  const [showAddForm, setShowAddForm] = useState(false)
-  const [saving, setSaving] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [pets, setPets] = useState<PetWithClient[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
-    name: '',
-    breed: '',
-    size: 'medium' as 'small' | 'medium' | 'large',
-    notes: ''
-  })
+    name: "",
+    breed: "",
+    size: "medium" as "small" | "medium" | "large",
+    notes: "",
+  });
 
   useEffect(() => {
-    loadPets()
-  }, [clientId])
+    loadPets();
+  }, [clientId]);
 
   const loadPets = async () => {
-    setLoading(true)
-    const result = await getPets(clientId)
+    setLoading(true);
+    const result = await getPets(clientId);
     if (result.error) {
-      setError(result.error)
+      setError(result.error);
     } else {
-      setPets(result.data || [])
+      setPets(result.data || []);
     }
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   const handleCreatePet = async () => {
-    if (!formData.name.trim()) return
+    if (!formData.name.trim()) return;
 
-    setSaving(true)
-    setError(null)
+    setSaving(true);
+    setError(null);
 
     try {
       const result = await createPet({
@@ -66,84 +66,88 @@ export function ClientPetsSection({ clientId }: ClientPetsSectionProps) {
         name: formData.name.trim(),
         breed: formData.breed.trim() || undefined,
         size: formData.size,
-        notes: formData.notes.trim() || undefined
-      })
+        notes: formData.notes.trim() || undefined,
+      });
 
       if (result.error) {
-        setError(result.error)
+        setError(result.error);
       } else {
-        await loadPets()
-        setShowAddForm(false)
-        setFormData({ name: '', breed: '', size: 'medium', notes: '' })
+        await loadPets();
+        setShowAddForm(false);
+        setFormData({ name: "", breed: "", size: "medium", notes: "" });
       }
     } catch (err) {
-      setError('Erro ao criar pet')
+      setError("Erro ao criar pet");
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }
+  };
 
   const handleDeletePet = async (petId: string) => {
     const result = await Swal.fire({
-      title: 'Excluir pet?',
-      text: 'Esta ação não pode ser desfeita!',
-      icon: 'warning',
+      title: "Excluir pet?",
+      text: "Esta ação não pode ser desfeita!",
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonText: 'Sim, excluir!',
-      cancelButtonText: 'Cancelar',
-      background: 'linear-gradient(135deg, #1e1b4b 0%, #581c87 50%, #312e81 100%)',
-      color: '#fff',
-      confirmButtonColor: '#ef4444',
-      cancelButtonColor: 'rgba(255, 255, 255, 0.1)',
-    })
+      confirmButtonText: "Sim, excluir!",
+      cancelButtonText: "Cancelar",
+      background:
+        "linear-gradient(135deg, #1e1b4b 0%, #581c87 50%, #312e81 100%)",
+      color: "#fff",
+      confirmButtonColor: "#ef4444",
+      cancelButtonColor: "rgba(255, 255, 255, 0.1)",
+    });
 
-    if (!result.isConfirmed) return
+    if (!result.isConfirmed) return;
 
-    setSaving(true)
-    const deleteResult = await deletePet(petId)
+    setSaving(true);
+    const deleteResult = await deletePet(petId);
     if (deleteResult.error) {
-      setError(deleteResult.error)
+      setError(deleteResult.error);
       await Swal.fire({
-        title: 'Erro!',
+        title: "Erro!",
         text: deleteResult.error,
-        icon: 'error',
-        confirmButtonText: 'OK',
-        background: 'linear-gradient(135deg, #1e1b4b 0%, #581c87 50%, #312e81 100%)',
-        color: '#fff',
-        confirmButtonColor: '#ef4444',
-      })
+        icon: "error",
+        confirmButtonText: "OK",
+        background:
+          "linear-gradient(135deg, #1e1b4b 0%, #581c87 50%, #312e81 100%)",
+        color: "#fff",
+        confirmButtonColor: "#ef4444",
+      });
     } else {
       await Swal.fire({
-        title: 'Excluído!',
-        text: 'O pet foi excluído com sucesso.',
-        icon: 'success',
-        confirmButtonText: 'OK',
-        background: 'linear-gradient(135deg, #1e1b4b 0%, #581c87 50%, #312e81 100%)',
-        color: '#fff',
-        confirmButtonColor: '#a855f7',
-      })
-      await loadPets()
+        title: "Excluído!",
+        text: "O pet foi excluído com sucesso.",
+        icon: "success",
+        confirmButtonText: "OK",
+        background:
+          "linear-gradient(135deg, #1e1b4b 0%, #581c87 50%, #312e81 100%)",
+        color: "#fff",
+        confirmButtonColor: "#a855f7",
+      });
+      await loadPets();
     }
-    setSaving(false)
-  }
+    setSaving(false);
+  };
 
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-bold text-white">
-          Pets ({pets.length})
-        </h2>
+        <h2 className="text-xl font-bold text-white">Pets ({pets.length})</h2>
         <Button
           variant="secondary"
           size="sm"
           onClick={() => setShowAddForm(!showAddForm)}
         >
-          {showAddForm ? 'Cancelar' : '+ Adicionar Pet'}
+          {showAddForm ? "Cancelar" : "+ Adicionar Pet"}
         </Button>
       </div>
 
       {error && (
-        <GlassCard variant="default" className="p-4 bg-red-500/20 border-red-500/50">
+        <GlassCard
+          variant="default"
+          className="p-4 bg-red-500/20 border-red-500/50"
+        >
           <p className="text-red-200">{error}</p>
         </GlassCard>
       )}
@@ -159,7 +163,9 @@ export function ClientPetsSection({ clientId }: ClientPetsSectionProps) {
               <Input
                 type="text"
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
                 placeholder="Ex: Rex, Mimi, Bob..."
                 required
                 autoFocus
@@ -173,7 +179,9 @@ export function ClientPetsSection({ clientId }: ClientPetsSectionProps) {
               <Input
                 type="text"
                 value={formData.breed}
-                onChange={(e) => setFormData({ ...formData, breed: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, breed: e.target.value })
+                }
                 placeholder="Ex: Poodle, Vira-lata..."
               />
             </div>
@@ -183,15 +191,15 @@ export function ClientPetsSection({ clientId }: ClientPetsSectionProps) {
                 Porte *
               </label>
               <div className="flex gap-2">
-                {(['small', 'medium', 'large'] as const).map((size) => (
+                {(["small", "medium", "large"] as const).map((size) => (
                   <button
                     key={size}
                     type="button"
                     onClick={() => setFormData({ ...formData, size })}
                     className={`px-4 py-2 rounded-lg border transition-all ${
                       formData.size === size
-                        ? 'bg-purple-500 border-purple-400 text-white'
-                        : 'bg-white/5 border-white/10 text-white/70 hover:border-white/30'
+                        ? "bg-purple-500 border-purple-400 text-white"
+                        : "bg-white/5 border-white/10 text-white/70 hover:border-white/30"
                     }`}
                   >
                     {SIZE_LABELS[size]}
@@ -206,7 +214,9 @@ export function ClientPetsSection({ clientId }: ClientPetsSectionProps) {
               </label>
               <textarea
                 value={formData.notes}
-                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, notes: e.target.value })
+                }
                 placeholder="Ex: Alérgico a certos alimentos, prefere banho rápido..."
                 rows={3}
                 className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-transparent backdrop-blur-sm resize-none"
@@ -219,13 +229,18 @@ export function ClientPetsSection({ clientId }: ClientPetsSectionProps) {
                 onClick={handleCreatePet}
                 disabled={saving || !formData.name.trim()}
               >
-                {saving ? 'Salvando...' : 'Salvar'}
+                {saving ? "Salvando..." : "Salvar"}
               </Button>
               <Button
                 variant="secondary"
                 onClick={() => {
-                  setShowAddForm(false)
-                  setFormData({ name: '', breed: '', size: 'medium', notes: '' })
+                  setShowAddForm(false);
+                  setFormData({
+                    name: "",
+                    breed: "",
+                    size: "medium",
+                    notes: "",
+                  });
                 }}
               >
                 Cancelar
@@ -236,23 +251,37 @@ export function ClientPetsSection({ clientId }: ClientPetsSectionProps) {
       )}
 
       {loading ? (
-        <p className="text-white/60">Carregando pets...</p>
+        <div className="flex items-center justify-center py-12">
+          <div className="w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full animate-spin" />
+        </div>
       ) : pets.length === 0 ? (
         <GlassCard variant="default" className="p-8 text-center">
           <p className="text-white/60">Nenhum pet cadastrado</p>
           <p className="text-white/40 text-sm mt-2">
-            Clique em "Adicionar Pet" para cadastrar o primeiro pet deste cliente.
+            Clique em "Adicionar Pet" para cadastrar o primeiro pet deste
+            cliente.
           </p>
         </GlassCard>
       ) : (
         <div className="grid gap-4">
           {pets.map((pet) => (
-            <GlassCard key={pet.id} variant="default" className="p-4 hover:bg-white/[0.08] transition-colors">
+            <GlassCard
+              key={pet.id}
+              variant="default"
+              className="p-4 hover:bg-white/[0.08] transition-colors"
+            >
               <div className="flex justify-between items-start gap-4">
-                <Link href={`/app/clientes/${clientId}/pets/${pet.id}`} className="flex-1 hover:opacity-80 transition-opacity">
+                <Link
+                  href={`/app/clientes/${clientId}/pets/${pet.id}`}
+                  className="flex-1 hover:opacity-80 transition-opacity"
+                >
                   <div className="flex items-center gap-3 mb-2">
-                    <h3 className="text-lg font-semibold text-white">{pet.name}</h3>
-                    <span className={`px-2 py-1 rounded-md text-xs font-medium ${SIZE_COLORS[pet.size]}`}>
+                    <h3 className="text-lg font-semibold text-white">
+                      {pet.name}
+                    </h3>
+                    <span
+                      className={`px-2 py-1 rounded-md text-xs font-medium ${SIZE_COLORS[pet.size]}`}
+                    >
                       {SIZE_LABELS[pet.size]}
                     </span>
                   </div>
@@ -265,11 +294,7 @@ export function ClientPetsSection({ clientId }: ClientPetsSectionProps) {
                 </Link>
                 <div className="flex gap-2">
                   <Link href={`/app/clientes/${clientId}/pets/${pet.id}`}>
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      title="Ver detalhes"
-                    >
+                    <Button variant="secondary" size="sm" title="Ver detalhes">
                       <Eye size={16} />
                     </Button>
                   </Link>
@@ -289,5 +314,5 @@ export function ClientPetsSection({ clientId }: ClientPetsSectionProps) {
         </div>
       )}
     </div>
-  )
+  );
 }
