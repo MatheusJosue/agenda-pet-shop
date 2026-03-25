@@ -35,7 +35,7 @@ async function getCurrentCompanyId(): Promise<string | null> {
 /**
  * Get all services for the current user's company
  */
-export async function getServices(activeOnly: boolean = true): Promise<ServicesListResponse> {
+export async function getServices(activeOnly: boolean = true, search?: string): Promise<ServicesListResponse> {
   const companyId = await getCurrentCompanyId()
 
   if (!companyId) {
@@ -48,13 +48,17 @@ export async function getServices(activeOnly: boolean = true): Promise<ServicesL
     .from('services')
     .select('*')
     .eq('company_id', companyId)
-    .order('name', { ascending: true })
 
   if (activeOnly) {
     query = query.eq('active', true)
   }
 
-  const { data, error } = await query
+  // Add search filter if provided
+  if (search && search.trim()) {
+    query = query.ilike('name', `%${search.trim()}%`)
+  }
+
+  const { data, error } = await query.order('name', { ascending: true })
 
   if (error) {
     return { data: [], error: 'Erro ao buscar serviços' }

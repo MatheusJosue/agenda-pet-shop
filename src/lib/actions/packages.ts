@@ -40,7 +40,7 @@ async function getCurrentCompanyId(): Promise<string | null> {
 /**
  * Get all active package types for the current company
  */
-export async function getPackageTypes(): Promise<PackageTypesResponse> {
+export async function getPackageTypes(search?: string): Promise<PackageTypesResponse> {
   const companyId = await getCurrentCompanyId()
 
   if (!companyId) {
@@ -49,12 +49,18 @@ export async function getPackageTypes(): Promise<PackageTypesResponse> {
 
   const supabase = await createSupabaseClient()
 
-  const { data, error } = await supabase
+  let query = supabase
     .from('package_types')
     .select('*')
     .eq('company_id', companyId)
     .eq('active', true)
-    .order('interval_days', { ascending: true })
+
+  // Add search filter if provided
+  if (search && search.trim()) {
+    query = query.ilike('name', `%${search.trim()}%`)
+  }
+
+  const { data, error } = await query.order('interval_days', { ascending: true })
 
   if (error) {
     return { data: [], error: 'Erro ao buscar tipos de pacote' }

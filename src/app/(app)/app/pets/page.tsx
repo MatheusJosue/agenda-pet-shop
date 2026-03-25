@@ -21,7 +21,7 @@ function PetsLoading() {
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/5 rounded-full blur-3xl" />
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
+        <div className="max-w-12xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
           <div className="flex items-center justify-center py-12">
             <div className="w-10 h-10 border-4 border-purple-500 border-t-transparent rounded-full animate-spin" />
           </div>

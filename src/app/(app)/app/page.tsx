@@ -62,10 +62,10 @@ export default function AppPage() {
 
   return (
     <AppLayout companyName={companyName} user={{ name: user?.user_metadata?.name, email: user?.email }}>
-      {/* Mobile-only components */}
-      <AppHeader companyName={companyName} user={{ name: user?.user_metadata?.name, email: user?.email }} />
+      <div className="flex flex-col h-dvh bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent relative overflow-hidden">
+        {/* Mobile-only components */}
+        <AppHeader companyName={companyName} user={{ name: user?.user_metadata?.name, email: user?.email }} />
 
-      <div className="h-[calc(100dvh-60px-64px)] xl:min-h-[87vh] bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent relative overflow-hidden">
         {/* Animated background decoration */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
@@ -73,7 +73,7 @@ export default function AppPage() {
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/5 rounded-full blur-3xl" />
         </div>
 
-        <main className="max-w-7xl mx-auto px-4 py-6 xl:px-6 xl:py-8 space-y-6 relative">
+        <main className="flex-1 overflow-y-auto w-full max-w-12xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-10 space-y-6 relative">
           {loading ? (
             <div className="flex items-center justify-center py-12">
               <div className="w-10 h-10 border-4 border-purple-500/30 border-t-purple-500 rounded-full animate-spin" />
@@ -169,9 +169,9 @@ export default function AppPage() {
             </>
           )}
         </main>
-      </div>
 
-      <BottomNavigation />
+        <BottomNavigation />
+      </div>
     </AppLayout>
   )
 }

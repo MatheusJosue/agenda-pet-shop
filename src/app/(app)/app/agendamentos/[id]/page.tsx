@@ -188,7 +188,9 @@ export default function AgendamentoDetailPage() {
             user={{ name: user?.user_metadata?.name, email: user?.email }}
           />
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
-            <p className="text-purple-200/60">Carregando...</p>
+            <div className="flex items-center justify-center py-12 animate-in fade-in duration-300">
+              <div className="w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full animate-spin" />
+            </div>
           </div>
           <BottomNavigation />
         </div>

@@ -35,7 +35,12 @@ export function ImpersonateButton({ companyId, companyName }: ImpersonateButtonP
       className="px-4 py-2 rounded-xl bg-purple-500/20 text-purple-300 hover:bg-purple-500/30 font-medium flex items-center gap-2 transition-all disabled:opacity-50"
     >
       <Eye size={18} />
-      {loading ? 'Carregando...' : 'Ver como esta empresa'}
+      <>
+        {loading && (
+          <div className="w-4 h-4 border-2 border-purple-300 border-t-transparent rounded-full animate-spin" />
+        )}
+        {!loading && 'Ver como esta empresa'}
+      </>
     </button>
   )
 }

@@ -1,170 +1,194 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { useRouter, useParams } from 'next/navigation'
-import Link from 'next/link'
-import { getServiceById, updateService, deleteService, checkServiceAppointments } from '@/lib/actions/services'
-import { GlassCard } from '@/components/ui/glass-card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { AppHeader } from '@/components/layout/app-header'
-import { AppLayout } from '@/components/layout/app-layout'
-import { BottomNavigation } from '@/components/layout/bottom-navigation'
-import { Pencil, Trash2, ArrowLeft, DollarSign } from 'lucide-react'
-import type { Service } from '@/lib/types/services'
+import { useState, useEffect } from "react";
+import { useRouter, useParams } from "next/navigation";
+import Link from "next/link";
+import {
+  getServiceById,
+  updateService,
+  deleteService,
+  checkServiceAppointments,
+} from "@/lib/actions/services";
+import { GlassCard } from "@/components/ui/glass-card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { AppHeader } from "@/components/layout/app-header";
+import { AppLayout } from "@/components/layout/app-layout";
+import { BottomNavigation } from "@/components/layout/bottom-navigation";
+import { Pencil, Trash2, ArrowLeft, DollarSign } from "lucide-react";
+import type { Service } from "@/lib/types/services";
 
 const sizeEmojis = {
-  small: '🐱',
-  medium: '🐕',
-  large: '🦮'
-}
+  small: "🐱",
+  medium: "🐕",
+  large: "🦮",
+};
 
 export default function ServicoDetailPage() {
-  const router = useRouter()
-  const params = useParams()
-  const serviceId = params.id as string
+  const router = useRouter();
+  const params = useParams();
+  const serviceId = params.id as string;
 
-  const [service, setService] = useState<Service | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [editing, setEditing] = useState(false)
-  const [saving, setSaving] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [appointmentCount, setAppointmentCount] = useState(0)
-  const [companyName, setCompanyName] = useState('Agenda Pet Shop')
-  const [user, setUser] = useState<{ user_metadata?: { name?: string }; email?: string } | null>(null)
+  const [service, setService] = useState<Service | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [appointmentCount, setAppointmentCount] = useState(0);
+  const [companyName, setCompanyName] = useState("Agenda Pet Shop");
+  const [user, setUser] = useState<{
+    user_metadata?: { name?: string };
+    email?: string;
+  } | null>(null);
   const [formData, setFormData] = useState({
-    name: '',
-    price: '',
-    duration_minutes: '60',
-  })
+    name: "",
+    price: "",
+    duration_minutes: "60",
+  });
 
   useEffect(() => {
     async function loadData() {
       try {
-        const { getAppStats } = await import('@/lib/actions/app')
-        const result = await getAppStats()
+        const { getAppStats } = await import("@/lib/actions/app");
+        const result = await getAppStats();
         if (result.data) {
-          setCompanyName(result.data.companyName || 'Agenda Pet Shop')
-          setUser(result.data.user)
+          setCompanyName(result.data.companyName || "Agenda Pet Shop");
+          setUser(result.data.user);
         }
       } catch (error) {
-        console.error('Error loading data:', error)
+        console.error("Error loading data:", error);
       }
     }
-    loadData()
-  }, [])
+    loadData();
+  }, []);
 
   useEffect(() => {
-    loadService()
-    loadAppointmentCount()
-  }, [serviceId])
+    loadService();
+    loadAppointmentCount();
+  }, [serviceId]);
 
   const loadService = async () => {
-    setLoading(true)
-    const result = await getServiceById(serviceId)
+    setLoading(true);
+    const result = await getServiceById(serviceId);
 
     if (result.error || !result.data) {
-      setError(result.error || 'Serviço não encontrado')
+      setError(result.error || "Serviço não encontrado");
     } else {
-      setService(result.data)
+      setService(result.data);
       setFormData({
         name: result.data.name,
         price: result.data.price.toString(),
         duration_minutes: result.data.duration_minutes.toString(),
-      })
+      });
     }
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   const loadAppointmentCount = async () => {
-    const count = await checkServiceAppointments(serviceId)
-    setAppointmentCount(count)
-  }
+    const count = await checkServiceAppointments(serviceId);
+    setAppointmentCount(count);
+  };
 
   const handleSave = async () => {
-    setSaving(true)
-    setError(null)
+    setSaving(true);
+    setError(null);
 
     try {
       const result = await updateService(serviceId, {
         name: formData.name,
         price: parseFloat(formData.price),
         duration_minutes: parseInt(formData.duration_minutes),
-      })
+      });
 
       if (result.error) {
-        setError(result.error)
+        setError(result.error);
       } else {
-        setService(result.data || null)
-        setEditing(false)
+        setService(result.data || null);
+        setEditing(false);
       }
     } catch (err) {
-      setError('Erro ao atualizar serviço')
+      setError("Erro ao atualizar serviço");
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }
+  };
 
   const handleDelete = async () => {
     if (appointmentCount > 0) {
-      setError(`Não é possível excluir serviço com ${appointmentCount} agendamento(s) futuro(s)`)
-      return
+      setError(
+        `Não é possível excluir serviço com ${appointmentCount} agendamento(s) futuro(s)`,
+      );
+      return;
     }
 
-    if (!confirm('Tem certeza que deseja excluir este serviço?')) {
-      return
+    if (!confirm("Tem certeza que deseja excluir este serviço?")) {
+      return;
     }
 
-    setSaving(true)
-    setError(null)
+    setSaving(true);
+    setError(null);
 
     try {
-      const result = await deleteService(serviceId)
+      const result = await deleteService(serviceId);
 
       if (result.error) {
-        setError(result.error)
+        setError(result.error);
       } else {
-        router.push('/app/servicos')
+        router.push("/app/servicos");
       }
     } catch (err) {
-      setError('Erro ao excluir serviço')
+      setError("Erro ao excluir serviço");
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }
+  };
 
   const handleChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }))
-  }
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
 
   if (loading) {
     return (
-      <AppLayout companyName={companyName} user={{ name: user?.user_metadata?.name, email: user?.email }}>
+      <AppLayout
+        companyName={companyName}
+        user={{ name: user?.user_metadata?.name, email: user?.email }}
+      >
         <div className="min-h-screen xl:min-h-[87vh] bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent relative overflow-hidden xl:pb-0 pb-20">
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
-            <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-fuchsia-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+            <div
+              className="absolute -bottom-40 -left-40 w-96 h-96 bg-fuchsia-500/10 rounded-full blur-3xl animate-pulse"
+              style={{ animationDelay: "1s" }}
+            />
           </div>
           <AppHeader
             companyName={companyName}
             user={{ name: user?.user_metadata?.name, email: user?.email }}
           />
           <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
-            <p className="text-white/60">Carregando...</p>
+            <div className="flex items-center justify-center py-12 animate-in fade-in duration-300">
+              <div className="w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full animate-spin" />
+            </div>
           </div>
           <BottomNavigation />
         </div>
       </AppLayout>
-    )
+    );
   }
 
   if (!service || error) {
     return (
-      <AppLayout companyName={companyName} user={{ name: user?.user_metadata?.name, email: user?.email }}>
+      <AppLayout
+        companyName={companyName}
+        user={{ name: user?.user_metadata?.name, email: user?.email }}
+      >
         <div className="min-h-screen xl:min-h-[87vh] bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent relative overflow-hidden xl:pb-0 pb-20">
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
-            <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-fuchsia-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+            <div
+              className="absolute -bottom-40 -left-40 w-96 h-96 bg-fuchsia-500/10 rounded-full blur-3xl animate-pulse"
+              style={{ animationDelay: "1s" }}
+            />
           </div>
           <AppHeader
             companyName={companyName}
@@ -189,7 +213,9 @@ export default function ServicoDetailPage() {
               </div>
             </div>
             <GlassCard variant="default" className="p-8 text-center">
-              <p className="text-red-400 mb-4">{error || 'Serviço não encontrado'}</p>
+              <p className="text-red-400 mb-4">
+                {error || "Serviço não encontrado"}
+              </p>
               <Link href="/app/servicos">
                 <Button variant="secondary">Voltar</Button>
               </Link>
@@ -198,16 +224,22 @@ export default function ServicoDetailPage() {
           <BottomNavigation />
         </div>
       </AppLayout>
-    )
+    );
   }
 
   return (
-    <AppLayout companyName={companyName} user={{ name: user?.user_metadata?.name, email: user?.email }}>
+    <AppLayout
+      companyName={companyName}
+      user={{ name: user?.user_metadata?.name, email: user?.email }}
+    >
       <div className="min-h-screen xl:min-h-[87vh] bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent relative overflow-hidden xl:pb-0 pb-20">
         {/* Animated background decoration */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-fuchsia-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+          <div
+            className="absolute -bottom-40 -left-40 w-96 h-96 bg-fuchsia-500/10 rounded-full blur-3xl animate-pulse"
+            style={{ animationDelay: "1s" }}
+          />
         </div>
 
         <AppHeader
@@ -232,7 +264,7 @@ export default function ServicoDetailPage() {
                     {service.name}
                   </h1>
                   <p className="text-purple-200/60 text-sm">
-                    {editing ? 'Editando' : 'Detalhes do serviço'}
+                    {editing ? "Editando" : "Detalhes do serviço"}
                   </p>
                 </div>
               </div>
@@ -243,13 +275,13 @@ export default function ServicoDetailPage() {
                       variant="ghost"
                       size="sm"
                       onClick={() => {
-                        setEditing(false)
+                        setEditing(false);
                         setFormData({
                           name: service.name,
                           price: service.price.toString(),
                           duration_minutes: service.duration_minutes.toString(),
-                        })
-                        setError(null)
+                        });
+                        setError(null);
                       }}
                       disabled={saving}
                     >
@@ -261,7 +293,7 @@ export default function ServicoDetailPage() {
                       onClick={handleSave}
                       disabled={saving}
                     >
-                      {saving ? 'Salvando...' : 'Salvar'}
+                      {saving ? "Salvando..." : "Salvar"}
                     </Button>
                   </>
                 ) : (
@@ -279,7 +311,11 @@ export default function ServicoDetailPage() {
                       size="sm"
                       onClick={handleDelete}
                       disabled={saving || appointmentCount > 0}
-                      title={appointmentCount > 0 ? `${appointmentCount} agendamento(s) futuro(s)` : undefined}
+                      title={
+                        appointmentCount > 0
+                          ? `${appointmentCount} agendamento(s) futuro(s)`
+                          : undefined
+                      }
                     >
                       <Trash2 size={18} />
                     </Button>
@@ -290,45 +326,75 @@ export default function ServicoDetailPage() {
           </div>
 
           {error && (
-            <GlassCard variant="default" className="p-4 mb-6 bg-red-500/20 border-red-500/50 animate-in fade-in slide-in-from-top-2">
+            <GlassCard
+              variant="default"
+              className="p-4 mb-6 bg-red-500/20 border-red-500/50 animate-in fade-in slide-in-from-top-2"
+            >
               <p className="text-red-200">⚠️ {error}</p>
             </GlassCard>
           )}
 
-          <GlassCard variant="default" className="p-8 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-100">
+          <GlassCard
+            variant="default"
+            className="p-8 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-100"
+          >
             {editing ? (
-              <form onSubmit={(e) => { e.preventDefault(); handleSave(); }} className="space-y-7">
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleSave();
+                }}
+                className="space-y-7"
+              >
                 {/* Name */}
-                <div className="animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '150ms' }}>
-                  <label htmlFor="name" className="block text-purple-100/90 text-sm font-semibold mb-2.5 flex items-center gap-2">
-                    <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">✂️</span>
+                <div
+                  className="animate-in fade-in slide-in-from-left-2 duration-300"
+                  style={{ animationDelay: "150ms" }}
+                >
+                  <label
+                    htmlFor="name"
+                    className="block text-purple-100/90 text-sm font-semibold mb-2.5 flex items-center gap-2"
+                  >
+                    <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">
+                      ✂️
+                    </span>
                     Nome do Serviço *
                   </label>
                   <Input
                     id="name"
                     type="text"
                     value={formData.name}
-                    onChange={(e) => handleChange('name', e.target.value)}
+                    onChange={(e) => handleChange("name", e.target.value)}
                     required
                     className="w-full"
                   />
                 </div>
 
                 {/* Price */}
-                <div className="animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '200ms' }}>
-                  <label htmlFor="price" className="block text-purple-100/90 text-sm font-semibold mb-2.5 flex items-center gap-2">
-                    <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">💰</span>
+                <div
+                  className="animate-in fade-in slide-in-from-left-2 duration-300"
+                  style={{ animationDelay: "200ms" }}
+                >
+                  <label
+                    htmlFor="price"
+                    className="block text-purple-100/90 text-sm font-semibold mb-2.5 flex items-center gap-2"
+                  >
+                    <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">
+                      💰
+                    </span>
                     Preço *
                   </label>
                   <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-purple-200/50 font-medium">R$</span>
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-purple-200/50 font-medium">
+                      R$
+                    </span>
                     <Input
                       id="price"
                       type="number"
                       step="0.01"
                       min="0"
                       value={formData.price}
-                      onChange={(e) => handleChange('price', e.target.value)}
+                      onChange={(e) => handleChange("price", e.target.value)}
                       required
                       className="w-full pl-12"
                     />
@@ -336,9 +402,17 @@ export default function ServicoDetailPage() {
                 </div>
 
                 {/* Duration */}
-                <div className="animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '400ms' }}>
-                  <label htmlFor="duration_minutes" className="block text-purple-100/90 text-sm font-semibold mb-2.5 flex items-center gap-2">
-                    <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">⏱️</span>
+                <div
+                  className="animate-in fade-in slide-in-from-left-2 duration-300"
+                  style={{ animationDelay: "400ms" }}
+                >
+                  <label
+                    htmlFor="duration_minutes"
+                    className="block text-purple-100/90 text-sm font-semibold mb-2.5 flex items-center gap-2"
+                  >
+                    <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">
+                      ⏱️
+                    </span>
                     Duração (minutos)
                   </label>
                   <Input
@@ -346,40 +420,67 @@ export default function ServicoDetailPage() {
                     type="number"
                     min="1"
                     value={formData.duration_minutes}
-                    onChange={(e) => handleChange('duration_minutes', e.target.value)}
+                    onChange={(e) =>
+                      handleChange("duration_minutes", e.target.value)
+                    }
                     className="w-full"
                   />
                 </div>
               </form>
             ) : (
               <div className="space-y-6">
-                <div className="animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '150ms' }}>
+                <div
+                  className="animate-in fade-in slide-in-from-left-2 duration-300"
+                  style={{ animationDelay: "150ms" }}
+                >
                   <h2 className="text-purple-200/60 text-sm font-semibold mb-1 flex items-center gap-2">
-                    <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">✂️</span>
+                    <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">
+                      ✂️
+                    </span>
                     Nome
                   </h2>
-                  <p className="text-2xl font-semibold text-white">{service.name}</p>
+                  <p className="text-2xl font-semibold text-white">
+                    {service.name}
+                  </p>
                 </div>
 
-                <div className="animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '200ms' }}>
+                <div
+                  className="animate-in fade-in slide-in-from-left-2 duration-300"
+                  style={{ animationDelay: "200ms" }}
+                >
                   <h2 className="text-purple-200/60 text-sm font-semibold mb-1 flex items-center gap-2">
-                    <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">💰</span>
+                    <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">
+                      💰
+                    </span>
                     Preço
                   </h2>
-                  <p className="text-2xl font-semibold text-white">R$ {service.price.toFixed(2)}</p>
+                  <p className="text-2xl font-semibold text-white">
+                    R$ {service.price.toFixed(2)}
+                  </p>
                 </div>
 
-                <div className="animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '250ms' }}>
+                <div
+                  className="animate-in fade-in slide-in-from-left-2 duration-300"
+                  style={{ animationDelay: "250ms" }}
+                >
                   <h2 className="text-purple-200/60 text-sm font-semibold mb-1 flex items-center gap-2">
-                    <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">⏱️</span>
+                    <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">
+                      ⏱️
+                    </span>
                     Duração
                   </h2>
-                  <p className="text-white">{service.duration_minutes} minutos</p>
+                  <p className="text-white">
+                    {service.duration_minutes} minutos
+                  </p>
                 </div>
 
-                <div className="pt-4 border-t border-white/10 animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '300ms' }}>
+                <div
+                  className="pt-4 border-t border-white/10 animate-in fade-in slide-in-from-left-2 duration-300"
+                  style={{ animationDelay: "300ms" }}
+                >
                   <p className="text-purple-200/40 text-xs">
-                    Cadastrado em {new Date(service.created_at).toLocaleDateString('pt-BR')}
+                    Cadastrado em{" "}
+                    {new Date(service.created_at).toLocaleDateString("pt-BR")}
                   </p>
                 </div>
               </div>
@@ -390,5 +491,5 @@ export default function ServicoDetailPage() {
         <BottomNavigation />
       </div>
     </AppLayout>
-  )
+  );
 }
