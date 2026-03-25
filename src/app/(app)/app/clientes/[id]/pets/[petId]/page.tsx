@@ -197,7 +197,7 @@ export default function ClientPetDetailPage() {
         companyName={companyName}
         user={{ name: user?.user_metadata?.name, email: user?.email }}
       >
-        <div className="min-h-screen xl:min-h-[87vh] bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent relative flex flex-col xl:block overflow-hidden">
+        <div className="flex flex-col h-dvh bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent relative overflow-hidden">
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
             <div
@@ -209,13 +209,12 @@ export default function ClientPetDetailPage() {
             companyName={companyName}
             user={{ name: user?.user_metadata?.name, email: user?.email }}
           />
-          <div className="flex-1 overflow-y-auto xl:overflow-auto">
-            <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
-              <div className="flex items-center justify-center py-12 animate-in fade-in duration-300">
-                <div className="w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full animate-spin" />
-              </div>
+          <main className="flex-1 overflow-y-auto w-full max-w-12xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
+            <div className="flex items-center justify-center py-12 animate-in fade-in duration-300">
+              <div className="w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full animate-spin" />
             </div>
-          </div>
+          </main>
+
           <BottomNavigation />
         </div>
       </AppLayout>
@@ -228,7 +227,7 @@ export default function ClientPetDetailPage() {
         companyName={companyName}
         user={{ name: user?.user_metadata?.name, email: user?.email }}
       >
-        <div className="min-h-screen xl:min-h-[87vh] bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent relative flex flex-col xl:block overflow-hidden">
+        <div className="flex flex-col h-dvh bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent relative overflow-hidden">
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
             <div
@@ -240,35 +239,34 @@ export default function ClientPetDetailPage() {
             companyName={companyName}
             user={{ name: user?.user_metadata?.name, email: user?.email }}
           />
-          <div className="flex-1 overflow-y-auto xl:overflow-auto">
-            <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
-              {/* Inline header for error state */}
-              <div className="mb-6">
-                <div className="flex items-center gap-3">
-                  <Link href={`/app/clientes/${clientId}`}>
-                    <Button variant="ghost" size="sm" className="p-2">
-                      <ArrowLeft size={20} />
-                    </Button>
-                  </Link>
-                  <div>
-                    <h1 className="text-2xl font-bold text-white flex items-center gap-3">
-                      <span className="text-3xl">🐾</span>
-                      Pet
-                    </h1>
-                    <p className="text-purple-200/60 text-sm">Erro</p>
-                  </div>
+          <main className="flex-1 overflow-y-auto w-full max-w-12xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
+            {/* Inline header for error state */}
+            <div className="mb-6">
+              <div className="flex items-center gap-3">
+                <Link href={`/app/clientes/${clientId}`}>
+                  <Button variant="ghost" size="sm" className="p-2">
+                    <ArrowLeft size={20} />
+                  </Button>
+                </Link>
+                <div>
+                  <h1 className="text-2xl font-bold text-white flex items-center gap-3">
+                    <span className="text-3xl">🐾</span>
+                    Pet
+                  </h1>
+                  <p className="text-purple-200/60 text-sm">Erro</p>
                 </div>
               </div>
-              <GlassCard variant="default" className="p-8 text-center">
-                <p className="text-red-400 mb-4">
-                  {error || "Pet não encontrado"}
-                </p>
-                <Link href={`/app/clientes/${clientId}`}>
-                  <Button variant="secondary">Voltar</Button>
-                </Link>
-              </GlassCard>
             </div>
-          </div>
+            <GlassCard variant="default" className="p-8 text-center">
+              <p className="text-red-400 mb-4">
+                {error || "Pet não encontrado"}
+              </p>
+              <Link href={`/app/clientes/${clientId}`}>
+                <Button variant="secondary">Voltar</Button>
+              </Link>
+            </GlassCard>
+          </main>
+
           <BottomNavigation />
         </div>
       </AppLayout>
@@ -280,7 +278,7 @@ export default function ClientPetDetailPage() {
       companyName={companyName}
       user={{ name: user?.user_metadata?.name, email: user?.email }}
     >
-      <div className="min-h-screen xl:min-h-[87vh] bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent relative flex flex-col xl:block overflow-hidden">
+      <div className="flex flex-col h-dvh bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent relative overflow-hidden">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
           <div
@@ -294,203 +292,202 @@ export default function ClientPetDetailPage() {
           user={{ name: user?.user_metadata?.name, email: user?.email }}
         />
 
-        <div className="flex-1 overflow-y-auto xl:overflow-auto">
-          <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
-            {/* Inline Page Header */}
-            <div className="mb-6">
-              <div className="flex items-center justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  <Link href={`/app/clientes/${clientId}`}>
-                    <Button variant="ghost" size="sm" className="p-2">
-                      <ArrowLeft size={20} />
-                    </Button>
-                  </Link>
-                  <div>
-                    <h1 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-3">
-                      <span className="text-3xl">{sizeEmojis[pet.size]}</span>
-                      {pet.name}
-                    </h1>
-                    <p className="text-purple-200/60 text-sm">
-                      {editing ? "Editando" : "Detalhes do pet"}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  {editing ? (
-                    <>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => {
-                          setEditing(false);
-                          setFormData({
-                            name: pet.name,
-                            breed: pet.breed || "",
-                            size: pet.size,
-                            notes: pet.notes || "",
-                          });
-                          setError(null);
-                        }}
-                        disabled={saving}
-                      >
-                        Cancelar
-                      </Button>
-                      <Button
-                        variant="primary"
-                        size="sm"
-                        onClick={handleSave}
-                        disabled={saving}
-                      >
-                        {saving ? "Salvando..." : "Salvar"}
-                      </Button>
-                    </>
-                  ) : (
-                    <>
-                      <button
-                        type="button"
-                        onClick={() => setShowPackageModal(true)}
-                        disabled={saving}
-                        className="p-2 rounded-lg text-purple-400/60 hover:text-purple-400 hover:bg-white/10 transition-colors disabled:opacity-50"
-                        title="Gerenciar pacote"
-                      >
-                        <Package size={18} />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setEditing(true)}
-                        disabled={saving}
-                        className="p-2 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-colors disabled:opacity-50"
-                        title="Editar pet"
-                      >
-                        <Pencil size={18} />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={handleDelete}
-                        disabled={saving}
-                        className="p-2 rounded-lg text-red-400/60 hover:text-red-400 hover:bg-red-500/10 transition-colors disabled:opacity-50"
-                        title="Excluir pet"
-                      >
-                        <Trash2 size={18} />
-                      </button>
-                    </>
-                  )}
+        <main className="flex-1 overflow-y-auto w-full max-w-12xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-10 relative">
+          {/* Inline Page Header */}
+          <div className="mb-6">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <Link href={`/app/clientes/${clientId}`}>
+                  <Button variant="ghost" size="sm" className="p-2">
+                    <ArrowLeft size={20} />
+                  </Button>
+                </Link>
+                <div>
+                  <h1 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-3">
+                    <span className="text-3xl">{sizeEmojis[pet.size]}</span>
+                    {pet.name}
+                  </h1>
+                  <p className="text-purple-200/60 text-sm">
+                    {editing ? "Editando" : "Detalhes do pet"}
+                  </p>
                 </div>
               </div>
+              <div className="flex gap-2">
+                {editing ? (
+                  <>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setEditing(false);
+                        setFormData({
+                          name: pet.name,
+                          breed: pet.breed || "",
+                          size: pet.size,
+                          notes: pet.notes || "",
+                        });
+                        setError(null);
+                      }}
+                      disabled={saving}
+                    >
+                      Cancelar
+                    </Button>
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      onClick={handleSave}
+                      disabled={saving}
+                    >
+                      {saving ? "Salvando..." : "Salvar"}
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => setShowPackageModal(true)}
+                      disabled={saving}
+                      className="p-2 rounded-lg text-purple-400/60 hover:text-purple-400 hover:bg-white/10 transition-colors disabled:opacity-50"
+                      title="Gerenciar pacote"
+                    >
+                      <Package size={18} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setEditing(true)}
+                      disabled={saving}
+                      className="p-2 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-colors disabled:opacity-50"
+                      title="Editar pet"
+                    >
+                      <Pencil size={18} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleDelete}
+                      disabled={saving}
+                      className="p-2 rounded-lg text-red-400/60 hover:text-red-400 hover:bg-red-500/10 transition-colors disabled:opacity-50"
+                      title="Excluir pet"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
+          </div>
 
-            {error && (
-              <GlassCard
-                variant="default"
-                className="p-4 mb-6 bg-red-500/20 border-red-500/50 animate-in fade-in slide-in-from-top-2"
-              >
-                <p className="text-red-200">⚠️ {error}</p>
-              </GlassCard>
-            )}
-
+          {error && (
             <GlassCard
               variant="default"
-              className="p-8 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-100 relative"
+              className="p-4 mb-6 bg-red-500/20 border-red-500/50 animate-in fade-in slide-in-from-top-2"
             >
-              {editing ? (
-                <form
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    handleSave();
-                  }}
-                  className="space-y-7"
-                >
-                  <div>
-                    <label
-                      htmlFor="name"
-                      className="block text-purple-100/90 text-sm font-semibold mb-2.5 flex items-center gap-2"
-                    >
-                      <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">
-                        🐾
-                      </span>
-                      Nome *
-                    </label>
-                    <Input
-                      id="name"
-                      type="text"
-                      value={formData.name}
-                      onChange={(e) => handleChange("name", e.target.value)}
-                      required
-                      minLength={2}
-                      className="w-full"
-                    />
-                  </div>
+              <p className="text-red-200">⚠️ {error}</p>
+            </GlassCard>
+          )}
 
-                  <div>
-                    <label
-                      htmlFor="breed"
-                      className="block text-purple-100/90 text-sm font-semibold mb-2.5 flex items-center gap-2"
-                    >
-                      <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">
-                        🎨
-                      </span>
-                      Raça
-                    </label>
-                    <Input
-                      id="breed"
-                      type="text"
-                      value={formData.breed}
-                      onChange={(e) => handleChange("breed", e.target.value)}
-                      placeholder="Ex: Poodle, Vira-lata..."
-                      className="w-full"
-                    />
-                  </div>
+          <GlassCard
+            variant="default"
+            className="p-8 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-100 relative"
+          >
+            {editing ? (
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleSave();
+                }}
+                className="space-y-7"
+            >
+                <div>
+                  <label
+                    htmlFor="name"
+                    className="block text-purple-100/90 text-sm font-semibold mb-2.5 flex items-center gap-2"
+                  >
+                    <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">
+                      🐾
+                    </span>
+                    Nome *
+                  </label>
+                  <Input
+                    id="name"
+                    type="text"
+                    value={formData.name}
+                    onChange={(e) => handleChange("name", e.target.value)}
+                    required
+                    minLength={2}
+                    className="w-full"
+                  />
+                </div>
 
-                  <div>
-                    <label className="block text-purple-100/90 text-sm font-semibold mb-2.5 flex items-center gap-2">
-                      <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">
-                        📏
-                      </span>
-                      Porte *
-                    </label>
-                    <div className="grid grid-cols-3 gap-3">
-                      {[
-                        { value: "small", label: "P", emoji: "🐱" },
-                        { value: "medium", label: "M", emoji: "🐕" },
-                        { value: "large", label: "G", emoji: "🦮" },
-                      ].map((size) => (
-                        <button
-                          key={size.value}
-                          type="button"
-                          onClick={() => handleChange("size", size.value)}
-                          className={`p-3 rounded-xl border-2 transition-all ${
-                            formData.size === size.value
-                              ? "bg-purple-500/30 border-purple-500 text-white"
-                              : "bg-white/5 border-white/10 text-white/60 hover:border-white/30"
-                          }`}
-                        >
-                          <div className="text-xl mb-0.5">{size.emoji}</div>
-                          <div className="text-xs">{size.label}</div>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
+                <div>
+                  <label
+                    htmlFor="breed"
+                    className="block text-purple-100/90 text-sm font-semibold mb-2.5 flex items-center gap-2"
+                  >
+                    <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">
+                      🎨
+                    </span>
+                    Raça
+                  </label>
+                  <Input
+                    id="breed"
+                    type="text"
+                    value={formData.breed}
+                    onChange={(e) => handleChange("breed", e.target.value)}
+                    placeholder="Ex: Poodle, Vira-lata..."
+                    className="w-full"
+                  />
+                </div>
 
-                  <div>
-                    <label
-                      htmlFor="notes"
-                      className="block text-purple-100/90 text-sm font-semibold mb-2.5 flex items-center gap-2"
-                    >
-                      <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">
-                        📝
-                      </span>
-                      Observações
-                    </label>
-                    <textarea
-                      id="notes"
-                      value={formData.notes}
-                      onChange={(e) => handleChange("notes", e.target.value)}
-                      placeholder="Adicione observações sobre o pet..."
-                      rows={3}
-                      className="w-full px-4 py-3.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-purple-200/30 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 backdrop-blur-sm resize-none transition-all hover:bg-white/[0.07]"
-                    />
+                <div>
+                  <label className="block text-purple-100/90 text-sm font-semibold mb-2.5 flex items-center gap-2">
+                    <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">
+                      📏
+                    </span>
+                    Porte *
+                  </label>
+                  <div className="grid grid-cols-3 gap-3">
+                    {[
+                      { value: "small", label: "P", emoji: "🐱" },
+                      { value: "medium", label: "M", emoji: "🐕" },
+                      { value: "large", label: "G", emoji: "🦮" },
+                    ].map((size) => (
+                      <button
+                        key={size.value}
+                        type="button"
+                        onClick={() => handleChange("size", size.value)}
+                        className={`p-3 rounded-xl border-2 transition-all ${
+                          formData.size === size.value
+                            ? "bg-purple-500/30 border-purple-500 text-white"
+                            : "bg-white/5 border-white/10 text-white/60 hover:border-white/30"
+                        }`}
+                      >
+                        <div className="text-xl mb-0.5">{size.emoji}</div>
+                        <div className="text-xs">{size.label}</div>
+                      </button>
+                    ))}
                   </div>
-                </form>
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="notes"
+                    className="block text-purple-100/90 text-sm font-semibold mb-2.5 flex items-center gap-2"
+                  >
+                    <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">
+                      📝
+                    </span>
+                    Observações
+                  </label>
+                  <textarea
+                    id="notes"
+                    value={formData.notes}
+                    onChange={(e) => handleChange("notes", e.target.value)}
+                    placeholder="Adicione observações sobre o pet..."
+                    rows={3}
+                    className="w-full px-4 py-3.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-purple-200/30 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 backdrop-blur-sm resize-none transition-all hover:bg-white/[0.07]"
+                  />
+                </div>
+              </form>
               ) : (
                 <>
                   <div className="space-y-6">
@@ -568,30 +565,29 @@ export default function ClientPetDetailPage() {
                   </div>
                 </>
               )}
-            </GlassCard>
+          </GlassCard>
 
-            {activePackage && (
-              <div className="mt-6 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200">
-                <PackageCard
-                  packageData={activePackage}
-                  onChange={() => setShowPackageModal(true)}
-                />
-              </div>
-            )}
-
-            {showPackageModal && pet && (
-              <AddPackageModal
-                petId={pet.id}
-                petName={pet.name}
-                isEditing={!!activePackage}
-                onClose={() => {
-                  setShowPackageModal(false);
-                  loadActivePackage();
-                }}
+          {activePackage && (
+            <div className="mt-6 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200">
+              <PackageCard
+                packageData={activePackage}
+                onChange={() => setShowPackageModal(true)}
               />
-            )}
-          </main>
-        </div>
+            </div>
+          )}
+
+          {showPackageModal && pet && (
+            <AddPackageModal
+              petId={pet.id}
+              petName={pet.name}
+              isEditing={!!activePackage}
+              onClose={() => {
+                setShowPackageModal(false);
+                loadActivePackage();
+              }}
+            />
+          )}
+        </main>
 
         <BottomNavigation />
       </div>

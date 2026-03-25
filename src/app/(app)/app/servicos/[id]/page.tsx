@@ -153,7 +153,7 @@ export default function ServicoDetailPage() {
         companyName={companyName}
         user={{ name: user?.user_metadata?.name, email: user?.email }}
       >
-        <div className="min-h-screen xl:min-h-[87vh] bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent relative overflow-hidden xl:pb-0 pb-20">
+        <div className="flex flex-col h-dvh bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent relative overflow-hidden">
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
             <div
@@ -165,11 +165,11 @@ export default function ServicoDetailPage() {
             companyName={companyName}
             user={{ name: user?.user_metadata?.name, email: user?.email }}
           />
-          <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
+          <main className="flex-1 overflow-y-auto w-full max-w-12xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-10 relative">
             <div className="flex items-center justify-center py-12 animate-in fade-in duration-300">
               <div className="w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full animate-spin" />
             </div>
-          </div>
+          </main>
           <BottomNavigation />
         </div>
       </AppLayout>
@@ -182,7 +182,7 @@ export default function ServicoDetailPage() {
         companyName={companyName}
         user={{ name: user?.user_metadata?.name, email: user?.email }}
       >
-        <div className="min-h-screen xl:min-h-[87vh] bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent relative overflow-hidden xl:pb-0 pb-20">
+        <div className="flex flex-col h-dvh bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent relative overflow-hidden">
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
             <div
@@ -194,7 +194,7 @@ export default function ServicoDetailPage() {
             companyName={companyName}
             user={{ name: user?.user_metadata?.name, email: user?.email }}
           />
-          <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
+          <main className="flex-1 overflow-y-auto w-full max-w-12xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-10 relative">
             {/* Inline header for error state */}
             <div className="mb-6">
               <div className="flex items-center gap-3">
@@ -220,7 +220,7 @@ export default function ServicoDetailPage() {
                 <Button variant="secondary">Voltar</Button>
               </Link>
             </GlassCard>
-          </div>
+          </main>
           <BottomNavigation />
         </div>
       </AppLayout>
@@ -232,7 +232,7 @@ export default function ServicoDetailPage() {
       companyName={companyName}
       user={{ name: user?.user_metadata?.name, email: user?.email }}
     >
-      <div className="min-h-screen xl:min-h-[87vh] bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent relative overflow-hidden xl:pb-0 pb-20">
+      <div className="flex flex-col h-dvh bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent relative overflow-hidden">
         {/* Animated background decoration */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
@@ -248,7 +248,7 @@ export default function ServicoDetailPage() {
         />
 
         {/* Main Content */}
-        <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
+        <main className="flex-1 overflow-y-auto w-full max-w-12xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-10 relative">
           {/* Inline Page Header */}
           <div className="mb-6">
             <div className="flex items-center justify-between gap-4">
