@@ -175,11 +175,6 @@ export default function NovoAgendamentoPage() {
     setFormData(prev => ({ ...prev, [field]: value }))
   }
 
-  const getMinDate = () => {
-    const today = new Date()
-    return today.toISOString().split('T')[0]
-  }
-
   return (
     <AppLayout companyName="Agenda Pet Shop" user={{}}>
       <AppHeader
@@ -342,7 +337,6 @@ export default function NovoAgendamentoPage() {
                   type="date"
                   value={formData.date}
                   onChange={(e) => handleChange('date', e.target.value)}
-                  min={getMinDate()}
                   required
                   className="w-full"
                 />
