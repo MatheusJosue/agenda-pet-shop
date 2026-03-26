@@ -7,7 +7,6 @@ import {
   Home,
   Calendar,
   Users,
-  Package,
   Scissors,
   UserCircle,
   HelpCircle,
@@ -24,7 +23,6 @@ const mainNavItems = [
   { href: "/app", icon: Home, label: "Início" },
   { href: "/app/agendamentos", icon: Calendar, label: "Agenda" },
   { href: "/app/clientes", icon: Users, label: "Clientes" },
-  { href: "/app/pacotes", icon: Package, label: "Pacotes" },
   { href: "/app/servicos", icon: Scissors, label: "Serviços" },
 ];
 

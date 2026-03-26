@@ -1,9 +1,11 @@
+import type { SizeCategory } from './service-prices'
+
 export interface Appointment {
   id: string
   company_id: string
   client_id: string
   pet_id: string
-  service_id: string
+  service_price_id: string
   date: string
   time: string
   price: number
@@ -24,22 +26,24 @@ export interface AppointmentWithRelations extends Appointment {
   pet: {
     id: string
     name: string
-    size: 'small' | 'medium' | 'large'
+    size: SizeCategory
   }
-  service: {
+  service_price: {
     id: string
-    name: string
-    duration_minutes: number
+    service_name: string
+    billing_type: 'avulso' | 'pacote'
+    hair_type: 'PC' | 'PL' | null
+    size_category: SizeCategory
+    price: number
   }
 }
 
 export type AppointmentInput = {
   clientId: string
   petId: string
-  serviceId: string
-  date: Date | string
+  servicePriceId: string
+  date: string
   time: string
-  price: number
   useCredit?: boolean
   clientPlanId?: string
   petPackageId?: string

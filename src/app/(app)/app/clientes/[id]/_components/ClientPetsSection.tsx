@@ -3,28 +3,28 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Swal from "sweetalert2";
-import { Trash2, Eye, Pencil } from "lucide-react";
+import { Trash2, Eye } from "lucide-react";
 import { getPets, createPet, deletePet } from "@/lib/actions/pets";
 import { GlassCard } from "@/components/ui/glass-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { SIZE_LABELS, SIZE_COLORS } from "@/lib/types/service-prices";
+import { HAIR_TYPE_LABELS } from "@/lib/types/pets";
 import type { PetWithClient } from "@/lib/types/pets";
-
-const SIZE_LABELS = {
-  small: "P",
-  medium: "M",
-  large: "G",
-};
-
-const SIZE_COLORS = {
-  small: "bg-green-500/20 text-green-200",
-  medium: "bg-yellow-500/20 text-yellow-200",
-  large: "bg-red-500/20 text-red-200",
-};
+import type { SizeCategory } from "@/lib/types/service-prices";
+import type { HairType } from "@/lib/types/pets";
 
 interface ClientPetsSectionProps {
   clientId: string;
 }
+
+const SIZE_OPTIONS: Array<{ value: SizeCategory; label: string }> = [
+  { value: 'tiny', label: 'Tiny' },
+  { value: 'small', label: 'Pequeno' },
+  { value: 'medium', label: 'Médio' },
+  { value: 'large', label: 'Grande' },
+  { value: 'giant', label: 'Gigante' }
+]
 
 export function ClientPetsSection({ clientId }: ClientPetsSectionProps) {
   const [pets, setPets] = useState<PetWithClient[]>([]);
@@ -35,7 +35,8 @@ export function ClientPetsSection({ clientId }: ClientPetsSectionProps) {
   const [formData, setFormData] = useState({
     name: "",
     breed: "",
-    size: "medium" as "small" | "medium" | "large",
+    size: "medium" as SizeCategory,
+    hairType: "PC" as HairType,
     notes: "",
   });
 
@@ -66,6 +67,7 @@ export function ClientPetsSection({ clientId }: ClientPetsSectionProps) {
         name: formData.name.trim(),
         breed: formData.breed.trim() || undefined,
         size: formData.size,
+        hairType: formData.hairType,
         notes: formData.notes.trim() || undefined,
       });
 
@@ -74,7 +76,7 @@ export function ClientPetsSection({ clientId }: ClientPetsSectionProps) {
       } else {
         await loadPets();
         setShowAddForm(false);
-        setFormData({ name: "", breed: "", size: "medium", notes: "" });
+        setFormData({ name: "", breed: "", size: "medium", hairType: "PC", notes: "" });
       }
     } catch (err) {
       setError("Erro ao criar pet");
@@ -190,19 +192,41 @@ export function ClientPetsSection({ clientId }: ClientPetsSectionProps) {
               <label className="block text-white/80 text-sm font-medium mb-2">
                 Porte *
               </label>
-              <div className="flex gap-2">
-                {(["small", "medium", "large"] as const).map((size) => (
+              <div className="grid grid-cols-5 gap-2">
+                {SIZE_OPTIONS.map((option) => (
                   <button
-                    key={size}
+                    key={option.value}
                     type="button"
-                    onClick={() => setFormData({ ...formData, size })}
-                    className={`px-4 py-2 rounded-lg border transition-all ${
-                      formData.size === size
+                    onClick={() => setFormData({ ...formData, size: option.value })}
+                    className={`px-3 py-2 rounded-lg border transition-all text-xs ${
+                      formData.size === option.value
                         ? "bg-purple-500 border-purple-400 text-white"
                         : "bg-white/5 border-white/10 text-white/70 hover:border-white/30"
                     }`}
                   >
-                    {SIZE_LABELS[size]}
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-white/80 text-sm font-medium mb-2">
+                Tipo de Pelo *
+              </label>
+              <div className="grid grid-cols-2 gap-2">
+                {(Object.entries(HAIR_TYPE_LABELS) as [HairType, string][]).map(([value, label]) => (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => setFormData({ ...formData, hairType: value })}
+                    className={`px-4 py-2 rounded-lg border transition-all text-sm ${
+                      formData.hairType === value
+                        ? "bg-purple-500 border-purple-400 text-white"
+                        : "bg-white/5 border-white/10 text-white/70 hover:border-white/30"
+                    }`}
+                  >
+                    {label}
                   </button>
                 ))}
               </div>
@@ -239,6 +263,7 @@ export function ClientPetsSection({ clientId }: ClientPetsSectionProps) {
                     name: "",
                     breed: "",
                     size: "medium",
+                    hairType: "PC",
                     notes: "",
                   });
                 }}

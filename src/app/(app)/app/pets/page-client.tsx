@@ -10,21 +10,10 @@ import { AppLayout } from '@/components/layout/app-layout'
 import { GlassCard } from '@/components/ui/glass-card'
 import { Button } from '@/components/ui/button'
 import { AnimatedIcon } from '@/components/ui/animated-icon'
+import { SIZE_LABELS, SIZE_ICONS, SIZE_EMOJIS } from '@/lib/types/service-prices'
 import { motion } from 'framer-motion'
-import { Dog, Cat, Dog as DogLarge, Plus, PawPrint, User } from 'lucide-react'
+import { Plus, PawPrint, User } from 'lucide-react'
 import type { PetWithClient } from '@/lib/types/pets'
-
-const sizeLabels = {
-  small: 'Pequeno',
-  medium: 'Médio',
-  large: 'Grande'
-}
-
-const sizeIcons = {
-  small: Cat,
-  medium: Dog,
-  large: DogLarge
-}
 
 export function PetsPageContent() {
   const searchParams = useSearchParams()
@@ -130,8 +119,9 @@ export function PetsPageContent() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {pets.map((pet: PetWithClient, index) => {
-              const SizeIcon = sizeIcons[pet.size]
-              const sizeEmoji = pet.size === 'small' ? '🐱' : pet.size === 'medium' ? '🐕' : '🦮'
+              const SizeIcon = SIZE_ICONS[pet.size]
+              const sizeEmoji = SIZE_EMOJIS[pet.size]
+              const isSmallSize = pet.size === 'tiny' || pet.size === 'small'
               return (
                 <motion.div
                   key={pet.id}
@@ -145,7 +135,7 @@ export function PetsPageContent() {
                       className="p-6 hover:scale-[1.02] transition-all cursor-pointer h-full group hover:bg-white/[0.08]"
                     >
                       <div className="flex flex-col h-full">
-                        <div className={`w-14 h-14 rounded-2xl ${pet.size === 'small' ? 'bg-gradient-to-br from-pink-500/30 to-fuchsia-500/30' : 'bg-gradient-to-br from-purple-500/30 to-fuchsia-500/30'} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
+                        <div className={`w-14 h-14 rounded-2xl ${isSmallSize ? 'bg-gradient-to-br from-pink-500/30 to-fuchsia-500/30' : 'bg-gradient-to-br from-purple-500/30 to-fuchsia-500/30'} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
                           <span className="text-2xl">{sizeEmoji}</span>
                         </div>
                         <h3 className="font-bold text-white text-lg mb-1 truncate">
@@ -154,8 +144,8 @@ export function PetsPageContent() {
                         {pet.breed && (
                           <p className="text-purple-200/60 text-sm mb-3 truncate">{pet.breed}</p>
                         )}
-                        <span className={`inline-block px-3 py-1.5 ${pet.size === 'small' ? 'bg-pink-500/20 text-pink-300' : 'bg-purple-500/20 text-purple-300'} text-xs rounded-full mb-4 self-start font-medium`}>
-                          {sizeLabels[pet.size]}
+                        <span className={`inline-block px-3 py-1.5 ${isSmallSize ? 'bg-pink-500/20 text-pink-300' : 'bg-purple-500/20 text-purple-300'} text-xs rounded-full mb-4 self-start font-medium`}>
+                          {SIZE_LABELS[pet.size]}
                         </span>
                         <div className="mt-auto pt-3 border-t border-white/10 flex items-center gap-2 text-purple-200/60 text-sm">
                           <User size={14} />

@@ -10,11 +10,9 @@ import { Button } from "@/components/ui/button";
 import { ViewModeSelector } from "@/components/agendamentos";
 import { useAppointmentsFilter } from "@/hooks/useAppointmentsFilter";
 import { navigateDate, type ViewMode } from "@/lib/utils/date";
+import { SIZE_ICONS } from "@/lib/types/service-prices";
 import { motion } from "framer-motion";
 import {
-  Cat,
-  Dog,
-  Dog as DogLarge,
   Clock,
   User,
   Scissors,
@@ -34,12 +32,6 @@ const statusStyles = {
   scheduled: "bg-purple-500/20 text-purple-300 border-purple-500/30",
   completed: "bg-green-500/20 text-green-300 border-green-500/30",
   cancelled: "bg-red-500/20 text-red-300 border-red-500/30",
-};
-
-const sizeIcons = {
-  small: Cat,
-  medium: Dog,
-  large: DogLarge,
 };
 
 function formatDate(dateStr: string) {
@@ -174,7 +166,7 @@ export default function AgendamentosPage() {
             <div className="space-y-4">
               {appointments.map(
                 (appointment: AppointmentWithRelations, index) => {
-                  const SizeIcon = sizeIcons[appointment.pet.size];
+                  const SizeIcon = SIZE_ICONS[appointment.pet.size];
                   return (
                     <motion.div
                       key={appointment.id}
@@ -218,9 +210,9 @@ export default function AgendamentosPage() {
                                   {appointment.client.name}
                                 </span>
                                 <span>•</span>
-                                <span className="flex items-center gap-1 truncate max-w-[80px] sm:max-w-none" title={appointment.service.name}>
+                                <span className="flex items-center gap-1 truncate max-w-[80px] sm:max-w-none" title={appointment.service_price.service_name}>
                                   <Scissors size={14} className="flex-shrink-0" />
-                                  {appointment.service.name}
+                                  {appointment.service_price.service_name}
                                 </span>
                                 <span>•</span>
                                 <span className="flex items-center gap-1">

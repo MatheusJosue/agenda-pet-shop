@@ -9,6 +9,7 @@ import { GlassCard } from "@/components/ui/glass-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
+import { HAIR_TYPE_LABELS, type HairType } from "@/lib/types/pets";
 
 export default function NovoPetPage() {
   const router = useRouter();
@@ -19,7 +20,8 @@ export default function NovoPetPage() {
     clientId: "",
     name: "",
     breed: "",
-    size: "medium" as "small" | "medium" | "large",
+    size: "medium" as "tiny" | "small" | "medium" | "large" | "giant",
+    hairType: "PC" as HairType,
     notes: "",
   });
 
@@ -226,24 +228,55 @@ export default function NovoPetPage() {
                 </span>
                 Porte *
               </label>
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-5 gap-2">
                 {[
+                  { value: "tiny", label: "Tiny", emoji: "🐭" },
                   { value: "small", label: "Pequeno", emoji: "🐱" },
                   { value: "medium", label: "Médio", emoji: "🐕" },
                   { value: "large", label: "Grande", emoji: "🦮" },
+                  { value: "giant", label: "Gigante", emoji: "🦏" },
                 ].map((size) => (
                   <button
                     key={size.value}
                     type="button"
                     onClick={() => handleChange("size", size.value)}
-                    className={`p-4 rounded-xl border-2 transition-all ${
+                    className={`p-3 rounded-xl border-2 transition-all ${
                       formData.size === size.value
                         ? "bg-purple-500/30 border-purple-500 text-white shadow-lg shadow-purple-500/20"
                         : "bg-white/5 border-white/10 text-white/60 hover:border-white/30 hover:bg-white/10"
                     }`}
                   >
-                    <div className="text-2xl mb-1">{size.emoji}</div>
-                    <div className="text-sm font-medium">{size.label}</div>
+                    <div className="text-xl mb-1">{size.emoji}</div>
+                    <div className="text-xs font-medium">{size.label}</div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Hair Type */}
+            <div
+              className="animate-in fade-in slide-in-from-left-2 duration-300"
+              style={{ animationDelay: "325ms" }}
+            >
+              <label className="block text-purple-100/90 text-sm font-semibold mb-2.5 flex items-center gap-2">
+                <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">
+                  ✂️
+                </span>
+                Tipo de Pelo *
+              </label>
+              <div className="grid grid-cols-2 gap-3">
+                {(Object.entries(HAIR_TYPE_LABELS) as [HairType, string][]).map(([value, label]) => (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => handleChange("hairType", value)}
+                    className={`p-4 rounded-xl border-2 transition-all ${
+                      formData.hairType === value
+                        ? "bg-purple-500/30 border-purple-500 text-white shadow-lg shadow-purple-500/20"
+                        : "bg-white/5 border-white/10 text-white/60 hover:border-white/30 hover:bg-white/10"
+                    }`}
+                  >
+                    <div className="text-sm font-medium">{label}</div>
                   </button>
                 ))}
               </div>

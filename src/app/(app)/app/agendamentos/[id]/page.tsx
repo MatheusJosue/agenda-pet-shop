@@ -12,6 +12,8 @@ import { AppHeader } from '@/components/layout/app-header'
 import { AppLayout } from '@/components/layout/app-layout'
 import { BottomNavigation } from '@/components/layout/bottom-navigation'
 import type { AppointmentWithRelations } from '@/lib/types/appointments'
+import { SIZE_EMOJIS, SIZE_LABELS } from '@/lib/types/service-prices'
+import type { SizeCategory } from '@/lib/types/service-prices'
 
 const statusLabels = {
   scheduled: 'Agendado',
@@ -23,18 +25,6 @@ const statusStyles = {
   scheduled: 'bg-blue-500/20 text-blue-200 border-blue-500/30',
   completed: 'bg-green-500/20 text-green-200 border-green-500/30',
   cancelled: 'bg-red-500/20 text-red-200 border-red-500/30'
-}
-
-const sizeEmojis = {
-  small: '🐱',
-  medium: '🐕',
-  large: '🦮'
-}
-
-const sizeLabels = {
-  small: 'Pequeno',
-  medium: 'Médio',
-  large: 'Grande'
 }
 
 function formatDate(dateStr: string) {
@@ -107,7 +97,6 @@ export default function AgendamentoDetailPage() {
       const result = await updateAppointment(appointmentId, {
         date: formData.date,
         time: formData.time,
-        price: parseFloat(formData.price),
         notes: formData.notes || undefined,
       })
 
@@ -366,7 +355,7 @@ export default function AgendamentoDetailPage() {
             <GlassCard variant="default" className="p-5 animate-in fade-in slide-in-from-bottom-4 duration-500">
               <div className="flex items-start gap-4">
                 <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-purple-500/20 to-fuchsia-500/20 flex items-center justify-center text-2xl flex-shrink-0">
-                  {sizeEmojis[appointment.pet.size]}
+                  {SIZE_EMOJIS[appointment.pet.size]}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-purple-200/50 text-xs mb-1">Pet</p>
@@ -376,7 +365,7 @@ export default function AgendamentoDetailPage() {
                   >
                     {appointment.pet.name}
                   </Link>
-                  <p className="text-purple-200/60 text-sm">{sizeLabels[appointment.pet.size]}</p>
+                  <p className="text-purple-200/60 text-sm">{SIZE_LABELS[appointment.pet.size]}</p>
                 </div>
               </div>
             </GlassCard>
@@ -408,8 +397,8 @@ export default function AgendamentoDetailPage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-purple-200/50 text-xs mb-1">Serviço</p>
-                  <p className="text-white font-semibold text-lg">{appointment.service.name}</p>
-                  <p className="text-purple-200/60 text-sm">{appointment.service.duration_minutes} min</p>
+                  <p className="text-white font-semibold text-lg">{appointment.service_price.service_name}</p>
+                  <p className="text-purple-200/60 text-sm">{appointment.service_price.billing_type === 'pacote' ? 'Pacote' : 'Avulso'}</p>
                 </div>
               </div>
             </GlassCard>

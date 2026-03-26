@@ -119,6 +119,7 @@ export async function createPet(input: PetInput): Promise<PetResponse> {
     name: input.name,
     breed: input.breed,
     size: input.size,
+    hairType: input.hairType,
     notes: input.notes
   })
 
@@ -146,6 +147,7 @@ export async function createPet(input: PetInput): Promise<PetResponse> {
       name: validatedFields.data.name,
       breed: validatedFields.data.breed || null,
       size: validatedFields.data.size,
+      hair_type: validatedFields.data.hairType,
       notes: validatedFields.data.notes || null
     })
     .select()
@@ -190,6 +192,7 @@ export async function updatePet(id: string, input: Partial<PetInput>): Promise<P
     name: input.name || '',
     breed: input.breed,
     size: input.size || 'medium',
+    hairType: input.hairType || 'PC',
     notes: input.notes
   })
 
@@ -201,6 +204,7 @@ export async function updatePet(id: string, input: Partial<PetInput>): Promise<P
     name: validatedFields.data.name,
     breed: validatedFields.data.breed,
     size: validatedFields.data.size,
+    hair_type: validatedFields.data.hairType,
     notes: validatedFields.data.notes
   }
 

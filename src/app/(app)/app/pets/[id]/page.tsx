@@ -17,18 +17,8 @@ import { AddPackageModal } from '@/components/pacotes/add-package-modal'
 import { Pencil, Trash2, Package, ArrowLeft } from 'lucide-react'
 import type { PetWithClient } from '@/lib/types/pets'
 import type { PetPackageWithRelations } from '@/lib/types/packages'
-
-const sizeLabels = {
-  small: 'Pequeno',
-  medium: 'Médio',
-  large: 'Grande'
-}
-
-const sizeEmojis = {
-  small: '🐱',
-  medium: '🐕',
-  large: '🦮'
-}
+import { SIZE_LABELS, SIZE_EMOJIS, SIZE_CATEGORIES } from '@/lib/types/service-prices'
+import type { SizeCategory } from '@/lib/types/service-prices'
 
 export default function PetDetailPage() {
   const router = useRouter()
@@ -47,7 +37,7 @@ export default function PetDetailPage() {
   const [formData, setFormData] = useState({
     name: '',
     breed: '',
-    size: 'medium' as 'small' | 'medium' | 'large',
+    size: 'medium' as SizeCategory,
     notes: '',
   })
 
@@ -179,7 +169,10 @@ export default function PetDetailPage() {
   }
 
   const handleChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }))
+    setFormData(prev => ({
+      ...prev,
+      [field]: field === 'size' ? value as SizeCategory : value
+    }))
   }
 
   if (loading) {
@@ -273,7 +266,7 @@ export default function PetDetailPage() {
                 </Link>
                 <div>
                   <h1 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-3">
-                    <span className="text-3xl">{sizeEmojis[pet.size]}</span>
+                    <span className="text-3xl">{SIZE_EMOJIS[pet.size]}</span>
                     {pet.name}
                   </h1>
                   <p className="text-purple-200/60 text-sm">
@@ -390,12 +383,8 @@ export default function PetDetailPage() {
                     <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">📏</span>
                     Porte *
                   </label>
-                  <div className="grid grid-cols-3 gap-3">
-                    {[
-                      { value: 'small', label: 'P', emoji: '🐱' },
-                      { value: 'medium', label: 'M', emoji: '🐕' },
-                      { value: 'large', label: 'G', emoji: '🦮' },
-                    ].map((size) => (
+                  <div className="grid grid-cols-5 gap-3">
+                    {SIZE_CATEGORIES.map((size) => (
                       <button
                         key={size.value}
                         type="button"
@@ -406,8 +395,8 @@ export default function PetDetailPage() {
                             : 'bg-white/5 border-white/10 text-white/60 hover:border-white/30'
                         }`}
                       >
-                        <div className="text-xl mb-0.5">{size.emoji}</div>
-                        <div className="text-xs">{size.label}</div>
+                        <div className="text-xl mb-0.5">{SIZE_EMOJIS[size.value]}</div>
+                        <div className="text-xs">{size.value}</div>
                       </button>
                     ))}
                   </div>
@@ -453,7 +442,7 @@ export default function PetDetailPage() {
                     <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">📏</span>
                     Porte
                   </h2>
-                  <p className="text-white">{sizeEmojis[pet.size]} {sizeLabels[pet.size]}</p>
+                  <p className="text-white">{SIZE_EMOJIS[pet.size]} {SIZE_LABELS[pet.size]}</p>
                 </div>
 
                 <div>

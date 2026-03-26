@@ -6,7 +6,6 @@ import Link from "next/link";
 import { createAppointment } from "@/lib/actions/appointments";
 import { getClients } from "@/lib/actions/clients";
 import { getPets } from "@/lib/actions/pets";
-import { getServices, getServicePrice } from "@/lib/actions/services";
 import { AppLayout } from "@/components/layout/app-layout";
 import { AppHeader } from "@/components/layout/app-header";
 import { BottomNavigation } from "@/components/layout/bottom-navigation";
@@ -15,42 +14,25 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { ArrowLeft } from "lucide-react";
+import { ServiceSelector } from "@/components/appointments/service-selector";
 import type { Client } from "@/lib/types/clients";
-import type { Service } from "@/lib/types/services";
-
-interface PetWithClient {
-  id: string;
-  name: string;
-  size: "small" | "medium" | "large";
-}
-
-interface SelectedService {
-  serviceId: string;
-  price: number;
-}
-
-const sizeLabels = {
-  small: "Pequeno",
-  medium: "Médio",
-  large: "Grande",
-};
-
-const sizeEmojis = {
-  small: "🐱",
-  medium: "🐕",
-  large: "🦮",
-};
+import type { Pet } from "@/lib/types/pets";
+import { SIZE_LABELS, SIZE_EMOJIS, BILLING_TYPE_LABELS } from "@/lib/types/service-prices";
 
 export default function NovoAgendamentoPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [clients, setClients] = useState<Client[]>([]);
-  const [services, setServices] = useState<Service[]>([]);
-  const [filteredPets, setFilteredPets] = useState<PetWithClient[]>([]);
-  const [selectedServices, setSelectedServices] = useState<SelectedService[]>(
-    [],
-  );
+  const [filteredPets, setFilteredPets] = useState<Pet[]>([]);
+  const [selectedService, setSelectedService] = useState<{
+    servicePriceId: string;
+    price: number;
+    serviceName: string;
+    hairType: 'PC' | 'PL' | null;
+    billingType: 'avulso' | 'pacote';
+  } | null>(null);
+  const [billingType, setBillingType] = useState<'avulso' | 'pacote'>('avulso');
   const [formData, setFormData] = useState({
     clientId: "",
     petId: "",
@@ -61,7 +43,7 @@ export default function NovoAgendamentoPage() {
   });
 
   useEffect(() => {
-    loadData();
+    loadClients();
   }, []);
 
   useEffect(() => {
@@ -70,31 +52,29 @@ export default function NovoAgendamentoPage() {
     } else {
       setFilteredPets([]);
       setFormData((prev) => ({ ...prev, petId: "" }));
+      setSelectedService(null);
     }
   }, [formData.clientId]);
 
   useEffect(() => {
-    if (formData.petId && selectedServices.length > 0) {
-      calculateTotalPrice();
+    // Update price when service is selected
+    if (selectedService) {
+      setFormData((prev) => ({ ...prev, price: selectedService.price.toFixed(2) }));
     } else {
       setFormData((prev) => ({ ...prev, price: "" }));
     }
-  }, [formData.petId, selectedServices]);
+  }, [selectedService]);
 
   useEffect(() => {
-    // Clear selected services when pet changes
+    // Clear selected service when pet changes
     if (!formData.petId) {
-      setSelectedServices([]);
+      setSelectedService(null);
     }
   }, [formData.petId]);
 
-  const loadData = async () => {
-    const [clientsResult, servicesResult] = await Promise.all([
-      getClients(),
-      getServices(),
-    ]);
-    if (clientsResult.data) setClients(clientsResult.data);
-    if (servicesResult.data) setServices(servicesResult.data);
+  const loadClients = async () => {
+    const result = await getClients();
+    if (result.data) setClients(result.data);
   };
 
   const loadPets = async (clientId: string) => {
@@ -104,39 +84,14 @@ export default function NovoAgendamentoPage() {
     }
   };
 
-  const calculateTotalPrice = async () => {
-    let total = 0;
-    for (const selected of selectedServices) {
-      const result = await getServicePrice(selected.serviceId);
-      if (result.data) {
-        total += result.data;
-      }
-    }
-
-    setFormData((prev) => ({ ...prev, price: total.toFixed(2) }));
-  };
-
-  const toggleService = async (serviceId: string) => {
-    if (!formData.petId) return;
-
-    const existingIndex = selectedServices.findIndex(
-      (s) => s.serviceId === serviceId,
-    );
-    let newSelectedServices: SelectedService[];
-
-    if (existingIndex >= 0) {
-      // Remove service
-      newSelectedServices = selectedServices.filter(
-        (s) => s.serviceId !== serviceId,
-      );
-    } else {
-      // Add service with price
-      const result = await getServicePrice(serviceId);
-      const price = result.data || 0;
-      newSelectedServices = [...selectedServices, { serviceId, price }];
-    }
-
-    setSelectedServices(newSelectedServices);
+  const handleServiceSelect = (servicePriceId: string, price: number, hairType: 'PC' | 'PL' | null, serviceName: string) => {
+    setSelectedService({
+      servicePriceId,
+      price,
+      serviceName,
+      hairType,
+      billingType,
+    });
   };
 
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
@@ -144,28 +99,19 @@ export default function NovoAgendamentoPage() {
     setLoading(true);
     setError(null);
 
-    if (
-      !formData.clientId ||
-      !formData.petId ||
-      selectedServices.length === 0
-    ) {
+    if (!formData.clientId || !formData.petId || !selectedService) {
       setError("Preencha todos os campos obrigatórios");
       setLoading(false);
       return;
     }
 
     try {
-      // Use the first selected service as the primary service
-      const primaryServiceId = selectedServices[0].serviceId;
-      const totalPrice = parseFloat(formData.price);
-
       const result = await createAppointment({
         clientId: formData.clientId,
         petId: formData.petId,
-        serviceId: primaryServiceId,
-        date: new Date(formData.date),
+        servicePriceId: selectedService.servicePriceId,
+        date: formData.date,
         time: formData.time,
-        price: totalPrice,
         notes: formData.notes || undefined,
       });
 
@@ -287,85 +233,93 @@ export default function NovoAgendamentoPage() {
                       { value: "", label: "Selecione o pet" },
                       ...filteredPets.map((pet) => ({
                         value: pet.id,
-                        label: `${sizeEmojis[pet.size]} ${pet.name} (${sizeLabels[pet.size]})`,
+                        label: `${SIZE_EMOJIS[pet.size as keyof typeof SIZE_EMOJIS]} ${pet.name} (${SIZE_LABELS[pet.size as keyof typeof SIZE_LABELS]} • ${pet.hair_type === 'PC' ? 'Pelo Curto' : 'Pelo Longo'})`,
                       })),
                     ]}
                     required
                   />
                 </div>
 
-                {/* Services - Multi Select */}
+                {/* Billing Type Selector */}
                 <div
                   className="animate-in fade-in slide-in-from-left-2 duration-300"
                   style={{ animationDelay: "250ms" }}
                 >
                   <label className="block text-purple-100/90 text-sm font-semibold mb-3 flex items-center gap-2">
                     <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">
-                      ✨
+                      💳
                     </span>
-                    Serviços *
+                    Tipo de Cobrança *
                   </label>
                   <div className="grid grid-cols-2 gap-3">
-                    {services.map((service) => {
-                      const isSelected = selectedServices.some(
-                        (s) => s.serviceId === service.id,
-                      );
-                      return (
-                        <button
-                          key={service.id}
-                          type="button"
-                          disabled={!formData.petId}
-                          onClick={() => toggleService(service.id)}
-                          className={`
-                        relative p-4 rounded-xl border-2 transition-all duration-200 text-left
-                        ${
-                          isSelected
-                            ? "bg-purple-500/30 border-purple-400 text-white"
-                            : "bg-white/5 border-white/10 text-purple-100/70 hover:bg-white/10 hover:border-white/20"
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setBillingType('avulso');
+                        setSelectedService(null);
+                      }}
+                      className={`
+                        relative p-4 rounded-xl border-2 transition-all duration-200 text-center
+                        ${billingType === 'avulso'
+                          ? 'bg-purple-500/30 border-purple-400 text-white'
+                          : 'bg-white/5 border-white/10 text-purple-100/70 hover:bg-white/10 hover:border-white/20'
                         }
-                        ${!formData.petId ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
                       `}
-                        >
-                          <div className="flex items-center justify-between">
-                            <span className="font-medium">{service.name}</span>
-                            {isSelected && (
-                              <span className="w-5 h-5 rounded-full bg-purple-400 flex items-center justify-center text-xs">
-                                ✓
-                              </span>
-                            )}
-                          </div>
-                        </button>
-                      );
-                    })}
+                    >
+                      <div className="font-medium">Avulso</div>
+                      <div className="text-xs opacity-70 mt-1">Pagamento individual</div>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setBillingType('pacote');
+                        setSelectedService(null);
+                      }}
+                      className={`
+                        relative p-4 rounded-xl border-2 transition-all duration-200 text-center
+                        ${billingType === 'pacote'
+                          ? 'bg-purple-500/30 border-purple-400 text-white'
+                          : 'bg-white/5 border-white/10 text-purple-100/70 hover:bg-white/10 hover:border-white/20'
+                        }
+                      `}
+                    >
+                      <div className="font-medium">Pacote</div>
+                      <div className="text-xs opacity-70 mt-1">Usar créditos</div>
+                    </button>
                   </div>
-                  {!formData.petId && (
-                    <p className="mt-2 text-xs text-purple-200/50">
-                      Selecione um pet primeiro para ver os preços
-                    </p>
-                  )}
-                  {selectedServices.length > 0 && formData.petId && (
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      {selectedServices.map((selected) => {
-                        const service = services.find(
-                          (s) => s.id === selected.serviceId,
-                        );
-                        return (
-                          <span
-                            key={selected.serviceId}
-                            className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-purple-500/20 text-purple-200 text-sm"
-                          >
-                            {service?.name} - R$ {selected.price.toFixed(2)}
-                          </span>
-                        );
-                      })}
-                    </div>
-                  )}
                 </div>
+
+                {/* Service Selector */}
+                {formData.petId && (() => {
+                  const selectedPet = filteredPets.find(p => p.id === formData.petId);
+                  if (!selectedPet) return null;
+                  return (
+                    <div
+                      className="animate-in fade-in slide-in-from-left-2 duration-300"
+                      style={{ animationDelay: "300ms" }}
+                    >
+                      <ServiceSelector
+                        petSize={selectedPet.size}
+                        petHairType={selectedPet.hair_type}
+                        billingType={billingType}
+                        selectedServicePriceId={selectedService?.servicePriceId}
+                        onServiceSelect={(servicePriceId, price, hairType) => {
+                          handleServiceSelect(
+                            servicePriceId,
+                            price,
+                            hairType,
+                            `${selectedPet.name} - ${BILLING_TYPE_LABELS[billingType]}`
+                          );
+                        }}
+                      />
+                    </div>
+                  );
+                })()}
 
                 {/* Date & Time */}
                 <div
                   className="grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-left-2 duration-300"
-                  style={{ animationDelay: "300ms" }}
+                  style={{ animationDelay: "350ms" }}
                 >
                   <div>
                     <label
@@ -411,7 +365,7 @@ export default function NovoAgendamentoPage() {
                 {/* Price - Disabled, auto-calculated */}
                 <div
                   className="animate-in fade-in slide-in-from-left-2 duration-300"
-                  style={{ animationDelay: "350ms" }}
+                  style={{ animationDelay: "400ms" }}
                 >
                   <label
                     htmlFor="price"
@@ -438,17 +392,16 @@ export default function NovoAgendamentoPage() {
                       required
                       className="w-full pl-12 disabled:opacity-70 disabled:cursor-not-allowed"
                     />
-                    {selectedServices.length > 0 && (
+                    {selectedService && (
                       <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-purple-300/70">
-                        Calculado ({selectedServices.length} serviço
-                        {selectedServices.length > 1 ? "s" : ""})
+                        {selectedService.hairType ? `Tipo: ${selectedService.hairType}` : 'Padrão'}
                       </span>
                     )}
                   </div>
                   {!formData.price && (
                     <p className="mt-2 text-xs text-purple-200/50">
-                      O preço será calculado automaticamente com base nos
-                      serviços selecionados e porte do pet
+                      O preço será calculado automaticamente com base no
+                      serviço selecionado e porte do pet
                     </p>
                   )}
                 </div>
@@ -456,7 +409,7 @@ export default function NovoAgendamentoPage() {
                 {/* Notes */}
                 <div
                   className="animate-in fade-in slide-in-from-left-2 duration-300"
-                  style={{ animationDelay: "400ms" }}
+                  style={{ animationDelay: "450ms" }}
                 >
                   <label
                     htmlFor="notes"
@@ -480,7 +433,7 @@ export default function NovoAgendamentoPage() {
                 {/* Actions */}
                 <div
                   className="flex gap-4 pt-6 animate-in fade-in slide-in-from-bottom-2 duration-300"
-                  style={{ animationDelay: "450ms" }}
+                  style={{ animationDelay: "500ms" }}
                 >
                   <Button
                     type="button"

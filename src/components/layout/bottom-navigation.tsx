@@ -2,14 +2,13 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, Calendar, Users, Package, Scissors } from 'lucide-react'
+import { Home, Calendar, Users, Scissors } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const tabs = [
   { href: '/app', icon: Home, label: 'Início' },
   { href: '/app/agendamentos', icon: Calendar, label: 'Agenda' },
   { href: '/app/clientes', icon: Users, label: 'Clientes' },
-  { href: '/app/pacotes', icon: Package, label: 'Pacotes' },
   { href: '/app/servicos', icon: Scissors, label: 'Serviços' },
 ]
 
