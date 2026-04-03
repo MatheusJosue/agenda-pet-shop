@@ -1,8 +1,8 @@
 'use client'
 
 import { cn } from '@/lib/utils'
-import styles from './ViewModeSelector.module.css'
 import type { ViewMode } from '@/lib/utils/date'
+import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react'
 
 export interface ViewModeSelectorProps {
   viewMode: ViewMode
@@ -22,7 +22,6 @@ const viewModeLabels: Record<ViewMode, string> = {
 
 export function ViewModeSelector({
   viewMode,
-  selectedDate,
   periodLabel,
   onViewModeChange,
   onPrevious,
@@ -30,48 +29,54 @@ export function ViewModeSelector({
   loading = false
 }: ViewModeSelectorProps) {
   return (
-    <div className={styles.container}>
+    <div className="space-y-4">
       {/* View Mode Tabs */}
-      <div className={styles.tabsContainer}>
+      <div className="flex items-center gap-1.5 p-1.5 bg-[#120a21]/40 backdrop-blur-xl rounded-2xl border border-white/5">
         {(Object.keys(viewModeLabels) as ViewMode[]).map((mode) => (
           <button
             key={mode}
             type="button"
-            className={cn(styles.tab, viewMode === mode && styles.active)}
             onClick={() => onViewModeChange(mode)}
             disabled={loading}
+            className={cn(
+              'flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 relative',
+              viewMode === mode
+                ? 'bg-[#f183ff] text-black shadow-lg shadow-[#f183ff]/40'
+                : 'text-white/50 hover:text-white/80 hover:bg-white/5'
+            )}
           >
             {viewModeLabels[mode]}
           </button>
         ))}
       </div>
 
-      {/* Date Navigation */}
-      <div className={styles.navigation}>
+      {/* Date Navigation Card */}
+      <div className="flex items-center gap-3 px-4 py-3 bg-[#120a21]/60 backdrop-blur-xl rounded-2xl border border-white/5">
         <button
           type="button"
-          className={styles.navButton}
           onClick={onPrevious}
           disabled={loading}
+          className="p-2 rounded-xl text-white/60 hover:text-[#f183ff] hover:bg-white/10 transition-all disabled:opacity-50"
           aria-label="Período anterior"
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M15 18l-6-6 6-6" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
+          <ChevronLeft size={20} />
         </button>
 
-        <span className={styles.periodLabel}>{periodLabel}</span>
+        <div className="flex-1 flex items-center justify-center gap-2">
+          <Calendar size={18} className="text-[#f183ff]/70" />
+          <span className="text-white font-semibold text-sm">
+            {periodLabel}
+          </span>
+        </div>
 
         <button
           type="button"
-          className={styles.navButton}
           onClick={onNext}
           disabled={loading}
+          className="p-2 rounded-xl text-white/60 hover:text-[#f183ff] hover:bg-white/10 transition-all disabled:opacity-50"
           aria-label="Próximo período"
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M9 18l6-6-6-6" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
+          <ChevronRight size={20} />
         </button>
       </div>
     </div>

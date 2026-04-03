@@ -5,7 +5,6 @@ import { GlassCard } from "@/components/ui/glass-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ChevronDown, ChevronUp, Scissors, Package, Edit3, Check, X } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
 import {
   SIZE_LABELS,
   HAIR_TYPE_LABELS,
@@ -125,7 +124,11 @@ export function ServicePricesList({ billingType, onBillingTypeChange }: ServiceP
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="w-10 h-10 border-4 border-purple-500 border-t-transparent rounded-full animate-spin" />
+        <div className="relative w-12 h-12">
+          <div className="absolute inset-0 border-4 border-[#f183ff]/30 rounded-full" />
+          <div className="absolute inset-0 border-4 border-transparent border-t-[#f183ff] rounded-full animate-spin" />
+          <div className="absolute inset-2 border-4 border-transparent border-b-[#d946ef] rounded-full animate-spin [animation-duration:_1.5s] animation-direction-reverse" />
+        </div>
       </div>
     );
   }
@@ -133,13 +136,13 @@ export function ServicePricesList({ billingType, onBillingTypeChange }: ServiceP
   return (
     <div className="space-y-4">
       {error && (
-        <GlassCard variant="default" className="p-4 bg-red-500/20 border-red-500/50">
+        <GlassCard variant="default" className="p-4 bg-red-500/10 border-red-500/30 animate-in fade-in slide-in-from-bottom-2 duration-300">
           <p className="text-red-200 text-sm">⚠️ {error}</p>
         </GlassCard>
       )}
 
       {success && (
-        <GlassCard variant="default" className="p-4 bg-green-500/20 border-green-500/50">
+        <GlassCard variant="default" className="p-4 bg-green-500/10 border-green-500/30 animate-in fade-in slide-in-from-bottom-2 duration-300">
           <p className="text-green-200 text-sm">✓ {success}</p>
         </GlassCard>
       )}
@@ -149,7 +152,7 @@ export function ServicePricesList({ billingType, onBillingTypeChange }: ServiceP
           <p className="text-purple-200/60">Nenhum preço cadastrado</p>
         </GlassCard>
       ) : (
-        serviceGroups.map((group) => (
+        serviceGroups.map((group, index) => (
           <ServicePriceCard
             key={group.serviceName}
             group={group}
@@ -160,6 +163,7 @@ export function ServicePricesList({ billingType, onBillingTypeChange }: ServiceP
             onCancelEdit={cancelEditing}
             onSave={() => savePrices(group.serviceName)}
             saving={saving}
+            index={index}
           />
         ))
       )}
@@ -176,6 +180,7 @@ interface ServicePriceCardProps {
   onCancelEdit: () => void;
   onSave: () => void;
   saving: boolean;
+  index: number;
 }
 
 function ServicePriceCard({
@@ -186,7 +191,8 @@ function ServicePriceCard({
   onStartEdit,
   onCancelEdit,
   onSave,
-  saving
+  saving,
+  index
 }: ServicePriceCardProps) {
   const [expanded, setExpanded] = useState(true);
 
@@ -202,10 +208,13 @@ function ServicePriceCard({
   // Check if service has hair type distinction
   const hasHairTypes = group.prices.some(p => p.hair_type);
 
+  const animationDelay = Math.min(index * 100, 500);
+
   return (
     <GlassCard
       variant="default"
-      className="overflow-hidden hover:scale-[1.005] hover:bg-white/5 transition-all duration-300"
+      className={`overflow-hidden hover:scale-[1.005] hover:bg-white/5 transition-all duration-300 animate-in fade-in slide-in-from-bottom-4 duration-500`}
+      style={{ animationDelay: `${animationDelay}ms` }}
     >
       {/* Header */}
       <div
@@ -213,7 +222,7 @@ function ServicePriceCard({
         onClick={() => setExpanded(!expanded)}
       >
         <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-purple-500 to-fuchsia-500 flex items-center justify-center shadow-lg">
+          <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#f183ff] to-[#d946ef] flex items-center justify-center shadow-lg shadow-[#f183ff]/20">
             <Scissors size={20} className="text-white" />
           </div>
           <div>
@@ -245,15 +254,8 @@ function ServicePriceCard({
         </div>
       </div>
 
-      <AnimatePresence>
-        {expanded && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="overflow-hidden"
-          >
+      {expanded && (
+        <div className="animate-in fade-in slide-in-from-top-2 duration-300 overflow-hidden">
             <div className="px-4 pb-4 space-y-4">
               {Object.entries(byBillingType).map(([billingType, prices]) => (
                 <div key={billingType} className="space-y-2">
@@ -314,7 +316,7 @@ function ServicePriceCard({
                                   />
                                 </div>
                               ) : (
-                                <p className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-fuchsia-400">
+                                <p className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#f183ff] to-[#d946ef]">
                                   R$ {price.price.toFixed(2)}
                                 </p>
                               )}
@@ -356,9 +358,8 @@ function ServicePriceCard({
                 </Button>
               </div>
             )}
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
     </GlassCard>
   );
 }

@@ -9,11 +9,17 @@ import { BottomNavigation } from '@/components/layout/bottom-navigation'
 import { AppLayout } from '@/components/layout/app-layout'
 import { GlassCard } from '@/components/ui/glass-card'
 import { Button } from '@/components/ui/button'
-import { AnimatedIcon } from '@/components/ui/animated-icon'
-import { SIZE_LABELS, SIZE_ICONS, SIZE_EMOJIS } from '@/lib/types/service-prices'
-import { motion } from 'framer-motion'
-import { Plus, PawPrint, User } from 'lucide-react'
+import { SIZE_LABELS, SIZE_COLORS } from '@/lib/types/service-prices'
+import { Plus, PawPrint } from 'lucide-react'
 import type { PetWithClient } from '@/lib/types/pets'
+
+const SIZE_EMOJIS: Record<string, string> = {
+  tiny: '🐭',
+  small: '🐱',
+  medium: '🐕',
+  large: '🦮',
+  giant: '🐕‍🦺'
+}
 
 export function PetsPageContent() {
   const searchParams = useSearchParams()
@@ -55,12 +61,13 @@ export function PetsPageContent() {
 
   return (
     <AppLayout companyName={companyName} user={{ name: user?.user_metadata?.name, email: user?.email }}>
-      <div className="h-[calc(100dvh-60px-64px)] bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent relative overflow-hidden xl:min-h-0">
-        {/* Animated background decoration */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-fuchsia-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/5 rounded-full blur-3xl" />
+      <div className="flex flex-col min-h-dvh relative overflow-hidden bg-[#120a21]">
+        {/* Premium animated background layers */}
+        <div className="fixed inset-0 pointer-events-none overflow-hidden">
+          <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-[#f183ff]/10 rounded-full blur-[120px] animate-[float_8s_ease-in-out_infinite]" />
+          <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] bg-[#d946ef]/10 rounded-full blur-[120px] animate-[float_10s_ease-in-out_infinite_reverse]" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-[#8b5cf6]/5 rounded-full blur-[100px] animate-[pulse-glow_6s_ease-in-out_infinite]" />
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(241,131,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(241,131,255,0.02)_1px,transparent_1px)] bg-[size:80px_80px]" />
         </div>
 
         {/* Mobile Header */}
@@ -70,91 +77,109 @@ export function PetsPageContent() {
         />
 
       {/* Main Content */}
-      <main className="w-full max-w-12xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
-        {/* Page Header - Inline */}
-        <div className="mb-6">
+      <main className="flex-1 overflow-y-auto w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 space-y-6 relative z-10 custom-scrollbar">
+        {/* Page Header */}
+        <section className="animate-in fade-in slide-in-from-bottom-4 duration-700">
           <div className="flex items-center justify-between gap-4">
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-3">
-                <span className="text-3xl">🐾</span>
-                Pets
-              </h1>
-              <p className="text-purple-200/60 mt-1">
-                {pets?.length || 0} pet{pets?.length !== 1 ? 's' : ''}
-              </p>
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#f183ff]/20 to-[#d946ef]/20 flex items-center justify-center border border-[#f183ff]/20">
+                <PawPrint className="w-6 h-6 text-[#f183ff]" />
+              </div>
+              <div>
+                <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-white">
+                  Pets
+                </h1>
+                <p className="text-white/50 text-sm mt-0.5">
+                  {pets?.length || 0} cadastrado{pets?.length !== 1 ? 's' : ''}
+                </p>
+              </div>
             </div>
             <Link href="/app/pets/novo">
-              <Button variant="primary" size="sm" className="rounded-full">
-                <PawPrint size={16} className="mr-2" />
-                Novo
+              <Button
+                variant="primary"
+                size="sm"
+                className="gap-2 rounded-xl bg-gradient-to-r from-[#f183ff] to-[#d946ef] hover:from-[#f183ff]/90 hover:to-[#d946ef]/90 border-0 shadow-[0_0_20px_rgba(241,131,255,0.3)] hover:shadow-[0_0_30px_rgba(241,131,255,0.5)] transition-all duration-300"
+              >
+                <Plus size={18} />
+                <span className="hidden sm:inline">Novo</span>
               </Button>
             </Link>
           </div>
-        </div>
+        </section>
 
         {loading ? (
-          <div className="flex items-center justify-center py-12">
-            <div className="w-10 h-10 border-4 border-purple-500 border-t-transparent rounded-full animate-spin" />
+          <div className="flex items-center justify-center py-20 animate-in fade-in duration-300">
+            <div className="relative">
+              <div className="w-16 h-16 border-4 border-[#f183ff]/20 border-t-[#f183ff] rounded-full animate-spin" />
+              <div className="absolute inset-0 w-16 h-16 border-4 border-transparent border-r-[#d946ef]/40 rounded-full animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }} />
+            </div>
           </div>
         ) : !pets || pets.length === 0 ? (
-          <GlassCard variant="default" className="p-12 text-center animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500/20 to-fuchsia-500/20 flex items-center justify-center text-3xl mb-6 mx-auto">
-              🐾
+          <GlassCard
+            variant="elevated"
+            className="p-12 text-center animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200"
+          >
+            <div className="relative inline-block mb-6">
+              <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#f183ff]/10 to-[#d946ef]/10 flex items-center justify-center border border-[#f183ff]/20">
+                <PawPrint size={40} className="text-[#f183ff]/60" />
+              </div>
+              <div className="absolute inset-0 w-20 h-20 rounded-2xl bg-[#f183ff]/10 animate-ping" />
             </div>
             <h2 className="text-xl font-semibold text-white mb-2">
               {clientId ? 'Este cliente não tem pets' : 'Nenhum pet cadastrado'}
             </h2>
-            <p className="text-purple-200/60 mb-6">
+            <p className="text-white/50 mb-6">
               {clientId
                 ? 'Adicione o primeiro pet deste cliente'
                 : 'Comece adicionando seu primeiro pet'}
             </p>
             <Link href="/app/pets/novo">
-              <Button variant="primary" size="lg" className="gap-2 shadow-lg shadow-purple-500/30">
+              <Button
+                variant="primary"
+                size="lg"
+                className="gap-2 bg-gradient-to-r from-[#f183ff] to-[#d946ef] hover:from-[#f183ff]/90 hover:to-[#d946ef]/90 border-0 shadow-[0_0_20px_rgba(241,131,255,0.3)] hover:shadow-[0_0_30px_rgba(241,131,255,0.5)] transition-all duration-300"
+              >
                 <Plus size={18} />
                 Adicionar Pet
               </Button>
             </Link>
           </GlassCard>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
             {pets.map((pet: PetWithClient, index) => {
-              const SizeIcon = SIZE_ICONS[pet.size]
-              const sizeEmoji = SIZE_EMOJIS[pet.size]
-              const isSmallSize = pet.size === 'tiny' || pet.size === 'small'
+              const sizeEmoji = SIZE_EMOJIS[pet.size] || '🐾'
               return (
-                <motion.div
+                <Link
                   key={pet.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05, duration: 0.3 }}
+                  href={clientId ? `/app/clientes/${clientId}/pets/${pet.id}` : `/app/pets/${pet.id}`}
+                  className="animate-in fade-in slide-in-from-bottom-2 duration-300"
+                  style={{ animationDelay: `${Math.min(index * 50, 300)}ms` }}
                 >
-                  <Link href={`/app/pets/${pet.id}`}>
-                    <GlassCard
-                      variant="default"
-                      className="p-6 hover:scale-[1.02] transition-all cursor-pointer h-full group hover:bg-white/[0.08]"
-                    >
-                      <div className="flex flex-col h-full">
-                        <div className={`w-14 h-14 rounded-2xl ${isSmallSize ? 'bg-gradient-to-br from-pink-500/30 to-fuchsia-500/30' : 'bg-gradient-to-br from-purple-500/30 to-fuchsia-500/30'} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
-                          <span className="text-2xl">{sizeEmoji}</span>
-                        </div>
-                        <h3 className="font-bold text-white text-lg mb-1 truncate">
-                          {pet.name}
-                        </h3>
-                        {pet.breed && (
-                          <p className="text-purple-200/60 text-sm mb-3 truncate">{pet.breed}</p>
-                        )}
-                        <span className={`inline-block px-3 py-1.5 ${isSmallSize ? 'bg-pink-500/20 text-pink-300' : 'bg-purple-500/20 text-purple-300'} text-xs rounded-full mb-4 self-start font-medium`}>
-                          {SIZE_LABELS[pet.size]}
-                        </span>
-                        <div className="mt-auto pt-3 border-t border-white/10 flex items-center gap-2 text-purple-200/60 text-sm">
-                          <User size={14} />
-                          <span className="truncate">{pet.client.name}</span>
-                        </div>
+                  <GlassCard
+                    variant="elevated"
+                    className="p-6 hover:scale-[1.02] transition-all duration-300 cursor-pointer h-full group"
+                  >
+                    <div className="flex flex-col h-full">
+                      <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#f183ff]/30 to-[#d946ef]/30 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:border-[#f183ff]/40 transition-all duration-300 shadow-lg shadow-[#f183ff]/10 border border-[#f183ff]/20">
+                        <span className="text-2xl">{sizeEmoji}</span>
                       </div>
-                    </GlassCard>
-                  </Link>
-                </motion.div>
+                      <h3 className="font-semibold text-white text-lg mb-1 truncate group-hover:text-[#f183ff] transition-colors">
+                        {pet.name}
+                      </h3>
+                      {pet.breed && (
+                        <p className="text-white/60 text-sm mb-3 truncate">{pet.breed}</p>
+                      )}
+                      <span className={`inline-block px-3 py-1.5 ${SIZE_COLORS[pet.size]} text-xs rounded-lg mb-4 self-start font-medium border border-white/10`}>
+                        {SIZE_LABELS[pet.size]}
+                      </span>
+                      <div className="mt-auto pt-3 border-t border-white/10">
+                        <p className="text-white/50 text-sm truncate">
+                          {pet.client.name}
+                        </p>
+                      </div>
+                    </div>
+                  </GlassCard>
+                </Link>
               )
             })}
           </div>

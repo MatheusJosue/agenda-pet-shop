@@ -15,6 +15,7 @@ interface ServiceCardProps {
   petHairType?: HairType  // Pet's hair type - if provided, use it automatically
   selected?: boolean
   onSelect?: (hairType: 'PC' | 'PL' | null) => void
+  multiple?: boolean  // Enable multiple selection mode (show checkbox)
 }
 
 export function ServiceCard({
@@ -26,7 +27,8 @@ export function ServiceCard({
   sizeCategory,
   petHairType,
   selected = false,
-  onSelect
+  onSelect,
+  multiple = false
 }: ServiceCardProps) {
   // Use pet's hair type if provided, otherwise use local state for manual selection
   const [manualHairType, setManualHairType] = useState<'PC' | 'PL'>('PC')
@@ -133,8 +135,14 @@ export function ServiceCard({
       )}
 
       {selected && (
-        <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-purple-400 flex items-center justify-center text-xs">
-          ✓
+        <div className={`absolute top-2 right-2 flex items-center justify-center ${multiple ? 'w-6 h-6 rounded-md bg-purple-400' : 'w-5 h-5 rounded-full bg-purple-400'}`}>
+          {multiple ? (
+            <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+          ) : (
+            <span className="text-xs text-white">✓</span>
+          )}
         </div>
       )}
     </div>

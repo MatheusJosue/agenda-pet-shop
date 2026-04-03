@@ -12,6 +12,7 @@ import {
 import { GlassCard } from "@/components/ui/glass-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { AppHeader } from "@/components/layout/app-header";
 import { AppLayout } from "@/components/layout/app-layout";
 import { BottomNavigation } from "@/components/layout/bottom-navigation";
@@ -33,6 +34,7 @@ export default function ServicoDetailPage() {
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [appointmentCount, setAppointmentCount] = useState(0);
   const [companyName, setCompanyName] = useState("Agenda Pet Shop");
@@ -121,10 +123,10 @@ export default function ServicoDetailPage() {
       return;
     }
 
-    if (!confirm("Tem certeza que deseja excluir este serviço?")) {
-      return;
-    }
+    setShowDeleteConfirm(true);
+  };
 
+  const confirmDelete = async () => {
     setSaving(true);
     setError(null);
 
@@ -140,6 +142,7 @@ export default function ServicoDetailPage() {
       setError("Erro ao excluir serviço");
     } finally {
       setSaving(false);
+      setShowDeleteConfirm(false);
     }
   };
 
@@ -490,6 +493,19 @@ export default function ServicoDetailPage() {
 
         <BottomNavigation />
       </div>
+
+      <ConfirmDialog
+        open={showDeleteConfirm}
+        onOpenChange={setShowDeleteConfirm}
+        onConfirm={confirmDelete}
+        title="Excluir serviço?"
+        description="Esta ação não pode ser desfeita! Você perderá todos os dados e históricos vinculados a este serviço."
+        confirmText="Excluir"
+        cancelText="Cancelar"
+        variant="danger"
+        icon="trash"
+        loading={saving}
+      />
     </AppLayout>
   );
 }

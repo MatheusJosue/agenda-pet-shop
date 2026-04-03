@@ -9,16 +9,20 @@ export interface AppStats {
   servicesCount: number
   monthlyRevenue: number
   todayAppointments: any[]
-  user: any
+  user: {
+    id: string
+    email?: string
+    user_metadata?: { name?: string; [key: string]: any }
+  } | null
   companyName: string
 }
 
 export async function getAppStats(): Promise<{ data?: AppStats; error?: string }> {
   try {
     const supabase = await createClient()
-    const { data: { user }, error: userError } = await supabase.auth.getUser()
+    const { data: { user } } = await supabase.auth.getUser()
 
-    if (userError || !user) {
+    if (!user) {
       return { error: 'Not authenticated' }
     }
 
@@ -36,10 +40,10 @@ export async function getAppStats(): Promise<{ data?: AppStats; error?: string }
       { count: todayCount },
       { data: todayAppointments },
       { data: monthlyAppointments },
-      { data: company }
+      { data: userData }
     ] = await Promise.all([
       supabase.from('clients').select('*', { count: 'exact', head: true }),
-      supabase.from('services').select('*', { count: 'exact', head: true }),
+      supabase.from('service_prices').select('*', { count: 'exact', head: true }),
       supabase.from('appointments').select('*', { count: 'exact', head: true }).eq('date', today).eq('status', 'scheduled'),
       supabase
         .from('appointments')
@@ -48,30 +52,40 @@ export async function getAppStats(): Promise<{ data?: AppStats; error?: string }
           date,
           time,
           price,
+          total_price,
           status,
           client:clients(id, name),
-          pet:pets(id, name, size),
-          service:services(id, name)
+          pet:pets(id, name, size)
         `)
         .eq('date', today)
         .in('status', ['scheduled', 'completed'])
         .order('time', { ascending: true }),
       supabase
         .from('appointments')
-        .select('price')
+        .select('price, total_price')
         .gte('date', firstDay)
         .lte('date', lastDay)
         .in('status', ['completed', 'scheduled']),
       supabase
-        .from('companies')
-        .select('name')
-        .eq('id', user?.user_metadata?.company_id)
+        .from('users')
+        .select('company_id')
+        .eq('id', user.id)
         .single()
     ])
 
-    // Calculate monthly revenue
-    const monthlyRevenue = monthlyAppointments?.reduce((sum, apt) => sum + (apt.price || 0), 0) || 0
-    const companyName = company?.name || 'Agenda Pet Shop'
+    // Fetch company name separately
+    let companyName = 'Agenda Pet Shop'
+    if (userData?.company_id) {
+      const { data: companyData } = await supabase
+        .from('companies')
+        .select('name')
+        .eq('id', userData.company_id)
+        .single()
+      companyName = companyData?.name || 'Agenda Pet Shop'
+    }
+
+    // Calculate monthly revenue (use total_price if available, otherwise price)
+    const monthlyRevenue = monthlyAppointments?.reduce((sum, apt) => sum + (apt.total_price || apt.price || 0), 0) || 0
 
     return {
       data: {
@@ -80,12 +94,15 @@ export async function getAppStats(): Promise<{ data?: AppStats; error?: string }
         servicesCount: services || 0,
         monthlyRevenue,
         todayAppointments: todayAppointments || [],
-        user,
+        user: user ? {
+          id: user.id,
+          email: user.email,
+          user_metadata: user.user_metadata
+        } : null,
         companyName,
       }
     }
   } catch (error) {
-    console.error('Error loading app stats:', error)
     return { error: 'Failed to load stats' }
   }
 }

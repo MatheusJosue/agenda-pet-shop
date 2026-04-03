@@ -13,11 +13,33 @@ import { GlassCard } from "@/components/ui/glass-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
-import { ArrowLeft } from "lucide-react";
+import {
+  ArrowLeft,
+  Check,
+  X,
+  Calendar,
+  Clock,
+  DollarSign,
+  FileText,
+  User,
+  Dog,
+  Scissors,
+  CreditCard,
+  Sparkles
+} from "lucide-react";
 import { ServiceSelector } from "@/components/appointments/service-selector";
+import { PetPackageCard } from "@/components/appointments/pet-package-card";
 import type { Client } from "@/lib/types/clients";
 import type { Pet } from "@/lib/types/pets";
 import { SIZE_LABELS, SIZE_EMOJIS, BILLING_TYPE_LABELS } from "@/lib/types/service-prices";
+
+interface SelectedService {
+  servicePriceId: string;
+  price: number;
+  serviceName: string;
+  hairType: 'PC' | 'PL' | null;
+  billingType: 'avulso' | 'pacote';
+}
 
 export default function NovoAgendamentoPage() {
   const router = useRouter();
@@ -25,20 +47,13 @@ export default function NovoAgendamentoPage() {
   const [error, setError] = useState<string | null>(null);
   const [clients, setClients] = useState<Client[]>([]);
   const [filteredPets, setFilteredPets] = useState<Pet[]>([]);
-  const [selectedService, setSelectedService] = useState<{
-    servicePriceId: string;
-    price: number;
-    serviceName: string;
-    hairType: 'PC' | 'PL' | null;
-    billingType: 'avulso' | 'pacote';
-  } | null>(null);
+  const [selectedServices, setSelectedServices] = useState<SelectedService[]>([]);
   const [billingType, setBillingType] = useState<'avulso' | 'pacote'>('avulso');
   const [formData, setFormData] = useState({
     clientId: "",
     petId: "",
     date: "",
     time: "",
-    price: "",
     notes: "",
   });
 
@@ -52,25 +67,17 @@ export default function NovoAgendamentoPage() {
     } else {
       setFilteredPets([]);
       setFormData((prev) => ({ ...prev, petId: "" }));
-      setSelectedService(null);
+      setSelectedServices([]);
     }
   }, [formData.clientId]);
 
   useEffect(() => {
-    // Update price when service is selected
-    if (selectedService) {
-      setFormData((prev) => ({ ...prev, price: selectedService.price.toFixed(2) }));
-    } else {
-      setFormData((prev) => ({ ...prev, price: "" }));
-    }
-  }, [selectedService]);
-
-  useEffect(() => {
-    // Clear selected service when pet changes
     if (!formData.petId) {
-      setSelectedService(null);
+      setSelectedServices([]);
     }
   }, [formData.petId]);
+
+  const totalPrice = selectedServices.reduce((sum, s) => sum + s.price, 0);
 
   const loadClients = async () => {
     const result = await getClients();
@@ -84,14 +91,19 @@ export default function NovoAgendamentoPage() {
     }
   };
 
-  const handleServiceSelect = (servicePriceId: string, price: number, hairType: 'PC' | 'PL' | null, serviceName: string) => {
-    setSelectedService({
-      servicePriceId,
-      price,
-      serviceName,
-      hairType,
-      billingType,
-    });
+  const handleServiceToggle = (servicePriceId: string, price: number, hairType: 'PC' | 'PL' | null, serviceName: string) => {
+    const exists = selectedServices.find(s => s.servicePriceId === servicePriceId);
+    if (exists) {
+      setSelectedServices(prev => prev.filter(s => s.servicePriceId !== servicePriceId));
+    } else {
+      setSelectedServices(prev => [...prev, {
+        servicePriceId,
+        price,
+        serviceName,
+        hairType,
+        billingType,
+      }]);
+    }
   };
 
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
@@ -99,8 +111,8 @@ export default function NovoAgendamentoPage() {
     setLoading(true);
     setError(null);
 
-    if (!formData.clientId || !formData.petId || !selectedService) {
-      setError("Preencha todos os campos obrigatórios");
+    if (!formData.clientId || !formData.petId || selectedServices.length === 0) {
+      setError("Preencha todos os campos obrigatórios e selecione pelo menos um serviço");
       setLoading(false);
       return;
     }
@@ -109,7 +121,7 @@ export default function NovoAgendamentoPage() {
       const result = await createAppointment({
         clientId: formData.clientId,
         petId: formData.petId,
-        servicePriceId: selectedService.servicePriceId,
+        servicePriceIds: selectedServices.map(s => s.servicePriceId),
         date: formData.date,
         time: formData.time,
         notes: formData.notes || undefined,
@@ -133,67 +145,83 @@ export default function NovoAgendamentoPage() {
 
   return (
     <AppLayout companyName="Agenda Pet Shop" user={{}}>
-      <AppHeader companyName="Agenda Pet Shop" user={{}} />
-
-      <div className="h-[calc(100dvh-60px-64px)] xl:h-auto bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent relative flex flex-col xl:block overflow-hidden xl:overflow-visible">
-        {/* Animated background decoration */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
-          <div
-            className="absolute -bottom-40 -left-40 w-96 h-96 bg-fuchsia-500/10 rounded-full blur-3xl animate-pulse"
-            style={{ animationDelay: "1s" }}
-          />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/5 rounded-full blur-3xl" />
+      <div className="min-h-dvh bg-[#120a21] relative flex flex-col overflow-hidden">
+        {/* Premium animated background layers */}
+        <div className="fixed inset-0 pointer-events-none overflow-hidden">
+          <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-[#f183ff]/10 rounded-full blur-[120px] animate-[float_8s_ease-in-out_infinite]" />
+          <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] bg-[#d946ef]/10 rounded-full blur-[120px] animate-[float_10s_ease-in-out_infinite_reverse]" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-[#8b5cf6]/5 rounded-full blur-[100px] animate-[pulse-glow_6s_ease-in-out_infinite]" />
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(241,131,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(241,131,255,0.02)_1px,transparent_1px)] bg-[size:80px_80px]" />
         </div>
+
+        <AppHeader companyName="Agenda Pet Shop" user={{}} />
 
         {/* Scrollable content area */}
         <div className="flex-1 overflow-y-auto">
-          {/* Main Content */}
-          <main className="max-w-12xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
-            {/* Page Header - Inline */}
-            <div className="mb-6">
+          <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 relative z-10">
+            {/* Page Header */}
+            <div className="mb-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
               <div className="flex items-center gap-3">
                 <Link href="/app/agendamentos">
-                  <Button variant="ghost" size="sm" className="p-2">
-                    <ArrowLeft size={20} />
+                  <Button variant="ghost" size="sm" className="p-2 rounded-xl hover:bg-white/10">
+                    <ArrowLeft size={20} className="text-white/70" />
                   </Button>
                 </Link>
-                <div>
-                  <h1 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-3">
-                    <span className="text-3xl">📅</span>
-                    Novo Agendamento
-                  </h1>
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#f183ff]/20 to-[#d946ef]/20 flex items-center justify-center border border-[#f183ff]/20">
+                    <Calendar size={24} className="text-[#f183ff]" />
+                  </div>
+                  <div>
+                    <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-white">
+                      Novo Agendamento
+                    </h1>
+                    <p className="text-white/50 text-sm mt-0.5">Agende um novo serviço</p>
+                  </div>
                 </div>
               </div>
             </div>
 
+            {/* Hero Welcome Card */}
+            <div className="mb-6 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
+              <GlassCard variant="elevated" className="p-6 bg-gradient-to-r from-[#f183ff]/10 to-[#d946ef]/10 border-[#f183ff]/20">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-[#f183ff]/20 flex items-center justify-center flex-shrink-0 border border-[#f183ff]/20">
+                    <Sparkles size={24} className="text-[#f183ff]" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-white mb-1">
+                      Bem-vindo ao cadastro de agendamentos!
+                    </h3>
+                    <p className="text-xs text-white/60">
+                      Preencha as informações abaixo para criar um novo agendamento
+                      no sistema.
+                    </p>
+                  </div>
+                </div>
+              </GlassCard>
+            </div>
+
             {error && (
-              <GlassCard
-                variant="default"
-                className="p-4 mb-6 bg-red-500/20 border-red-500/50 animate-in fade-in slide-in-from-top-2"
-              >
-                <p className="text-red-200">⚠️ {error}</p>
+              <GlassCard variant="default" className="p-4 mb-6 bg-red-500/10 border-red-500/30 animate-in fade-in slide-in-from-top-2">
+                <p className="text-red-200 text-sm flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-red-400 animate-pulse" />
+                  {error}
+                </p>
               </GlassCard>
             )}
 
-            <GlassCard
-              variant="default"
-              className="p-8 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-100"
-            >
-              <form onSubmit={handleSubmit} className="space-y-7">
+            <GlassCard variant="elevated" className="p-6 sm:p-8 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
+              <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Client */}
-                <div
-                  className="animate-in fade-in slide-in-from-left-2 duration-300"
-                  style={{ animationDelay: "150ms" }}
-                >
+                <div className="animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '150ms' }}>
                   <Select
                     id="clientId"
                     label={
                       <span className="flex items-center gap-2">
-                        <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">
-                          👤
+                        <span className="w-7 h-7 rounded-xl bg-[#f183ff]/20 flex items-center justify-center">
+                          <User size={14} className="text-[#f183ff]" />
                         </span>
-                        Cliente
+                        Cliente *
                       </span>
                     }
                     value={formData.clientId}
@@ -211,18 +239,15 @@ export default function NovoAgendamentoPage() {
                 </div>
 
                 {/* Pet */}
-                <div
-                  className="animate-in fade-in slide-in-from-left-2 duration-300"
-                  style={{ animationDelay: "200ms" }}
-                >
+                <div className="animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '200ms' }}>
                   <Select
                     id="petId"
                     label={
                       <span className="flex items-center gap-2">
-                        <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">
-                          🐕
+                        <span className="w-7 h-7 rounded-xl bg-[#d946ef]/20 flex items-center justify-center">
+                          <Dog size={14} className="text-[#d946ef]" />
                         </span>
-                        Pet
+                        Pet *
                       </span>
                     }
                     value={formData.petId}
@@ -240,51 +265,57 @@ export default function NovoAgendamentoPage() {
                   />
                 </div>
 
-                {/* Billing Type Selector */}
-                <div
-                  className="animate-in fade-in slide-in-from-left-2 duration-300"
-                  style={{ animationDelay: "250ms" }}
-                >
-                  <label className="block text-purple-100/90 text-sm font-semibold mb-3 flex items-center gap-2">
-                    <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">
-                      💳
+                {/* Pet Package Info */}
+                {formData.petId && (() => {
+                  const selectedPet = filteredPets.find(p => p.id === formData.petId);
+                  if (!selectedPet) return null;
+                  return (
+                    <div className="animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '250ms' }}>
+                      <PetPackageCard petId={selectedPet.id} petName={selectedPet.name} />
+                    </div>
+                  );
+                })()}
+
+                {/* Billing Type Toggle */}
+                <div className="animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '250ms' }}>
+                  <label className="block text-white/80 text-sm font-semibold mb-2.5 flex items-center gap-2">
+                    <span className="w-7 h-7 rounded-xl bg-[#8b5cf6]/20 flex items-center justify-center">
+                      <CreditCard size={14} className="text-[#8b5cf6]" />
                     </span>
                     Tipo de Cobrança *
                   </label>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-2 gap-3 p-1.5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl">
                     <button
                       type="button"
                       onClick={() => {
                         setBillingType('avulso');
-                        setSelectedService(null);
+                        setSelectedServices([]);
                       }}
                       className={`
-                        relative p-4 rounded-xl border-2 transition-all duration-200 text-center
+                        relative p-3 rounded-xl text-sm font-medium transition-all duration-300
                         ${billingType === 'avulso'
-                          ? 'bg-purple-500/30 border-purple-400 text-white'
-                          : 'bg-white/5 border-white/10 text-purple-100/70 hover:bg-white/10 hover:border-white/20'
+                          ? 'bg-gradient-to-r from-[#f183ff] to-[#d946ef] text-white shadow-lg shadow-[#f183ff]/20'
+                          : 'text-white/60 hover:text-white hover:bg-white/5'
                         }
                       `}
                     >
-                      <div className="font-medium">Avulso</div>
-                      <div className="text-xs opacity-70 mt-1">Pagamento individual</div>
+                      Avulso
                     </button>
                     <button
                       type="button"
                       onClick={() => {
                         setBillingType('pacote');
-                        setSelectedService(null);
+                        setSelectedServices([]);
                       }}
                       className={`
-                        relative p-4 rounded-xl border-2 transition-all duration-200 text-center
+                        relative p-3 rounded-xl text-sm font-medium transition-all duration-300
                         ${billingType === 'pacote'
-                          ? 'bg-purple-500/30 border-purple-400 text-white'
-                          : 'bg-white/5 border-white/10 text-purple-100/70 hover:bg-white/10 hover:border-white/20'
+                          ? 'bg-gradient-to-r from-[#f183ff] to-[#d946ef] text-white shadow-lg shadow-[#f183ff]/20'
+                          : 'text-white/60 hover:text-white hover:bg-white/5'
                         }
                       `}
                     >
-                      <div className="font-medium">Pacote</div>
-                      <div className="text-xs opacity-70 mt-1">Usar créditos</div>
+                      Pacote
                     </button>
                   </div>
                 </div>
@@ -294,40 +325,78 @@ export default function NovoAgendamentoPage() {
                   const selectedPet = filteredPets.find(p => p.id === formData.petId);
                   if (!selectedPet) return null;
                   return (
-                    <div
-                      className="animate-in fade-in slide-in-from-left-2 duration-300"
-                      style={{ animationDelay: "300ms" }}
-                    >
+                    <div className="animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '300ms' }}>
+                      <label className="block text-white/80 text-sm font-semibold mb-2.5 flex items-center gap-2">
+                        <span className="w-7 h-7 rounded-xl bg-[#f183ff]/20 flex items-center justify-center">
+                          <Scissors size={14} className="text-[#f183ff]" />
+                        </span>
+                        Serviços *
+                      </label>
                       <ServiceSelector
                         petSize={selectedPet.size}
                         petHairType={selectedPet.hair_type}
                         billingType={billingType}
-                        selectedServicePriceId={selectedService?.servicePriceId}
-                        onServiceSelect={(servicePriceId, price, hairType) => {
-                          handleServiceSelect(
-                            servicePriceId,
-                            price,
-                            hairType,
-                            `${selectedPet.name} - ${BILLING_TYPE_LABELS[billingType]}`
-                          );
-                        }}
+                        selectedServicePriceIds={selectedServices.map(s => s.servicePriceId)}
+                        onServiceToggle={handleServiceToggle}
+                        multiple
                       />
                     </div>
                   );
                 })()}
 
+                {/* Selected Services Summary */}
+                {selectedServices.length > 0 && (
+                  <div className="animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '350ms' }}>
+                    <label className="block text-white/80 text-sm font-semibold mb-2.5 flex items-center gap-2">
+                      <span className="w-7 h-7 rounded-xl bg-[#d946ef]/20 flex items-center justify-center">
+                        <Check size={14} className="text-[#d946ef]" />
+                      </span>
+                      Serviços Selecionados ({selectedServices.length})
+                    </label>
+                    <div className="space-y-2">
+                      {selectedServices.map((service) => (
+                        <div
+                          key={service.servicePriceId}
+                          className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/[0.07] transition-colors"
+                        >
+                          <div className="flex-1">
+                            <div className="font-medium text-white">
+                              {service.serviceName}
+                            </div>
+                            <div className="text-xs text-white/50">
+                              {service.hairType ? `${service.hairType} • ` : ''}
+                              {BILLING_TYPE_LABELS[service.billingType]}
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <span className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#f183ff] to-[#d946ef]">
+                              R$ {service.price.toFixed(2)}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => handleServiceToggle(
+                                service.servicePriceId,
+                                service.price,
+                                service.hairType,
+                                service.serviceName
+                              )}
+                              className="w-8 h-8 rounded-full bg-red-500/20 hover:bg-red-500/30 flex items-center justify-center transition-colors"
+                            >
+                              <X size={16} className="text-red-300" />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {/* Date & Time */}
-                <div
-                  className="grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-left-2 duration-300"
-                  style={{ animationDelay: "350ms" }}
-                >
+                <div className="grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '400ms' }}>
                   <div>
-                    <label
-                      htmlFor="date"
-                      className="block text-purple-100/90 text-sm font-semibold mb-2.5 flex items-center gap-2"
-                    >
-                      <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">
-                        📅
+                    <label htmlFor="date" className="block text-white/80 text-sm font-semibold mb-2.5 flex items-center gap-2">
+                      <span className="w-7 h-7 rounded-xl bg-[#f183ff]/20 flex items-center justify-center">
+                        <Calendar size={14} className="text-[#f183ff]" />
                       </span>
                       Data *
                     </label>
@@ -342,12 +411,9 @@ export default function NovoAgendamentoPage() {
                   </div>
 
                   <div>
-                    <label
-                      htmlFor="time"
-                      className="block text-purple-100/90 text-sm font-semibold mb-2.5 flex items-center gap-2"
-                    >
-                      <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">
-                        🕐
+                    <label htmlFor="time" className="block text-white/80 text-sm font-semibold mb-2.5 flex items-center gap-2">
+                      <span className="w-7 h-7 rounded-xl bg-[#d946ef]/20 flex items-center justify-center">
+                        <Clock size={14} className="text-[#d946ef]" />
                       </span>
                       Horário *
                     </label>
@@ -362,61 +428,40 @@ export default function NovoAgendamentoPage() {
                   </div>
                 </div>
 
-                {/* Price - Disabled, auto-calculated */}
-                <div
-                  className="animate-in fade-in slide-in-from-left-2 duration-300"
-                  style={{ animationDelay: "400ms" }}
-                >
-                  <label
-                    htmlFor="price"
-                    className="block text-purple-100/90 text-sm font-semibold mb-2.5 flex items-center gap-2"
-                  >
-                    <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">
-                      💰
+                {/* Total Price */}
+                <div className="animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '450ms' }}>
+                  <label htmlFor="totalPrice" className="block text-white/80 text-sm font-semibold mb-2.5 flex items-center gap-2">
+                    <span className="w-7 h-7 rounded-xl bg-[#f183ff]/20 flex items-center justify-center">
+                      <DollarSign size={14} className="text-[#f183ff]" />
                     </span>
                     Preço Total *
                   </label>
                   <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-purple-200/50 font-medium">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-white/50 font-medium text-sm">
                       R$
                     </span>
                     <Input
-                      id="price"
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      value={formData.price}
-                      onChange={(e) => handleChange("price", e.target.value)}
+                      id="totalPrice"
+                      type="text"
+                      value={totalPrice > 0 ? totalPrice.toFixed(2) : ""}
                       placeholder="0.00"
                       disabled
                       required
-                      className="w-full pl-12 disabled:opacity-70 disabled:cursor-not-allowed"
+                      className="w-full pl-12 text-lg font-semibold disabled:opacity-70 disabled:cursor-not-allowed"
                     />
-                    {selectedService && (
-                      <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-purple-300/70">
-                        {selectedService.hairType ? `Tipo: ${selectedService.hairType}` : 'Padrão'}
-                      </span>
-                    )}
                   </div>
-                  {!formData.price && (
-                    <p className="mt-2 text-xs text-purple-200/50">
-                      O preço será calculado automaticamente com base no
-                      serviço selecionado e porte do pet
+                  {selectedServices.length > 0 && (
+                    <p className="mt-2 text-xs text-white/50">
+                      {selectedServices.length} serviço(s) selecionado(s)
                     </p>
                   )}
                 </div>
 
                 {/* Notes */}
-                <div
-                  className="animate-in fade-in slide-in-from-left-2 duration-300"
-                  style={{ animationDelay: "450ms" }}
-                >
-                  <label
-                    htmlFor="notes"
-                    className="block text-purple-100/90 text-sm font-semibold mb-2.5 flex items-center gap-2"
-                  >
-                    <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">
-                      📝
+                <div className="animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '500ms' }}>
+                  <label htmlFor="notes" className="block text-white/80 text-sm font-semibold mb-2.5 flex items-center gap-2">
+                    <span className="w-7 h-7 rounded-xl bg-[#6366f1]/20 flex items-center justify-center">
+                      <FileText size={14} className="text-[#6366f1]" />
                     </span>
                     Observações
                   </label>
@@ -426,22 +471,19 @@ export default function NovoAgendamentoPage() {
                     onChange={(e) => handleChange("notes", e.target.value)}
                     placeholder="Adicione observações sobre o agendamento..."
                     rows={3}
-                    className="w-full px-4 py-3.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-purple-200/30 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 backdrop-blur-sm resize-none transition-all hover:bg-white/[0.07]"
+                    className="w-full px-4 py-3.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#f183ff]/50 focus:border-[#f183ff]/50 backdrop-blur-sm resize-none transition-all hover:bg-white/[0.07]"
                   />
                 </div>
 
                 {/* Actions */}
-                <div
-                  className="flex gap-4 pt-6 animate-in fade-in slide-in-from-bottom-2 duration-300"
-                  style={{ animationDelay: "500ms" }}
-                >
+                <div className="flex gap-4 pt-4 animate-in fade-in slide-in-from-bottom-2 duration-300" style={{ animationDelay: '550ms' }}>
                   <Button
                     type="button"
                     variant="secondary"
                     size="lg"
                     onClick={() => router.back()}
                     disabled={loading}
-                    className="flex-1"
+                    className="flex-1 rounded-xl"
                   >
                     Cancelar
                   </Button>
@@ -449,10 +491,10 @@ export default function NovoAgendamentoPage() {
                     type="submit"
                     variant="primary"
                     size="lg"
-                    disabled={loading}
-                    className="flex-1"
+                    disabled={loading || selectedServices.length === 0}
+                    className="flex-1 rounded-xl bg-gradient-to-r from-[#f183ff] to-[#d946ef] hover:from-[#f183ff]/90 hover:to-[#d946ef]/90 border-0 shadow-[0_0_20px_rgba(241,131,255,0.3)] hover:shadow-[0_0_30px_rgba(241,131,255,0.5)] transition-all duration-300"
                   >
-                    {loading ? "Salvando..." : "Criar Agendamento"}
+                    {loading ? "Salvando..." : "Salvar Agendamento"}
                   </Button>
                 </div>
               </form>
@@ -460,9 +502,7 @@ export default function NovoAgendamentoPage() {
           </main>
         </div>
 
-        <div className="xl:hidden">
-          <BottomNavigation />
-        </div>
+        <BottomNavigation />
       </div>
     </AppLayout>
   );

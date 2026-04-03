@@ -13,7 +13,11 @@ interface ServiceSelectorProps {
   petHairType: HairType
   billingType: BillingType
   selectedServicePriceId?: string
-  onServiceSelect: (servicePriceId: string, price: number, hairType: 'PC' | 'PL' | null) => void
+  onServiceSelect?: (servicePriceId: string, price: number, hairType: 'PC' | 'PL' | null) => void
+  // Multiple selection props
+  multiple?: boolean
+  selectedServicePriceIds?: string[]
+  onServiceToggle?: (servicePriceId: string, price: number, hairType: 'PC' | 'PL' | null, serviceName: string) => void
 }
 
 interface GroupedService {
@@ -29,7 +33,10 @@ export function ServiceSelector({
   petHairType,
   billingType,
   selectedServicePriceId,
-  onServiceSelect
+  onServiceSelect,
+  multiple = false,
+  selectedServicePriceIds = [],
+  onServiceToggle
 }: ServiceSelectorProps) {
   const [services, setServices] = useState<ServicePrice[]>([])
   const [loading, setLoading] = useState(true)
@@ -154,12 +161,18 @@ export function ServiceSelector({
             return null
           }
 
-          const isSelected = selectedServicePriceId === targetPrice.id
+          const isSelected = multiple
+            ? selectedServicePriceIds.includes(targetPrice.id)
+            : selectedServicePriceId === targetPrice.id
 
           // When service has hair type options, automatically select based on pet's hair type
           // No need to show toggle buttons
           const handleSelect = () => {
-            onServiceSelect(targetPrice!.id, targetPrice!.price, displayHairType)
+            if (multiple && onServiceToggle) {
+              onServiceToggle(targetPrice!.id, targetPrice!.price, displayHairType, group.serviceName)
+            } else if (onServiceSelect) {
+              onServiceSelect(targetPrice!.id, targetPrice!.price, displayHairType)
+            }
           }
 
           return (
@@ -174,6 +187,7 @@ export function ServiceSelector({
               petHairType={petHairType}
               selected={isSelected}
               onSelect={() => handleSelect()}
+              multiple={multiple}
             />
           )
         })}

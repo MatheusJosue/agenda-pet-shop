@@ -9,15 +9,15 @@ import { BottomNavigation } from "@/components/layout/bottom-navigation";
 import { AppLayout } from "@/components/layout/app-layout";
 import { GlassCard } from "@/components/ui/glass-card";
 import { Button } from "@/components/ui/button";
-import { AnimatedIcon } from "@/components/ui/animated-icon";
-import { motion } from "framer-motion";
+import { WhatsAppButton } from "@/components/ui/whatsapp-button";
+import type { LucideIcon } from "lucide-react";
 import {
   Search,
   UserPlus,
   Phone,
   Mail,
   ChevronRight,
-  UserX,
+  Users,
 } from "lucide-react";
 import { formatPhone } from "@/lib/utils/phone";
 import type { Client } from "@/lib/types/clients";
@@ -68,139 +68,168 @@ export function ClientesPageContent() {
       companyName={companyName}
       user={{ name: user?.user_metadata?.name, email: user?.email }}
     >
-      <div className="flex flex-col h-dvh bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent relative overflow-hidden">
-        {/* Animated background decoration */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
-          <div
-            className="absolute -bottom-40 -left-40 w-96 h-96 bg-fuchsia-500/10 rounded-full blur-3xl animate-pulse"
-            style={{ animationDelay: "1s" }}
-          />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/5 rounded-full blur-3xl" />
+      <div className="flex flex-col min-h-dvh relative overflow-hidden bg-[#120a21]">
+        {/* Premium animated background layers */}
+        <div className="fixed inset-0 pointer-events-none overflow-hidden">
+          <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-[#f183ff]/10 rounded-full blur-[120px] animate-[float_8s_ease-in-out_infinite]" />
+          <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] bg-[#d946ef]/10 rounded-full blur-[120px] animate-[float_10s_ease-in-out_infinite_reverse]" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-[#8b5cf6]/5 rounded-full blur-[100px] animate-[pulse-glow_6s_ease-in-out_infinite]" />
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(241,131,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(241,131,255,0.02)_1px,transparent_1px)] bg-[size:80px_80px]" />
         </div>
 
-        {/* Mobile Header */}
         <AppHeader
           companyName={companyName}
           user={{ name: user?.user_metadata?.name, email: user?.email }}
         />
 
-        <main className="flex-1 overflow-y-auto w-full max-w-12xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
-          {/* Page Header - Inline */}
-          <div className="mb-6">
+        <main className="flex-1 overflow-y-auto w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 space-y-6 relative z-10 custom-scrollbar">
+          {/* Page Header */}
+          <section className="animate-in fade-in slide-in-from-bottom-4 duration-700">
             <div className="flex items-center justify-between gap-4">
-              <div>
-                <h1 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-3">
-                  <span className="text-3xl">👥</span>
-                  Clientes
-                </h1>
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#f183ff]/20 to-[#d946ef]/20 flex items-center justify-center border border-[#f183ff]/20">
+                  <Users className="w-6 h-6 text-[#f183ff]" />
+                </div>
+                <div>
+                  <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-white">
+                    Clientes
+                  </h1>
+                  <p className="text-white/50 text-sm mt-0.5">
+                    {clients.length} cliente{clients.length !== 1 ? 's' : ''} cadastrado{clients.length !== 1 ? 's' : ''}
+                  </p>
+                </div>
               </div>
               <Link href="/app/clientes/novo">
-                <Button variant="primary" size="sm" className="rounded-full">
-                  <UserPlus size={16} className="mr-2" />
-                  Novo
+                <Button
+                  variant="primary"
+                  size="sm"
+                  className="gap-2 rounded-xl bg-gradient-to-r from-[#f183ff] to-[#d946ef] hover:from-[#f183ff]/90 hover:to-[#d946ef]/90 border-0 shadow-[0_0_20px_rgba(241,131,255,0.3)] hover:shadow-[0_0_30px_rgba(241,131,255,0.5)] transition-all duration-300"
+                >
+                  <UserPlus size={18} />
+                  <span className="hidden sm:inline">Novo Cliente</span>
                 </Button>
               </Link>
             </div>
-          </div>
+          </section>
 
           {/* Search */}
-          <form className="mb-6 relative animate-in fade-in slide-in-from-bottom-2 duration-300">
-            <Search
-              size={20}
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-purple-200/50"
-            />
-            <input
-              type="search"
-              name="q"
-              placeholder="Buscar por nome, telefone ou email..."
-              defaultValue={search}
-              className="w-full pl-12 pr-4 py-3.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-purple-200/30 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 backdrop-blur-sm transition-all hover:bg-white/[0.07]"
-            />
+          <form className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
+            <div className="relative">
+              <Search
+                size={20}
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40"
+              />
+              <input
+                type="search"
+                name="q"
+                placeholder="Buscar por nome, telefone ou email..."
+                defaultValue={search}
+                className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#f183ff]/50 focus:border-[#f183ff]/50 backdrop-blur-xl transition-all hover:bg-white/[0.07] hover:border-white/20"
+              />
+            </div>
           </form>
 
           {loading ? (
-            <div className="flex items-center justify-center py-12 animate-in fade-in duration-300">
-              <div className="w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full animate-spin" />
+            <div className="flex items-center justify-center py-20 animate-in fade-in duration-300">
+              <div className="relative">
+                <div className="w-16 h-16 border-4 border-[#f183ff]/20 border-t-[#f183ff] rounded-full animate-spin" />
+                <div className="absolute inset-0 w-16 h-16 border-4 border-transparent border-r-[#d946ef]/40 rounded-full animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }} />
+              </div>
             </div>
           ) : !clients || clients.length === 0 ? (
             <GlassCard
-              variant="default"
-              className="p-12 text-center animate-in fade-in slide-in-from-bottom-4 duration-500"
+              variant="elevated"
+              className="p-12 text-center animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200"
             >
-              <AnimatedIcon
-                icon={UserX}
-                variant="scale"
-                size={48}
-                className="text-fuchsia-400 mb-4 mx-auto"
-              />
+              <div className="relative inline-block mb-6">
+                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#f183ff]/10 to-[#d946ef]/10 flex items-center justify-center border border-[#f183ff]/20">
+                  <Users size={40} className="text-[#f183ff]/60" />
+                </div>
+                <div className="absolute inset-0 w-20 h-20 rounded-2xl bg-[#f183ff]/10 animate-ping" />
+              </div>
               <h2 className="text-xl font-semibold text-white mb-2">
                 {search
                   ? "Nenhum cliente encontrado"
                   : "Nenhum cliente cadastrado"}
               </h2>
-              <p className="text-purple-200/60 mb-6">
+              <p className="text-white/50 mb-6">
                 {search
                   ? "Tente buscar com outro termo"
                   : "Comece adicionando seu primeiro cliente"}
               </p>
               <Link href="/app/clientes/novo">
-                <Button variant="primary" size="lg" className="gap-2">
+                <Button
+                  variant="primary"
+                  size="lg"
+                  className="gap-2 bg-gradient-to-r from-[#f183ff] to-[#d946ef] hover:from-[#f183ff]/90 hover:to-[#d946ef]/90 border-0 shadow-[0_0_20px_rgba(241,131,255,0.3)] hover:shadow-[0_0_30px_rgba(241,131,255,0.5)] transition-all duration-300"
+                >
                   <UserPlus size={18} />
                   Adicionar Cliente
                 </Button>
               </Link>
             </GlassCard>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-3 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
               {clients.map((client, index) => (
-                <motion.div
+                <Link
                   key={client.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                  className="animate-in fade-in slide-in-from-bottom-2 duration-300"
-                  style={{ animationDelay: `${index * 50}ms` }}
+                  href={`/app/clientes/${client.id}`}
+                  className="block animate-in fade-in slide-in-from-bottom-2 duration-300"
+                  style={{ animationDelay: `${Math.min(index * 50, 300)}ms` }}
                 >
-                  <Link href={`/app/clientes/${client.id}`}>
-                    <GlassCard
-                      variant="default"
-                      className="p-4 hover:scale-[1.01] hover:bg-white/[0.08] transition-all cursor-pointer group"
-                    >
-                      <div className="flex items-center gap-4">
-                        {/* Avatar */}
-                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-fuchsia-500 flex items-center justify-center text-white text-lg font-bold flex-shrink-0 shadow-lg shadow-purple-500/25">
+                  <GlassCard
+                    variant="elevated"
+                    className="p-4 hover:scale-[1.01] transition-all duration-300 cursor-pointer group"
+                  >
+                    <div className="flex items-center gap-4">
+                      {/* Avatar */}
+                      <div className="relative">
+                        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#f183ff]/30 to-[#d946ef]/30 flex items-center justify-center text-white text-xl font-bold border border-[#f183ff]/20 group-hover:scale-110 group-hover:border-[#f183ff]/40 transition-all duration-300 shadow-lg shadow-[#f183ff]/10">
                           {client.name.charAt(0).toUpperCase()}
                         </div>
+                        <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-[#22c55e] border-2 border-[#1a0f2e]" />
+                      </div>
 
-                        {/* Info */}
-                        <div className="flex-1 min-w-0">
-                          <h3 className="font-semibold text-white truncate max-w-[150px] sm:max-w-none" title={client.name}>
-                            {client.name}
-                          </h3>
-                          {client.phone && (
-                            <p className="text-sm text-purple-200/60 truncate flex items-center gap-1">
-                              <Phone size={14} />
-                              {formatPhone(client.phone)}
-                            </p>
-                          )}
-                          {client.email && (
-                            <p className="text-sm text-purple-200/60 truncate flex items-center gap-1">
-                              <Mail size={14} />
-                              {client.email}
-                            </p>
-                          )}
-                        </div>
+                      {/* Info */}
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-white text-base truncate group-hover:text-[#f183ff] transition-colors">
+                          {client.name}
+                        </h3>
+                        {client.phone && (
+                          <p className="text-sm text-white/50 truncate flex items-center gap-1.5 mt-0.5">
+                            <Phone size={14} className="text-[#f183ff]/60" />
+                            {formatPhone(client.phone)}
+                          </p>
+                        )}
+                        {client.email && (
+                          <p className="text-sm text-white/50 truncate flex items-center gap-1.5">
+                            <Mail size={14} className="text-[#d946ef]/60" />
+                            {client.email}
+                          </p>
+                        )}
+                      </div>
 
-                        {/* Arrow */}
+                      {/* Actions */}
+                      <div
+                        className="flex items-center gap-2 flex-shrink-0"
+                        onClick={(e) => e.preventDefault()}
+                      >
+                        {client.phone && (
+                          <WhatsAppButton
+                            phone={client.phone}
+                            message={`Olá ${client.name}!`}
+                            size="sm"
+                            variant="ghost"
+                          />
+                        )}
                         <ChevronRight
                           size={20}
-                          className="text-purple-200/40 group-hover:text-purple-200 group-hover:translate-x-1 transition-all flex-shrink-0"
+                          className="text-white/20 group-hover:text-[#f183ff] group-hover:translate-x-1 transition-all duration-300"
                         />
                       </div>
-                    </GlassCard>
-                  </Link>
-                </motion.div>
+                    </div>
+                  </GlassCard>
+                </Link>
               ))}
             </div>
           )}

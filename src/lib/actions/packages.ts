@@ -511,3 +511,254 @@ export async function deletePackageType(id: string): Promise<PackageTypeResponse
   revalidatePath('/app/pacotes')
   return { data: undefined }
 }
+
+/**
+ * Update a pet package (credits, active status, expiry date)
+ */
+export async function updatePetPackage(
+  packageId: string,
+  updates: {
+    credits_remaining?: number
+    active?: boolean
+    expires_at?: string
+  }
+): Promise<PetPackageResponse> {
+  const companyId = await getCurrentCompanyId()
+
+  if (!companyId) {
+    return { data: undefined, error: 'Não autenticado' }
+  }
+
+  const supabase = await createSupabaseClient()
+
+  // Verify package belongs to company
+  const { data: existingPackage } = await supabase
+    .from('pet_packages')
+    .select('id')
+    .eq('id', packageId)
+    .eq('company_id', companyId)
+    .single()
+
+  if (!existingPackage) {
+    return { error: 'Pacote não encontrado' }
+  }
+
+  const { data, error } = await supabase
+    .from('pet_packages')
+    .update(updates)
+    .eq('id', packageId)
+    .eq('company_id', companyId)
+    .select(`
+      *,
+      package_type:package_types!inner(*)
+    `)
+    .single()
+
+  if (error) {
+    return { error: 'Erro ao atualizar pacote' }
+  }
+
+  revalidatePath('/app/pacotes')
+  revalidatePath('/app/agendamentos')
+  return { data: data as PetPackageWithRelations }
+}
+
+/**
+ * Get active (valid) package for a pet
+ * Checks if package is active AND not expired
+ */
+export async function getValidPetPackage(petId: string): Promise<PetPackageWithRelationsResponse> {
+  const companyId = await getCurrentCompanyId()
+
+  if (!companyId) {
+    return { data: undefined, error: 'Não autenticado' }
+  }
+
+  const supabase = await createSupabaseClient()
+  const today = new Date().toISOString().split('T')[0]
+
+  const { data, error } = await supabase
+    .from('pet_packages')
+    .select(`
+      *,
+      package_type:package_types!inner(*)
+    `)
+    .eq('company_id', companyId)
+    .eq('pet_id', petId)
+    .eq('active', true)
+    .gt('expires_at', today)
+    .order('expires_at', { ascending: false })
+    .limit(1)
+    .single()
+
+  if (error || !data) {
+    return { data: undefined, error: 'Pacote não encontrado' }
+  }
+
+  return { data: data as PetPackageWithRelations }
+}
+
+/**
+ * Get package status info for UI display
+ */
+export async function getPetPackageStatus(petId: string) {
+  const result = await getValidPetPackage(petId)
+
+  if (result.error || !result.data) {
+    return {
+      hasActivePackage: false,
+      package: null
+    }
+  }
+
+  const pkg = result.data
+  const today = new Date()
+  const expiresAt = new Date(pkg.expires_at)
+  const daysUntilExpiry = Math.ceil((expiresAt.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
+
+  return {
+    hasActivePackage: true,
+    package: pkg,
+    status: pkg.credits_remaining === 0 ? 'exhausted' : daysUntilExpiry < 0 ? 'expired' : 'active',
+    creditsRemaining: pkg.credits_remaining,
+    totalCredits: pkg.package_type.credits,
+    expiresAt: pkg.expires_at,
+    daysUntilExpiry
+  }
+}
+
+/**
+ * Mark package as exhausted (set credits to 0)
+ */
+export async function markPackageExhausted(packageId: string): Promise<PetPackageResponse> {
+  const companyId = await getCurrentCompanyId()
+
+  if (!companyId) {
+    return { data: undefined, error: 'Não autenticado' }
+  }
+
+  const supabase = await createSupabaseClient()
+
+  // Verify package belongs to company
+  const { data: existingPackage } = await supabase
+    .from('pet_packages')
+    .select('id')
+    .eq('id', packageId)
+    .eq('company_id', companyId)
+    .single()
+
+  if (!existingPackage) {
+    return { error: 'Pacote não encontrado' }
+  }
+
+  const { data, error } = await supabase
+    .from('pet_packages')
+    .update({ credits_remaining: 0 })
+    .eq('id', packageId)
+    .eq('company_id', companyId)
+    .select(`
+      *,
+      package_type:package_types!inner(*)
+    `)
+    .single()
+
+  if (error) {
+    return { error: 'Erro ao marcar pacote como esgotado' }
+  }
+
+  revalidatePath('/app/pacotes')
+  revalidatePath('/app/pets')
+
+  return { data: data as PetPackageWithRelations }
+}
+
+/**
+ * Renew package (reset credits to original amount and extend expiry date)
+ */
+export async function renewPackage(packageId: string): Promise<PetPackageResponse> {
+  const companyId = await getCurrentCompanyId()
+
+  if (!companyId) {
+    return { data: undefined, error: 'Não autenticado' }
+  }
+
+  const supabase = await createSupabaseClient()
+
+  // Get package with type to reset credits
+  const { data: packageData } = await supabase
+    .from('pet_packages')
+    .select(`
+      *,
+      package_type:package_types!inner(*)
+    `)
+    .eq('id', packageId)
+    .eq('company_id', companyId)
+    .single()
+
+  if (!packageData) {
+    return { error: 'Pacote não encontrado' }
+  }
+
+  // Calculate new expiry date from today
+  const today = new Date()
+  const newExpiryDate = new Date(today)
+  newExpiryDate.setDate(newExpiryDate.getDate() + packageData.package_type.interval_days)
+
+  const { data, error } = await supabase
+    .from('pet_packages')
+    .update({
+      credits_remaining: packageData.package_type.credits,
+      expires_at: newExpiryDate.toISOString().split('T')[0],
+      active: true
+    })
+    .eq('id', packageId)
+    .eq('company_id', companyId)
+    .select(`
+      *,
+      package_type:package_types!inner(*)
+    `)
+    .single()
+
+  if (error) {
+    return { error: 'Erro ao renovar pacote' }
+  }
+
+  revalidatePath('/app/pacotes')
+  revalidatePath('/app/pets')
+
+  return { data: data as PetPackageWithRelations }
+}
+
+/**
+ * Get package with client info for WhatsApp message
+ */
+export async function getPackageWithClient(packageId: string): Promise<{
+  data?: (PetPackageWithRelations & { client: { name: string; phone: string } }) | null
+  error?: string
+}> {
+  const companyId = await getCurrentCompanyId()
+
+  if (!companyId) {
+    return { data: undefined, error: 'Não autenticado' }
+  }
+
+  const supabase = await createSupabaseClient()
+
+  const { data, error } = await supabase
+    .from('pet_packages')
+    .select(`
+      *,
+      pet:pets!inner(id, name),
+      client:clients!inner(id, name, phone),
+      package_type:package_types!inner(*)
+    `)
+    .eq('id', packageId)
+    .eq('company_id', companyId)
+    .single()
+
+  if (error || !data) {
+    return { data: null, error: 'Pacote não encontrado' }
+  }
+
+  return { data: data as PetPackageWithRelations & { client: { name: string; phone: string } } }
+}

@@ -5,7 +5,7 @@ interface WhatsAppButtonProps {
   phone: string
   message: string
   size?: 'sm' | 'md' | 'lg'
-  variant?: 'primary' | 'secondary'
+  variant?: 'primary' | 'secondary' | 'ghost'
 }
 
 export function WhatsAppButton({
@@ -14,7 +14,8 @@ export function WhatsAppButton({
   size = 'sm',
   variant = 'secondary'
 }: WhatsAppButtonProps) {
-  const handleClick = () => {
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation()
     const cleanPhone = phone.replace(/\D/g, '')
     const encodedMessage = encodeURIComponent(message)
     const url = `https://wa.me/55${cleanPhone}?text=${encodedMessage}`

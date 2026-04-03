@@ -3,7 +3,7 @@ import { z } from 'zod'
 export const appointmentSchema = z.object({
   clientId: z.string().uuid('ID do cliente inválido'),
   petId: z.string().uuid('ID do pets inválido'),
-  servicePriceId: z.string().uuid('ID do serviço inválido'),
+  servicePriceIds: z.array(z.string().uuid('ID do serviço inválido')).min(1, 'Selecione pelo menos um serviço'),
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Formato de data inválido'),
   time: z.string().regex(/^\d{2}:\d{2}$/, 'Horário inválido'),
   useCredit: z.boolean().default(false),

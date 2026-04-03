@@ -1,512 +1,707 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { useRouter, useParams } from 'next/navigation'
-import Link from 'next/link'
-import { Pencil, Trash2, ArrowLeft, Check, X } from 'lucide-react'
-import { getAppointmentById, updateAppointment, updateAppointmentStatus, deleteAppointment } from '@/lib/actions/appointments'
-import { GlassCard } from '@/components/ui/glass-card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { AppHeader } from '@/components/layout/app-header'
-import { AppLayout } from '@/components/layout/app-layout'
-import { BottomNavigation } from '@/components/layout/bottom-navigation'
-import type { AppointmentWithRelations } from '@/lib/types/appointments'
-import { SIZE_EMOJIS, SIZE_LABELS } from '@/lib/types/service-prices'
-import type { SizeCategory } from '@/lib/types/service-prices'
+import { useState, useEffect } from "react";
+import { useRouter, useParams } from "next/navigation";
+import Link from "next/link";
+import {
+  Pencil,
+  Trash2,
+  ArrowLeft,
+  Check,
+  X,
+  Phone,
+  ChevronRight,
+  Scissors,
+} from "lucide-react";
+import {
+  getAppointmentById,
+  updateAppointment,
+  updateAppointmentStatus,
+  deleteAppointment,
+} from "@/lib/actions/appointments";
+import { GlassCard } from "@/components/ui/glass-card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { PetPackageCard } from "@/components/appointments/pet-package-card";
+import { WhatsAppButton } from "@/components/ui/whatsapp-button";
+import { AppHeader } from "@/components/layout/app-header";
+import { AppLayout } from "@/components/layout/app-layout";
+import { BottomNavigation } from "@/components/layout/bottom-navigation";
+import { formatPhone } from "@/lib/utils/phone";
+import type { AppointmentWithRelations } from "@/lib/types/appointments";
+import {
+  SIZE_EMOJIS,
+  SIZE_LABELS,
+  SIZE_COLORS,
+} from "@/lib/types/service-prices";
 
-const statusLabels = {
-  scheduled: 'Agendado',
-  completed: 'Concluído',
-  cancelled: 'Cancelado'
-}
+const statusLabels: Record<string, string> = {
+  scheduled: "Agendado",
+  completed: "Concluído",
+  cancelled: "Cancelado",
+};
 
-const statusStyles = {
-  scheduled: 'bg-blue-500/20 text-blue-200 border-blue-500/30',
-  completed: 'bg-green-500/20 text-green-200 border-green-500/30',
-  cancelled: 'bg-red-500/20 text-red-200 border-red-500/30'
-}
+const statusStyles: Record<string, string> = {
+  scheduled:
+    "bg-gradient-to-r from-[#f183ff]/20 to-[#d946ef]/20 border-[#f183ff]/30 text-[#f183ff]",
+  completed:
+    "bg-gradient-to-r from-green-500/20 to-emerald-500/20 border-green-500/30 text-green-300",
+  cancelled:
+    "bg-gradient-to-r from-red-500/20 to-rose-500/20 border-red-500/30 text-red-300",
+};
+
+const statusIcons: Record<string, string> = {
+  scheduled: "📅",
+  completed: "✅",
+  cancelled: "❌",
+};
 
 function formatDate(dateStr: string) {
-  const date = new Date(dateStr + 'T00:00:00')
-  return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })
+  const date = new Date(dateStr + "T00:00:00");
+  return date.toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
 }
 
 export default function AgendamentoDetailPage() {
-  const router = useRouter()
-  const params = useParams()
-  const appointmentId = params.id as string
+  const router = useRouter();
+  const params = useParams();
+  const appointmentId = params.id as string;
 
-  const [appointment, setAppointment] = useState<AppointmentWithRelations | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [editing, setEditing] = useState(false)
-  const [saving, setSaving] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [companyName, setCompanyName] = useState('Agenda Pet Shop')
-  const [user, setUser] = useState<{ user_metadata?: { name?: string }; email?: string } | null>(null)
+  const [appointment, setAppointment] =
+    useState<AppointmentWithRelations | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [companyName, setCompanyName] = useState("Agenda Pet Shop");
+  const [user, setUser] = useState<{
+    user_metadata?: { name?: string };
+    email?: string;
+  } | null>(null);
   const [formData, setFormData] = useState({
-    date: '',
-    time: '',
-    price: '',
-    notes: '',
-  })
+    date: "",
+    time: "",
+    notes: "",
+  });
 
   useEffect(() => {
     async function loadData() {
       try {
-        const { getAppStats } = await import('@/lib/actions/app')
-        const result = await getAppStats()
+        const { getAppStats } = await import("@/lib/actions/app");
+        const result = await getAppStats();
         if (result.data) {
-          setCompanyName(result.data.companyName || 'Agenda Pet Shop')
-          setUser(result.data.user)
+          setCompanyName(result.data.companyName || "Agenda Pet Shop");
+          setUser(result.data.user);
         }
       } catch (error) {
-        console.error('Error loading data:', error)
+        console.error("Error loading data:", error);
       }
     }
-    loadData()
-  }, [])
+    loadData();
+  }, []);
 
   useEffect(() => {
-    loadAppointment()
-  }, [appointmentId])
+    loadAppointment();
+  }, [appointmentId]);
 
   const loadAppointment = async () => {
-    setLoading(true)
-    const result = await getAppointmentById(appointmentId)
+    setLoading(true);
+    const result = await getAppointmentById(appointmentId);
 
     if (result.error || !result.data) {
-      setError(result.error || 'Agendamento não encontrado')
+      setError(result.error || "Agendamento não encontrado");
     } else {
-      setAppointment(result.data)
+      setAppointment(result.data);
       setFormData({
         date: result.data.date,
         time: result.data.time,
-        price: result.data.price.toString(),
-        notes: result.data.notes || '',
-      })
+        notes: result.data.notes || "",
+      });
     }
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   const handleSave = async () => {
-    setSaving(true)
-    setError(null)
+    setSaving(true);
+    setError(null);
 
     try {
       const result = await updateAppointment(appointmentId, {
         date: formData.date,
         time: formData.time,
         notes: formData.notes || undefined,
-      })
+      });
 
       if (result.error) {
-        setError(result.error)
+        setError(result.error);
       } else {
-        await loadAppointment()
-        setEditing(false)
+        await loadAppointment();
+        setEditing(false);
       }
     } catch (err) {
-      setError('Erro ao atualizar agendamento')
+      setError("Erro ao atualizar agendamento");
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }
+  };
 
-  const handleStatusChange = async (status: 'scheduled' | 'completed' | 'cancelled') => {
-    setSaving(true)
-    setError(null)
+  const handleStatusChange = async (
+    status: "scheduled" | "completed" | "cancelled",
+  ) => {
+    setSaving(true);
+    setError(null);
 
     try {
-      const result = await updateAppointmentStatus(appointmentId, status)
+      const result = await updateAppointmentStatus(appointmentId, status);
 
       if (result.error) {
-        setError(result.error)
+        setError(result.error);
       } else {
-        await loadAppointment()
+        await loadAppointment();
       }
     } catch (err) {
-      setError('Erro ao atualizar status')
+      setError("Erro ao atualizar status");
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }
+  };
 
   const handleDelete = async () => {
-    if (!confirm('Tem certeza que deseja excluir este agendamento?')) {
-      return
-    }
+    setShowDeleteConfirm(true);
+  };
 
-    setSaving(true)
-    setError(null)
+  const confirmDelete = async () => {
+    setSaving(true);
+    setError(null);
 
     try {
-      const result = await deleteAppointment(appointmentId)
+      const result = await deleteAppointment(appointmentId);
 
       if (result.error) {
-        setError(result.error)
+        setError(result.error);
       } else {
-        router.push('/app/agendamentos')
+        router.push("/app/agendamentos");
       }
     } catch (err) {
-      setError('Erro ao excluir agendamento')
+      setError("Erro ao excluir agendamento");
     } finally {
-      setSaving(false)
+      setSaving(false);
+      setShowDeleteConfirm(false);
     }
-  }
+  };
 
   const handleChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }))
-  }
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
 
   const getMinDate = () => {
-    const today = new Date()
-    return today.toISOString().split('T')[0]
-  }
+    const today = new Date();
+    return today.toISOString().split("T")[0];
+  };
 
   if (loading) {
     return (
-      <AppLayout companyName={companyName} user={{ name: user?.user_metadata?.name, email: user?.email }}>
-        <div className="flex flex-col h-dvh bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent relative overflow-hidden">
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
-            <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-fuchsia-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+      <AppLayout
+        companyName={companyName}
+        user={{ name: user?.user_metadata?.name, email: user?.email }}
+      >
+        <div className="min-h-dvh bg-[#120a21] relative overflow-hidden">
+          <div className="fixed inset-0 pointer-events-none overflow-hidden">
+            <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-[#f183ff]/10 rounded-full blur-[120px] animate-[float_8s_ease-in-out_infinite]" />
+            <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] bg-[#d946ef]/10 rounded-full blur-[120px] animate-[float_10s_ease-in-out_infinite_reverse]" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-[#8b5cf6]/5 rounded-full blur-[100px] animate-[pulse-glow_6s_ease-in-out_infinite]" />
           </div>
+
           <AppHeader
             companyName={companyName}
             user={{ name: user?.user_metadata?.name, email: user?.email }}
           />
-          <div className="w-full max-w-12xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
-            <div className="flex items-center justify-center py-12 animate-in fade-in duration-300">
-              <div className="w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full animate-spin" />
+
+          <div className="flex-1 overflow-y-auto w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-10 relative z-10">
+            <div className="flex items-center justify-center py-20">
+              <div className="relative">
+                <div className="w-16 h-16 border-4 border-[#f183ff]/20 border-t-[#f183ff] rounded-full animate-spin" />
+                <div
+                  className="absolute inset-0 w-16 h-16 border-4 border-transparent border-r-[#d946ef]/40 rounded-full animate-spin"
+                  style={{
+                    animationDirection: "reverse",
+                    animationDuration: "1.5s",
+                  }}
+                />
+              </div>
             </div>
           </div>
+
           <BottomNavigation />
         </div>
       </AppLayout>
-    )
+    );
   }
 
   if (!appointment || error) {
     return (
-      <AppLayout companyName={companyName} user={{ name: user?.user_metadata?.name, email: user?.email }}>
-        <div className="flex flex-col h-dvh bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent relative overflow-hidden">
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
-            <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-fuchsia-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+      <AppLayout
+        companyName={companyName}
+        user={{ name: user?.user_metadata?.name, email: user?.email }}
+      >
+        <div className="min-h-dvh bg-[#120a21] relative overflow-hidden">
+          <div className="fixed inset-0 pointer-events-none overflow-hidden">
+            <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-[#f183ff]/10 rounded-full blur-[120px] animate-[float_8s_ease-in-out_infinite]" />
+            <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] bg-[#d946ef]/10 rounded-full blur-[120px] animate-[float_10s_ease-in-out_infinite_reverse]" />
           </div>
+
           <AppHeader
             companyName={companyName}
             user={{ name: user?.user_metadata?.name, email: user?.email }}
           />
-          <div className="w-full max-w-12xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
-            {/* Inline header for error state */}
-            <div className="mb-6">
+
+          <div className="flex-1 overflow-y-auto w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-10 relative z-10">
+            <div className="mb-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
               <div className="flex items-center gap-3">
                 <Link href="/app/agendamentos">
-                  <Button variant="ghost" size="sm" className="p-2">
-                    <ArrowLeft size={20} />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="p-2 rounded-xl hover:bg-white/10"
+                  >
+                    <ArrowLeft size={20} className="text-white/70" />
                   </Button>
                 </Link>
                 <div>
-                  <h1 className="text-2xl font-bold text-white flex items-center gap-3">
-                    <span className="text-3xl">📅</span>
+                  <h1 className="text-2xl font-semibold text-white">
                     Agendamento
                   </h1>
-                  <p className="text-purple-200/60 text-sm">Erro</p>
+                  <p className="text-white/50 text-sm">Erro</p>
                 </div>
               </div>
             </div>
-            <GlassCard variant="default" className="p-8 text-center">
-              <p className="text-red-200 mb-4">⚠️ {error || 'Agendamento não encontrado'}</p>
+            <GlassCard variant="elevated" className="p-8 text-center">
+              <p className="text-red-300 mb-4">
+                {error || "Agendamento não encontrado"}
+              </p>
               <Link href="/app/agendamentos">
-                <Button variant="secondary">Voltar</Button>
+                <Button variant="secondary" className="rounded-xl">
+                  Voltar
+                </Button>
               </Link>
             </GlassCard>
           </div>
+
           <BottomNavigation />
         </div>
       </AppLayout>
-    )
+    );
   }
 
   return (
-    <AppLayout companyName={companyName} user={{ name: user?.user_metadata?.name, email: user?.email }}>
-      <div className="flex flex-col h-dvh bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent relative overflow-hidden">
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-fuchsia-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+    <AppLayout
+      companyName={companyName}
+      user={{ name: user?.user_metadata?.name, email: user?.email }}
+    >
+      <div className="min-h-dvh bg-[#120a21] relative overflow-hidden">
+        {/* Premium animated background layers */}
+        <div className="fixed inset-0 pointer-events-none overflow-hidden">
+          <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-[#f183ff]/10 rounded-full blur-[120px] animate-[float_8s_ease-in-out_infinite]" />
+          <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] bg-[#d946ef]/10 rounded-full blur-[120px] animate-[float_10s_ease-in-out_infinite_reverse]" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-[#8b5cf6]/5 rounded-full blur-[100px] animate-[pulse-glow_6s_ease-in-out_infinite]" />
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(241,131,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(241,131,255,0.02)_1px,transparent_1px)] bg-[size:80px_80px]" />
         </div>
 
-        <AppHeader
-          companyName={companyName}
-          user={{ name: user?.user_metadata?.name, email: user?.email }}
-        />
+        {/* Header App Bar */}
+        <div className="sticky top-0 z-50 px-4 py-4 bg-[#120a21]/80 backdrop-blur-xl border-b border-white/5">
+          <div className="flex items-center justify-between max-w-7xl mx-auto">
+            <Link href="/app/agendamentos">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="p-2 rounded-xl hover:bg-white/10"
+              >
+                <ArrowLeft size={22} className="text-white/70" />
+              </Button>
+            </Link>
 
-        <main className="flex-1 overflow-y-auto w-full max-w-12xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-10 relative">
-          {/* Inline Page Header */}
-          <div className="mb-6">
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <Link href="/app/agendamentos">
-                  <Button variant="ghost" size="sm" className="p-2">
-                    <ArrowLeft size={20} />
+            <h1 className="text-lg font-semibold text-white tracking-wide">
+              Detalhes do Agendamento
+            </h1>
+
+            <div className="flex gap-1">
+              {editing ? (
+                <>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setEditing(false);
+                      setFormData({
+                        date: appointment.date,
+                        time: appointment.time,
+                        notes: appointment.notes || "",
+                      });
+                      setError(null);
+                    }}
+                    disabled={saving}
+                    className="rounded-xl bg-white/5 hover:bg-white/10 text-white/70"
+                  >
+                    Cancelar
                   </Button>
-                </Link>
-                <div>
-                  <h1 className="text-2xl font-bold text-white flex items-center gap-3">
-                    <span className="text-3xl">📅</span>
-                    {formatDate(appointment.date)} • {appointment.time}
-                  </h1>
-                  <p className="text-purple-200/60 text-sm">
-                    Agendamento - {statusLabels[appointment.status]}
-                  </p>
-                </div>
-              </div>
-              <div className="flex gap-2">
-                {editing ? (
-                  <>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        setEditing(false)
-                        setFormData({
-                          date: appointment.date,
-                          time: appointment.time,
-                          price: appointment.price.toString(),
-                          notes: appointment.notes || '',
-                        })
-                        setError(null)
-                      }}
-                      disabled={saving}
-                    >
-                      Cancelar
-                    </Button>
-                    <Button
-                      variant="primary"
-                      size="sm"
-                      onClick={handleSave}
-                      disabled={saving}
-                    >
-                      {saving ? 'Salvando...' : 'Salvar'}
-                    </Button>
-                  </>
-                ) : appointment.status === 'scheduled' ? (
-                  <>
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      onClick={() => setEditing(true)}
-                      disabled={saving}
-                      className="rounded-lg"
-                    >
-                      <Pencil size={16} />
-                    </Button>
-                    <Button
-                      variant="danger"
-                      size="sm"
-                      onClick={handleDelete}
-                      disabled={saving}
-                      className="rounded-lg"
-                    >
-                      <Trash2 size={16} />
-                    </Button>
-                  </>
-                ) : null}
-              </div>
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={handleSave}
+                    disabled={saving}
+                    className="rounded-xl bg-[#f183ff] hover:bg-[#f183ff]/90 text-white border-0 shadow-lg shadow-[#f183ff]/30"
+                  >
+                    {saving ? "Salvando..." : "Salvar"}
+                  </Button>
+                </>
+              ) : appointment.status === "scheduled" ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setEditing(true)}
+                    disabled={saving}
+                    className="p-2 rounded-xl text-white/60 hover:text-[#f183ff] hover:bg-white/10 transition-all disabled:opacity-50"
+                  >
+                    <Pencil size={20} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleDelete}
+                    disabled={saving}
+                    className="p-2 rounded-xl text-red-400/60 hover:text-red-400 hover:bg-red-500/10 transition-all disabled:opacity-50"
+                  >
+                    <Trash2 size={20} />
+                  </button>
+                </>
+              ) : null}
             </div>
           </div>
+        </div>
 
+        {/* Main Content */}
+        <main className="flex-1 overflow-y-auto pb-24 px-4 sm:px-6 lg:px-8 py-6 space-y-4 relative z-10 max-w-7xl mx-auto">
           {error && (
-            <GlassCard variant="default" className="p-3 mb-4 bg-red-500/20 border-red-500/50 animate-in fade-in slide-in-from-top-2">
-              <p className="text-red-200 text-sm">⚠️ {error}</p>
+            <GlassCard
+              variant="default"
+              className="p-4 bg-red-500/10 border-red-500/30 animate-in fade-in slide-in-from-top-2"
+            >
+              <p className="text-red-300 flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-red-400 animate-pulse" />
+                {error}
+              </p>
             </GlassCard>
           )}
 
-          {/* Status Actions */}
-          {appointment.status === 'scheduled' && !editing && (
-            <div className="grid grid-cols-2 gap-3 mb-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
-              <Button
-                variant="primary"
-                size="md"
-                onClick={() => handleStatusChange('completed')}
-                disabled={saving}
-                className="w-full"
-              >
-                <Check size={18} className="mr-2" />
-                Concluído
-              </Button>
-              <Button
-                variant="secondary"
-                size="md"
-                onClick={() => handleStatusChange('cancelled')}
-                disabled={saving}
-                className="w-full"
-              >
-                <X size={18} className="mr-2" />
-                Cancelar
-              </Button>
-            </div>
-          )}
+          {/* Appointment Profile Card - Hero Section */}
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <GlassCard variant="elevated" className="overflow-hidden">
+              {/* Profile Header with Gradient Background */}
+              <div className="relative h-32 bg-gradient-to-br from-[#f183ff]/30 via-[#d946ef]/20 to-[#8b5cf6]/30">
+                {/* Decorative elements */}
+                <div className="absolute top-4 right-4 w-16 h-16 bg-[#f183ff]/20 rounded-full blur-xl animate-pulse" />
+                <div
+                  className="absolute bottom-4 left-4 w-12 h-12 bg-[#d946ef]/20 rounded-full blur-lg animate-pulse"
+                  style={{ animationDelay: "0.5s" }}
+                />
+              </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Appointment Icon */}
+              <div className="relative px-6 -mt-16 mb-4">
+                <div className="relative w-28 h-28 mx-auto">
+                  {/* Icon glow ring */}
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#f183ff] via-[#d946ef] to-[#8b5cf6] blur-lg opacity-60 animate-pulse" />
+
+                  {/* Icon container */}
+                  <div className="relative w-full h-full rounded-full bg-[#120a21] border-4 border-[#f183ff]/30 flex items-center justify-center text-5xl shadow-2xl">
+                    📅
+                  </div>
+
+                  {/* Status badge */}
+                  <div
+                    className={`absolute -bottom-1 -right-1 px-2.5 py-1 rounded-full text-xs font-bold text-white shadow-lg ${statusStyles[appointment.status]}`}
+                  >
+                    {statusIcons[appointment.status]}
+                  </div>
+                </div>
+              </div>
+
+              {/* Appointment Info */}
+              <div className="px-6 pb-6 text-center">
+                {editing ? (
+                  <div className="space-y-3">
+                    <Input
+                      type="date"
+                      value={formData.date}
+                      onChange={(e) => handleChange("date", e.target.value)}
+                      min={getMinDate()}
+                      required
+                      className="w-full text-center"
+                    />
+                    <Input
+                      type="time"
+                      value={formData.time}
+                      onChange={(e) => handleChange("time", e.target.value)}
+                      required
+                      className="w-full text-center"
+                    />
+                  </div>
+                ) : (
+                  <>
+                    <h2 className="text-3xl sm:text-4xl font-bold text-white mb-1">
+                      {formatDate(appointment.date)}
+                    </h2>
+                    <p className="text-2xl text-white/70 font-medium mb-3">
+                      {appointment.time}
+                    </p>
+                    <div className="flex items-center justify-center gap-2 flex-wrap">
+                      <span
+                        className={`px-3 py-1.5 rounded-full border text-xs font-semibold uppercase tracking-wide ${statusStyles[appointment.status]}`}
+                      >
+                        {statusLabels[appointment.status]}
+                      </span>
+                    </div>
+                  </>
+                )}
+              </div>
+            </GlassCard>
+          </div>
+
+          {/* Info Cards Grid */}
+          <div className="grid grid-cols-1 gap-3 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
             {/* Pet Card */}
-            <GlassCard variant="default" className="p-5 animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <div className="flex items-start gap-4">
-                <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-purple-500/20 to-fuchsia-500/20 flex items-center justify-center text-2xl flex-shrink-0">
+            <GlassCard variant="default" className="p-4">
+              <Link
+                href={`/app/pets/${appointment.pet.id}`}
+                className="flex items-center gap-4 group"
+              >
+                <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#f183ff]/20 to-[#d946ef]/20 flex items-center justify-center text-xl shadow-lg shadow-[#f183ff]/10 flex-shrink-0">
                   {SIZE_EMOJIS[appointment.pet.size]}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-purple-200/50 text-xs mb-1">Pet</p>
-                  <Link
-                    href={`/app/pets/${appointment.pet.id}`}
-                    className="text-white font-semibold text-lg hover:text-purple-300 transition-colors"
-                  >
+                  <p className="text-white/50 text-[10px] font-semibold uppercase tracking-wider mb-0.5">
+                    Pet
+                  </p>
+                  <p className="text-white text-sm font-medium truncate group-hover:text-[#f183ff] transition-colors">
                     {appointment.pet.name}
-                  </Link>
-                  <p className="text-purple-200/60 text-sm">{SIZE_LABELS[appointment.pet.size]}</p>
+                  </p>
+                  <span
+                    className={`inline-block mt-0.5 px-2 py-0.5 rounded-full text-[10px] font-medium border ${SIZE_COLORS[appointment.pet.size]}`}
+                  >
+                    {SIZE_LABELS[appointment.pet.size]}
+                  </span>
                 </div>
-              </div>
+                <ChevronRight
+                  size={18}
+                  className="text-white/30 group-hover:text-[#f183ff] group-hover:translate-x-1 transition-all flex-shrink-0"
+                />
+              </Link>
             </GlassCard>
 
             {/* Client Card */}
-            <GlassCard variant="default" className="p-5 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-75">
-              <div className="flex items-start gap-4">
-                <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500/20 to-cyan-500/20 flex items-center justify-center text-2xl flex-shrink-0">
+            <GlassCard variant="default" className="p-4">
+              <Link
+                href={`/app/clientes/${appointment.client.id}`}
+                className="flex items-center gap-4"
+              >
+                <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#8b5cf6]/20 to-[#6366f1]/20 flex items-center justify-center text-xl shadow-lg shadow-[#8b5cf6]/10 flex-shrink-0">
                   👤
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-purple-200/50 text-xs mb-1">Cliente</p>
-                  <Link
-                    href={`/app/clientes/${appointment.client.id}`}
-                    className="text-white font-semibold text-lg hover:text-purple-300 transition-colors"
-                  >
+                  <p className="text-white/50 text-[10px] font-semibold uppercase tracking-wider mb-0.5">
+                    Cliente
+                  </p>
+                  <p className="text-white text-sm font-medium truncate">
                     {appointment.client.name}
-                  </Link>
-                  <p className="text-purple-200/60 text-sm">{appointment.client.phone}</p>
+                  </p>
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    <Phone size={12} className="text-white/40" />
+                    <span className="text-white/50 text-xs">
+                      {formatPhone(appointment.client.phone)}
+                    </span>
+                  </div>
                 </div>
-              </div>
+                <ChevronRight
+                  size={18}
+                  className="text-white/30 flex-shrink-0"
+                />
+              </Link>
             </GlassCard>
 
             {/* Service Card */}
-            <GlassCard variant="default" className="p-5 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-100">
-              <div className="flex items-start gap-4">
-                <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 flex items-center justify-center text-2xl flex-shrink-0">
-                  ✂️
+            <GlassCard variant="default" className="p-4">
+              <div className="flex items-center gap-4">
+                <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 flex items-center justify-center text-xl shadow-lg shadow-amber-500/10 flex-shrink-0">
+                  <Scissors size={20} className="text-amber-400" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-purple-200/50 text-xs mb-1">Serviço</p>
-                  <p className="text-white font-semibold text-lg">{appointment.service_price.service_name}</p>
-                  <p className="text-purple-200/60 text-sm">{appointment.service_price.billing_type === 'pacote' ? 'Pacote' : 'Avulso'}</p>
+                  <p className="text-white/50 text-[10px] font-semibold uppercase tracking-wider mb-0.5">
+                    Serviço
+                  </p>
+                  <p className="text-white text-sm font-medium truncate">
+                    {appointment.service_price?.service_name || "Serviço"}
+                  </p>
+                  <p className="text-white/50 text-xs mt-0.5">
+                    {appointment.service_price?.billing_type === "pacote"
+                      ? "📦 Pacote"
+                      : "💳 Avulso"}
+                  </p>
                 </div>
               </div>
             </GlassCard>
 
             {/* Price Card */}
-            <GlassCard variant="default" className="p-5 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-150">
-              <div className="flex items-start gap-4">
-                <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-green-500/20 to-emerald-500/20 flex items-center justify-center text-2xl flex-shrink-0">
+            <GlassCard variant="default" className="p-4">
+              <div className="flex items-center gap-4">
+                <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-green-500/20 to-emerald-500/20 flex items-center justify-center text-xl shadow-lg shadow-green-500/10 flex-shrink-0">
                   💰
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-purple-200/50 text-xs mb-1">Valor</p>
-                  <p className="text-white font-bold text-2xl">R$ {appointment.price.toFixed(2)}</p>
+                  <p className="text-white/50 text-[10px] font-semibold uppercase tracking-wider mb-0.5">
+                    Valor
+                  </p>
+                  <p className="text-white text-lg font-bold">
+                    R$ {appointment.price.toFixed(2)}
+                  </p>
                   {appointment.used_credit && (
-                    <p className="text-purple-200/60 text-sm">Crédito utilizado</p>
+                    <p className="text-white/50 text-xs mt-0.5">
+                      Crédito utilizado
+                    </p>
                   )}
                 </div>
               </div>
             </GlassCard>
           </div>
 
-          {/* Notes Section */}
-          {appointment.notes && (
-            <GlassCard variant="default" className="p-5 mt-4 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200">
-              <p className="text-purple-200/50 text-xs mb-2 flex items-center gap-2">
-                <span>📝</span>
-                Observações
-              </p>
-              <p className="text-white leading-relaxed">{appointment.notes}</p>
-            </GlassCard>
+          {/* Notes Card */}
+          {(appointment.notes || editing) && (
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150">
+              <GlassCard variant="default" className="p-4">
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#f183ff]/20 to-[#d946ef]/20 flex items-center justify-center text-lg shadow-lg shadow-[#f183ff]/10 flex-shrink-0 mt-0.5">
+                    📝
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white/50 text-[10px] font-semibold uppercase tracking-wider mb-2">
+                      Observações
+                    </p>
+                    {editing ? (
+                      <textarea
+                        value={formData.notes}
+                        onChange={(e) => handleChange("notes", e.target.value)}
+                        placeholder="Adicione observações sobre o agendamento..."
+                        rows={3}
+                        className="w-full px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-sm placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#f183ff]/50 focus:border-[#f183ff]/50 backdrop-blur-sm resize-none transition-all hover:bg-white/[0.07]"
+                      />
+                    ) : (
+                      <p className="text-white/80 text-sm whitespace-pre-wrap leading-relaxed">
+                        {appointment.notes || (
+                          <span className="text-white/30 italic">
+                            Nenhuma observação
+                          </span>
+                        )}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </GlassCard>
+            </div>
           )}
 
-          {/* Edit Form */}
-          {editing && (
-            <GlassCard variant="default" className="p-5 mt-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <form onSubmit={(e) => { e.preventDefault(); handleSave(); }} className="space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label htmlFor="date" className="block text-purple-200/70 text-sm font-medium mb-2">
-                      Data
-                    </label>
-                    <Input
-                      id="date"
-                      type="date"
-                      value={formData.date}
-                      onChange={(e) => handleChange('date', e.target.value)}
-                      min={getMinDate()}
-                      required
-                      className="w-full"
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="time" className="block text-purple-200/70 text-sm font-medium mb-2">
-                      Horário
-                    </label>
-                    <Input
-                      id="time"
-                      type="time"
-                      value={formData.time}
-                      onChange={(e) => handleChange('time', e.target.value)}
-                      required
-                      className="w-full"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label htmlFor="price" className="block text-purple-200/70 text-sm font-medium mb-2">
-                    Preço
-                  </label>
-                  <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-purple-200/50">R$</span>
-                    <Input
-                      id="price"
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      value={formData.price}
-                      onChange={(e) => handleChange('price', e.target.value)}
-                      required
-                      className="w-full pl-12"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label htmlFor="notes" className="block text-purple-200/70 text-sm font-medium mb-2">
-                    Observações
-                  </label>
-                  <textarea
-                    id="notes"
-                    value={formData.notes}
-                    onChange={(e) => handleChange('notes', e.target.value)}
-                    placeholder="Adicione observações..."
-                    rows={2}
-                    className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-purple-200/30 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 backdrop-blur-sm resize-none transition-all hover:bg-white/[0.07]"
-                  />
-                </div>
-              </form>
-            </GlassCard>
+          {/* Pet Package Info */}
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
+            <PetPackageCard
+              petId={appointment.pet.id}
+              petName={appointment.pet.name}
+            />
+          </div>
+
+          {/* Action Buttons */}
+          {appointment.status === "scheduled" && !editing && (
+            <div className="grid grid-cols-2 gap-3 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
+              <Button
+                variant="primary"
+                size="lg"
+                onClick={() => handleStatusChange("completed")}
+                disabled={saving}
+                className="rounded-2xl bg-gradient-to-r from-[#f183ff] to-[#d946ef] hover:from-[#f183ff]/90 hover:to-[#d946ef]/90 border-0 shadow-lg shadow-[#f183ff]/30 py-5 text-base font-semibold"
+              >
+                <Check size={20} className="mr-2" />
+                Concluir
+              </Button>
+              <Button
+                variant="secondary"
+                size="lg"
+                onClick={() => setShowCancelConfirm(true)}
+                disabled={saving}
+                className="rounded-2xl border border-white/20 bg-white/5 hover:bg-white/10 hover:border-white/30 py-5 text-base font-semibold"
+              >
+                <X size={20} className="mr-2" />
+                Cancelar
+              </Button>
+            </div>
           )}
 
-          {/* Footer */}
-          <p className="text-center text-purple-200/20 text-xs mt-6">
-            Criado em {new Date(appointment.created_at).toLocaleDateString('pt-BR')} às {new Date(appointment.created_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
-          </p>
+          {/* Metadata */}
+          <div className="pt-2 text-center animate-in fade-in slide-in-from-bottom-4 duration-700 delay-400">
+            <p className="text-white/20 text-xs">
+              Criado em{" "}
+              {new Date(appointment.created_at).toLocaleDateString("pt-BR")} às{" "}
+              {new Date(appointment.created_at).toLocaleTimeString("pt-BR", {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </p>
+          </div>
         </main>
 
         <BottomNavigation />
       </div>
+
+      <ConfirmDialog
+        open={showDeleteConfirm}
+        onOpenChange={setShowDeleteConfirm}
+        onConfirm={confirmDelete}
+        title="Excluir agendamento?"
+        description="Esta ação não pode ser desfeita! Você perderá todos os dados e históricos vinculados a este agendamento."
+        confirmText="Excluir"
+        cancelText="Cancelar"
+        variant="danger"
+        icon="trash"
+        loading={saving}
+      />
+
+      <ConfirmDialog
+        open={showCancelConfirm}
+        onOpenChange={setShowCancelConfirm}
+        onConfirm={() => {
+          handleStatusChange("cancelled");
+          setShowCancelConfirm(false);
+        }}
+        title="Cancelar agendamento?"
+        description="Esta ação mudará o status do agendamento para cancelado. Você poderá reativá-lo se necessário."
+        confirmText="Cancelar"
+        cancelText="Voltar"
+        variant="warning"
+        icon="alert"
+        loading={saving}
+      />
+
+      <style>{`
+        @keyframes float {
+          0%, 100% { transform: translateY(0px) rotate(0deg); }
+          50% { transform: translateY(-20px) rotate(5deg); }
+        }
+        @keyframes pulse-glow {
+          0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+          50% { opacity: 0.8; transform: translate(-50%, -50%) scale(1.05); }
+        }
+      `}</style>
     </AppLayout>
-  )
+  );
 }

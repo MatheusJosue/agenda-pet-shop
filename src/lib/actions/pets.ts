@@ -19,12 +19,9 @@ export interface PetWithClientResponse {
 async function getCurrentCompanyId(): Promise<string | null> {
   const supabase = await createSupabaseClient()
 
-  // Use getUser() instead of getSession() for server-side code
-  // getUser() sends a request to validate the token, more secure than getSession()
   const { data: { user }, error } = await supabase.auth.getUser()
 
   if (error || !user) {
-    console.error('getCurrentCompanyId - auth error:', error)
     return null
   }
 
@@ -76,13 +73,27 @@ export async function getPets(clientId?: string): Promise<PetsListResponse> {
  * Get a single pet by ID
  */
 export async function getPetById(id: string): Promise<PetWithClientResponse> {
+  const supabase = await createSupabaseClient()
+
+  const { data: petData, error: petError } = await supabase
+    .from('pets')
+    .select('*')
+    .eq('id', id)
+    .single()
+
+  if (petError || !petData) {
+    return { error: petError?.message || 'Pet não encontrado' }
+  }
+
   const companyId = await getCurrentCompanyId()
 
   if (!companyId) {
     return { error: 'Não autenticado' }
   }
 
-  const supabase = await createSupabaseClient()
+  if (petData.company_id !== companyId) {
+    return { error: 'Pet não encontrado' }
+  }
 
   const { data, error } = await supabase
     .from('pets')
@@ -95,7 +106,7 @@ export async function getPetById(id: string): Promise<PetWithClientResponse> {
     .single()
 
   if (error || !data) {
-    return { error: 'Pet não encontrado' }
+    return { error: error?.message || 'Pet não encontrado' }
   }
 
   return { data }
