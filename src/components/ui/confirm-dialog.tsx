@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect } from 'react'
-import { AlertTriangle, Trash2, Loader2 } from 'lucide-react'
+import { useEffect, type ReactNode } from 'react'
+import { AlertTriangle, Trash2, Loader2, Edit2, RefreshCw } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 export interface ConfirmDialogProps {
@@ -9,11 +9,11 @@ export interface ConfirmDialogProps {
   onOpenChange: (open: boolean) => void
   onConfirm: () => void | Promise<void>
   title: string
-  description: string
+  description: string | ReactNode
   confirmText?: string
   cancelText?: string
-  variant?: 'danger' | 'warning'
-  icon?: 'alert' | 'trash'
+  variant?: 'danger' | 'warning' | 'default'
+  icon?: 'alert' | 'trash' | 'edit' | 'refresh'
   loading?: boolean
 }
 
@@ -46,7 +46,14 @@ export function ConfirmDialog({
     await onConfirm()
   }
 
-  const Icon = icon === 'trash' ? Trash2 : AlertTriangle
+  const getIcon = () => {
+    if (icon === 'trash') return Trash2
+    if (icon === 'edit') return Edit2
+    if (icon === 'refresh') return RefreshCw
+    return AlertTriangle
+  }
+
+  const Icon = getIcon()
 
   return (
     <div
@@ -75,14 +82,17 @@ export function ConfirmDialog({
                 "border-2",
                 variant === 'danger'
                   ? 'bg-[#ff4d4d]/10 border-[#ff4d4d]/30 shadow-[0_0_30px_rgba(255,77,77,0.3)]'
-                  : 'bg-amber-500/10 border-amber-500/30 shadow-[0_0_30px_rgba(245,158,11,0.3)]'
+                  : variant === 'warning'
+                  ? 'bg-amber-500/10 border-amber-500/30 shadow-[0_0_30px_rgba(245,158,11,0.3)]'
+                  : 'bg-[#f183ff]/10 border-[#f183ff]/30 shadow-[0_0_30px_rgba(241,131,255,0.3)]'
               )}
             >
               <Icon
                 size={36}
                 className={cn(
                   "animate-in spin-in-12 duration-500",
-                  variant === 'danger' ? 'text-[#ff4d4d]' : 'text-amber-500'
+                  variant === 'danger' ? 'text-[#ff4d4d]' : variant === 'warning' ? 'text-amber-500' : 'text-[#f183ff]',
+                  icon === 'edit' && 'animate-none'
                 )}
               />
             </div>
@@ -94,9 +104,15 @@ export function ConfirmDialog({
           </h2>
 
           {/* Description */}
-          <p className="text-white/60 text-center text-sm leading-relaxed mb-8">
-            {description}
-          </p>
+          {typeof description === 'string' ? (
+            <p className="text-white/60 text-center text-sm leading-relaxed mb-8">
+              {description}
+            </p>
+          ) : (
+            <div className="text-white/60 text-center text-sm leading-relaxed mb-8">
+              {description}
+            </div>
+          )}
 
           {/* Actions */}
           <div className="flex flex-col sm:flex-row gap-3">
@@ -122,7 +138,9 @@ export function ConfirmDialog({
                 "border-0 shadow-lg",
                 variant === 'danger'
                   ? 'bg-[#ff4d4d] text-white shadow-[#ff4d4d]/40 hover:shadow-[#ff4d4d]/60'
-                  : 'bg-amber-500 text-white shadow-amber-500/40 hover:shadow-amber-500/60',
+                  : variant === 'warning'
+                  ? 'bg-amber-500 text-white shadow-amber-500/40 hover:shadow-amber-500/60'
+                  : 'bg-[#f183ff] text-white shadow-[#f183ff]/40 hover:shadow-[#f183ff]/60',
                 "hover:opacity-90",
                 "disabled:opacity-50 disabled:cursor-not-allowed",
                 "transition-all duration-200"
