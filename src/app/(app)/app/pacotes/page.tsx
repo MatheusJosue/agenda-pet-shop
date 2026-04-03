@@ -9,6 +9,7 @@ import { AppLayout } from "@/components/layout/app-layout";
 import { GlassCard } from "@/components/ui/glass-card";
 import { Button } from "@/components/ui/button";
 import { AnimatedIcon } from "@/components/ui/animated-icon";
+import { SkeletonListStack } from "@/components/skeleton";
 import { motion } from "framer-motion";
 import {
   Package,
@@ -162,9 +163,7 @@ export default function PacotesPage() {
           </form>
 
           {loading ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="w-10 h-10 border-4 border-purple-500 border-t-transparent rounded-full animate-spin" />
-            </div>
+            <SkeletonListStack count={6} />
           ) : !packageTypes || packageTypes.length === 0 ? (
             <GlassCard
               variant="default"

@@ -13,6 +13,7 @@ import { AppHeader } from '@/components/layout/app-header'
 import { AppLayout } from '@/components/layout/app-layout'
 import { BottomNavigation } from '@/components/layout/bottom-navigation'
 import { ManagePackageModal } from '@/components/pacotes/manage-package-modal'
+import { SkeletonInput, SkeletonForm } from '@/components/skeleton'
 import { Pencil, Trash2, Package, ArrowLeft, Sparkles, Calendar, ChevronRight } from 'lucide-react'
 import type { PetWithClient } from '@/lib/types/pets'
 import type { PetPackageWithRelations } from '@/lib/types/packages'
@@ -181,10 +182,71 @@ export default function PetDetailPage() {
           />
 
           <div className="flex-1 overflow-y-auto w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-10 relative z-10">
-            <div className="flex items-center justify-center py-20">
-              <div className="relative">
-                <div className="w-16 h-16 border-4 border-[#f183ff]/20 border-t-[#f183ff] rounded-full animate-spin" />
-                <div className="absolute inset-0 w-16 h-16 border-4 border-transparent border-r-[#d946ef]/40 rounded-full animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }} />
+            {/* Page Header Skeleton */}
+            <div className="mb-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-[#2b2041]/40 animate-pulse" />
+                  <div className="h-9 w-48 bg-[#2b2041]/40 rounded animate-pulse" />
+                </div>
+                <div className="flex gap-2">
+                  <div className="w-10 h-10 rounded-xl bg-[#2b2041]/40 animate-pulse" />
+                  <div className="w-10 h-10 rounded-xl bg-[#2b2041]/40 animate-pulse" />
+                </div>
+              </div>
+            </div>
+
+            {/* Pet Profile Card Skeleton */}
+            <div className="mb-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-1">
+                <div className="p-6 rounded-2xl border backdrop-blur-sm bg-[#2d1b4e]/30 border-white/10 h-full">
+                  <div className="flex flex-col items-center text-center gap-4">
+                    <div className="w-24 h-24 rounded-full bg-[#2b2041]/40 animate-pulse" />
+                    <div className="w-full">
+                      <div className="h-7 w-32 bg-[#2b2041]/40 rounded animate-pulse mx-auto mb-2" />
+                      <div className="h-5 w-24 bg-[#2b2041]/40 rounded animate-pulse mx-auto" />
+                    </div>
+                    <div className="flex gap-2 w-full justify-center">
+                      <div className="h-6 w-16 bg-[#2b2041]/40 rounded-lg animate-pulse" />
+                      <div className="h-6 w-16 bg-[#2b2041]/40 rounded-lg animate-pulse" />
+                    </div>
+                  </div>
+                  <div className="mt-6 pt-6 border-t border-white/10 space-y-3">
+                    <div className="flex justify-between items-center">
+                      <div className="h-4 w-20 bg-[#2b2041]/40 rounded animate-pulse" />
+                      <div className="h-4 w-24 bg-[#2b2041]/40 rounded animate-pulse" />
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <div className="h-4 w-24 bg-[#2b2041]/40 rounded animate-pulse" />
+                      <div className="h-4 w-20 bg-[#2b2041]/40 rounded animate-pulse" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="lg:col-span-2">
+                <div className="p-6 rounded-2xl border backdrop-blur-sm bg-[#2d1b4e]/30 border-white/10">
+                  <div className="space-y-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <div className="h-4 w-16 bg-[#2b2041]/40 rounded animate-pulse" />
+                        <div className="h-10 w-full bg-[#2b2041]/40 rounded-xl animate-pulse" />
+                      </div>
+                      <div className="space-y-2">
+                        <div className="h-4 w-20 bg-[#2b2041]/40 rounded animate-pulse" />
+                        <div className="h-10 w-full bg-[#2b2041]/40 rounded-xl animate-pulse" />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="h-4 w-24 bg-[#2b2041]/40 rounded animate-pulse" />
+                      <div className="h-10 w-full bg-[#2b2041]/40 rounded-xl animate-pulse" />
+                    </div>
+                    <div className="space-y-2">
+                      <div className="h-4 w-20 bg-[#2b2041]/40 rounded animate-pulse" />
+                      <div className="h-24 w-full bg-[#2b2041]/40 rounded-xl animate-pulse" />
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

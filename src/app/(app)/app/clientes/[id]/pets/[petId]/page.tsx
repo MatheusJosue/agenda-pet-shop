@@ -13,6 +13,7 @@ import { AppHeader } from '@/components/layout/app-header'
 import { AppLayout } from '@/components/layout/app-layout'
 import { BottomNavigation } from '@/components/layout/bottom-navigation'
 import { ManagePackageModal } from '@/components/pacotes/manage-package-modal'
+import { SkeletonInput, SkeletonForm } from '@/components/skeleton'
 import { Pencil, Trash2, Package, ArrowLeft, Sparkles, Calendar, ChevronRight } from 'lucide-react'
 import type { PetWithClient } from '@/lib/types/pets'
 import type { PetPackageWithRelations } from '@/lib/types/packages'
@@ -182,10 +183,70 @@ export default function ClientPetDetailPage() {
           />
 
           <div className="flex-1 overflow-y-auto w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-10 relative z-10">
-            <div className="flex items-center justify-center py-20">
-              <div className="relative">
-                <div className="w-16 h-16 border-4 border-[#f183ff]/20 border-t-[#f183ff] rounded-full animate-spin" />
-                <div className="absolute inset-0 w-16 h-16 border-4 border-transparent border-r-[#d946ef]/40 rounded-full animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }} />
+            {/* Page Header Skeleton */}
+            <div className="mb-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-[#2b2041]/40 animate-pulse" />
+                <div className="h-7 w-32 bg-[#2b2041]/40 rounded animate-pulse" />
+              </div>
+            </div>
+
+            {/* Pet Profile Card Skeleton */}
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-100">
+              <div className="rounded-2xl border backdrop-blur-sm bg-[#2d1b4e]/30 border-white/10 overflow-hidden">
+                {/* Profile Header with Gradient Background Skeleton */}
+                <div className="relative h-32 bg-gradient-to-br from-[#f183ff]/30 via-[#d946ef]/20 to-[#8b5cf6]/30">
+                  <div className="absolute top-4 right-4 w-16 h-16 bg-[#f183ff]/20 rounded-full blur-xl animate-pulse" />
+                  <div className="absolute bottom-4 left-4 w-12 h-12 bg-[#d946ef]/20 rounded-full blur-lg animate-pulse" />
+                </div>
+
+                {/* Pet Avatar Skeleton */}
+                <div className="relative px-6 -mt-16 mb-4">
+                  <div className="relative w-28 h-28 mx-auto">
+                    <div className="absolute inset-0 rounded-full bg-[#2b2041]/40 animate-pulse" />
+                    <div className="relative w-full h-full rounded-full bg-[#120a21] border-4 border-white/10 animate-pulse" />
+                  </div>
+                </div>
+
+                {/* Pet Info Skeleton */}
+                <div className="px-6 pb-6 text-center space-y-3">
+                  <div className="h-8 w-32 bg-[#2b2041]/40 rounded animate-pulse mx-auto" />
+                  <div className="h-5 w-24 bg-[#2b2041]/40 rounded animate-pulse mx-auto" />
+                </div>
+              </div>
+            </div>
+
+            {/* Pet Details Card Skeleton */}
+            <div className="mt-4 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-150">
+              <div className="p-5 rounded-2xl border backdrop-blur-sm bg-[#2d1b4e]/30 border-white/10">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <div className="h-4 w-20 bg-[#2b2041]/40 rounded animate-pulse" />
+                    <div className="h-6 w-16 bg-[#2b2041]/40 rounded-lg animate-pulse" />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="h-4 w-24 bg-[#2b2041]/40 rounded animate-pulse" />
+                    <div className="h-6 w-16 bg-[#2b2041]/40 rounded-lg animate-pulse" />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="h-4 w-16 bg-[#2b2041]/40 rounded animate-pulse" />
+                    <div className="h-6 w-20 bg-[#2b2041]/40 rounded-lg animate-pulse" />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="h-4 w-28 bg-[#2b2041]/40 rounded animate-pulse" />
+                    <div className="h-6 w-16 bg-[#2b2041]/40 rounded-lg animate-pulse" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Notes Card Skeleton */}
+            <div className="mt-4 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200">
+              <div className="p-5 rounded-2xl border backdrop-blur-sm bg-[#2d1b4e]/30 border-white/10">
+                <div className="space-y-2">
+                  <div className="h-4 w-20 bg-[#2b2041]/40 rounded animate-pulse" />
+                  <div className="h-20 w-full bg-[#2b2041]/40 rounded-xl animate-pulse" />
+                </div>
               </div>
             </div>
           </div>

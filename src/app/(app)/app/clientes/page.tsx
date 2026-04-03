@@ -1,6 +1,7 @@
 import { Suspense } from 'react'
 import { ClientesPageContent } from './page-client'
 import { AppLayout } from '@/components/layout/app-layout'
+import { SkeletonListStack, SkeletonHeader } from '@/components/skeleton'
 
 export default function ClientesPage() {
   return (
@@ -22,12 +23,8 @@ function ClientesLoading() {
         </div>
 
         <div className="max-w-7xl mx-auto px-4 py-6 relative z-10">
-          <div className="flex items-center justify-center py-20">
-            <div className="relative">
-              <div className="w-16 h-16 border-4 border-[#f183ff]/20 border-t-[#f183ff] rounded-full animate-spin" />
-              <div className="absolute inset-0 w-16 h-16 border-4 border-transparent border-r-[#d946ef]/40 rounded-full animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }} />
-            </div>
-          </div>
+          <SkeletonHeader showLogo={false} showUser={false} titleWidth="w-40" />
+          <SkeletonListStack count={8} />
         </div>
       </div>
     </AppLayout>

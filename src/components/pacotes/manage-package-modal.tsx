@@ -58,16 +58,16 @@ export function ManagePackageModal({
     creditsTotal > 0 ? (creditsUsed / creditsTotal) * 100 : 0
   const isExhausted = packageData?.credits_remaining === 0
 
-  // Load package types for new package
+  // Load package types for new package or when pet has no active package
   useEffect(() => {
-    if (showNewPackage) {
+    if (showNewPackage || !packageData) {
       getPackageTypes().then((result) => {
         if (result.data) {
           setPackageTypes(result.data)
         }
       })
     }
-  }, [showNewPackage])
+  }, [showNewPackage, packageData])
 
   const handleMarkExhausted = async () => {
     if (!packageData) return
@@ -329,24 +329,29 @@ export function ManagePackageModal({
                   </button>
                 </div>
               </>
-            ) : showNewPackage ? (
+            ) : (
               <>
                 {/* New Package Selection */}
                 <div className="space-y-3">
                   <div className="flex items-center gap-3 mb-4">
-                    <button
-                      onClick={() => {
-                        setShowNewPackage(false)
-                        setSelectedType(null)
-                      }}
-                      className="p-2 rounded-xl text-white/50 hover:text-white hover:bg-white/10 transition-all"
-                    >
-                      <X size={18} />
-                    </button>
+                    {packageData && (
+                      <button
+                        onClick={() => {
+                          setShowNewPackage(false)
+                          setSelectedType(null)
+                        }}
+                        className="p-2 rounded-xl text-white/50 hover:text-white hover:bg-white/10 transition-all"
+                      >
+                        <X size={18} />
+                      </button>
+                    )}
                     <div>
                       <h3 className="text-white font-semibold">Criar Novo Pacote</h3>
                       <p className="text-white/40 text-sm">
-                        Este substituirá o pacote atual
+                        {packageData
+                          ? 'Este substituirá o pacote atual'
+                          : 'Selecione um pacote para adicionar ao pet'
+                        }
                       </p>
                     </div>
                   </div>
@@ -399,10 +404,6 @@ export function ManagePackageModal({
                   </Button>
                 )}
               </>
-            ) : (
-              <div className="text-center py-8">
-                <p className="text-white/40">Nenhum pacote ativo</p>
-              </div>
             )}
 
             {/* Error */}

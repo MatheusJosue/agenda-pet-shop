@@ -7,6 +7,7 @@ import { AppLayout } from '@/components/layout/app-layout'
 import { AppHeader } from '@/components/layout/app-header'
 import { BottomNavigation } from '@/components/layout/bottom-navigation'
 import { GlassCard } from '@/components/ui/glass-card'
+import { SkeletonMetricGrid } from '@/components/skeleton'
 import type { LucideIcon } from 'lucide-react'
 import { Calendar, Scissors, Users, Sparkles, ChevronRight, DollarSign, TrendingUp, PawPrint } from 'lucide-react'
 
@@ -85,10 +86,55 @@ export default function AppPage() {
 
         <main className="flex-1 overflow-y-auto w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 space-y-6 relative z-10 custom-scrollbar">
           {loading ? (
-            <div className="flex items-center justify-center py-20">
-              <div className="relative">
-                <div className="w-16 h-16 border-4 border-[#f183ff]/20 border-t-[#f183ff] rounded-full animate-spin" />
-                <div className="absolute inset-0 w-16 h-16 border-4 border-transparent border-r-[#d946ef]/40 rounded-full animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }} />
+            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+              {/* Welcome Section Skeleton */}
+              <div className="space-y-2">
+                <div className="h-10 w-48 bg-[#2b2041]/40 rounded animate-pulse" />
+                <div className="h-5 w-64 bg-[#2b2041]/40 rounded animate-pulse" />
+              </div>
+
+              {/* Stats Cards Skeleton */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="relative overflow-hidden rounded-2xl p-4 sm:p-5 border backdrop-blur-sm bg-[#2d1b4e]/30 border-white/10 animate-pulse"
+                    style={{ animationDelay: `${i * 100}ms` }}
+                  >
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-[#2b2041]/40 mb-3" />
+                    <div className="h-8 w-20 bg-[#2b2041]/40 rounded mb-1" />
+                    <div className="h-4 w-24 bg-[#2b2041]/40 rounded" />
+                  </div>
+                ))}
+              </div>
+
+              {/* Today's Schedule Skeleton */}
+              <div className="p-4 sm:p-5 rounded-2xl border backdrop-blur-sm bg-[#2d1b4e]/30 border-white/10">
+                <div className="space-y-4">
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <div key={i} className="flex items-center gap-3 sm:gap-4">
+                      <div className="w-16 sm:w-20 h-8 sm:h-10 bg-[#2b2041]/40 rounded animate-pulse" />
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-[#2b2041]/40 animate-pulse" />
+                      <div className="flex-1 space-y-1">
+                        <div className="h-5 w-32 bg-[#2b2041]/40 rounded animate-pulse" />
+                        <div className="h-4 w-24 bg-[#2b2041]/40 rounded animate-pulse" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Quick Actions Skeleton */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="flex flex-col items-center justify-center gap-2 p-4 sm:p-5 rounded-xl border backdrop-blur-sm bg-[#2d1b4e]/30 border-white/10 animate-pulse"
+                  >
+                    <div className="w-6 h-6 bg-[#2b2041]/40 rounded" />
+                    <div className="h-4 w-20 bg-[#2b2041]/40 rounded" />
+                  </div>
+                ))}
               </div>
             </div>
           ) : (

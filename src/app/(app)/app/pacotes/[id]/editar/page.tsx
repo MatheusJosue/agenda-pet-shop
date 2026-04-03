@@ -11,6 +11,7 @@ import { Select } from '@/components/ui/select'
 import { AppHeader } from '@/components/layout/app-header'
 import { AppLayout } from '@/components/layout/app-layout'
 import { BottomNavigation } from '@/components/layout/bottom-navigation'
+import { SkeletonInput, SkeletonForm } from '@/components/skeleton'
 import { ArrowLeft } from 'lucide-react'
 import type { PackageType } from '@/lib/types/packages'
 
@@ -118,9 +119,58 @@ export default function EditarTipoPacotePage() {
     return (
       <AppLayout companyName={companyName} user={{ name: user?.user_metadata?.name, email: user?.email }}>
         <div className="flex flex-col h-dvh bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent relative overflow-hidden">
-          <div className="flex items-center justify-center py-12">
-            <div className="w-10 h-10 border-4 border-purple-500 border-t-transparent rounded-full animate-spin" />
+          {/* Animated background decoration */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
+            <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-fuchsia-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
           </div>
+
+          <AppHeader companyName={companyName} user={{ name: user?.user_metadata?.name, email: user?.email }} />
+
+          <main className="flex-1 overflow-y-auto w-full max-w-12xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
+            {/* Page Header Skeleton */}
+            <div className="mb-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-[#2b2041]/40 animate-pulse" />
+                <div className="h-8 w-48 bg-[#2b2041]/40 rounded animate-pulse" />
+              </div>
+            </div>
+
+            {/* Form Card Skeleton */}
+            <div className="max-w-md mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500 delay-100">
+              <div className="p-6 rounded-2xl border backdrop-blur-sm bg-[#2d1b4e]/30 border-white/10">
+                <div className="space-y-6">
+                  {/* Name skeleton */}
+                  <div className="space-y-2">
+                    <div className="h-4 w-20 bg-[#2b2041]/40 rounded animate-pulse" />
+                    <div className="h-12 w-full bg-[#2b2041]/40 rounded-xl animate-pulse" />
+                  </div>
+
+                  {/* Interval skeleton */}
+                  <div className="space-y-2">
+                    <div className="h-4 w-24 bg-[#2b2041]/40 rounded animate-pulse" />
+                    <div className="h-12 w-full bg-[#2b2041]/40 rounded-xl animate-pulse" />
+                  </div>
+
+                  {/* Credits skeleton */}
+                  <div className="space-y-2">
+                    <div className="h-4 w-28 bg-[#2b2041]/40 rounded animate-pulse" />
+                    <div className="h-12 w-full bg-[#2b2041]/40 rounded-xl animate-pulse" />
+                  </div>
+
+                  {/* Price skeleton */}
+                  <div className="space-y-2">
+                    <div className="h-4 w-16 bg-[#2b2041]/40 rounded animate-pulse" />
+                    <div className="h-12 w-full bg-[#2b2041]/40 rounded-xl animate-pulse" />
+                  </div>
+
+                  {/* Submit button skeleton */}
+                  <div className="h-12 w-full bg-[#2b2041]/40 rounded-xl animate-pulse pt-4" />
+                </div>
+              </div>
+            </div>
+          </main>
+
           <BottomNavigation />
         </div>
       </AppLayout>

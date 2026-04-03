@@ -16,6 +16,7 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { AppHeader } from "@/components/layout/app-header";
 import { AppLayout } from "@/components/layout/app-layout";
 import { BottomNavigation } from "@/components/layout/bottom-navigation";
+import { SkeletonInput } from "@/components/skeleton";
 import { Pencil, Trash2, ArrowLeft, DollarSign } from "lucide-react";
 import type { Service } from "@/lib/types/services";
 
@@ -169,8 +170,46 @@ export default function ServicoDetailPage() {
             user={{ name: user?.user_metadata?.name, email: user?.email }}
           />
           <main className="flex-1 overflow-y-auto w-full max-w-12xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-10 relative">
-            <div className="flex items-center justify-center py-12 animate-in fade-in duration-300">
-              <div className="w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full animate-spin" />
+            {/* Page Header Skeleton */}
+            <div className="mb-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-[#2b2041]/40 animate-pulse" />
+                  <div className="h-9 w-48 bg-[#2b2041]/40 rounded animate-pulse" />
+                </div>
+                <div className="flex gap-2">
+                  <div className="w-10 h-10 rounded-xl bg-[#2b2041]/40 animate-pulse" />
+                  <div className="w-10 h-10 rounded-xl bg-[#2b2041]/40 animate-pulse" />
+                </div>
+              </div>
+            </div>
+
+            {/* Service Detail Card Skeleton */}
+            <div className="p-8 rounded-2xl border backdrop-blur-sm bg-[#2d1b4e]/30 border-white/10 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-100">
+              <div className="space-y-7">
+                {/* Name skeleton */}
+                <div className="space-y-2.5">
+                  <div className="h-4 w-32 bg-[#2b2041]/40 rounded animate-pulse" />
+                  <div className="h-10 w-full bg-[#2b2041]/40 rounded-xl animate-pulse" />
+                </div>
+
+                {/* Price skeleton */}
+                <div className="space-y-2.5">
+                  <div className="h-4 w-24 bg-[#2b2041]/40 rounded animate-pulse" />
+                  <div className="h-12 w-full bg-[#2b2041]/40 rounded-xl animate-pulse" />
+                </div>
+
+                {/* Duration skeleton */}
+                <div className="space-y-2.5">
+                  <div className="h-4 w-36 bg-[#2b2041]/40 rounded animate-pulse" />
+                  <div className="h-12 w-full bg-[#2b2041]/40 rounded-xl animate-pulse" />
+                </div>
+
+                {/* Footer skeleton */}
+                <div className="pt-4 border-t border-white/10">
+                  <div className="h-4 w-48 bg-[#2b2041]/40 rounded animate-pulse" />
+                </div>
+              </div>
             </div>
           </main>
           <BottomNavigation />

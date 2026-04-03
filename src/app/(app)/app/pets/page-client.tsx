@@ -9,6 +9,7 @@ import { BottomNavigation } from '@/components/layout/bottom-navigation'
 import { AppLayout } from '@/components/layout/app-layout'
 import { GlassCard } from '@/components/ui/glass-card'
 import { Button } from '@/components/ui/button'
+import { SkeletonListStack } from '@/components/skeleton'
 import { SIZE_LABELS, SIZE_COLORS } from '@/lib/types/service-prices'
 import { Plus, PawPrint } from 'lucide-react'
 import type { PetWithClient } from '@/lib/types/pets'
@@ -108,11 +109,20 @@ export function PetsPageContent() {
         </section>
 
         {loading ? (
-          <div className="flex items-center justify-center py-20 animate-in fade-in duration-300">
-            <div className="relative">
-              <div className="w-16 h-16 border-4 border-[#f183ff]/20 border-t-[#f183ff] rounded-full animate-spin" />
-              <div className="absolute inset-0 w-16 h-16 border-4 border-transparent border-r-[#d946ef]/40 rounded-full animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }} />
-            </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div
+                key={i}
+                className="p-6 rounded-2xl border backdrop-blur-sm bg-[#2d1b4e]/30 border-white/10 animate-pulse"
+              >
+                <div className="w-14 h-14 rounded-2xl bg-[#2b2041]/40 mb-4" />
+                <div className="h-6 w-24 bg-[#2b2041]/40 rounded mb-2" />
+                <div className="h-4 w-32 bg-[#2b2041]/40 rounded mb-4" />
+                <div className="h-7 w-20 bg-[#2b2041]/40 rounded mb-4" />
+                <div className="h-px bg-white/10 mb-3" />
+                <div className="h-4 w-28 bg-[#2b2041]/40 rounded" />
+              </div>
+            ))}
           </div>
         ) : !pets || pets.length === 0 ? (
           <GlassCard

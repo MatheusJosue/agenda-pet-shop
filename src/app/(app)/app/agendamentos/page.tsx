@@ -8,6 +8,7 @@ import { AppLayout } from '@/components/layout/app-layout'
 import { GlassCard } from '@/components/ui/glass-card'
 import { Button } from '@/components/ui/button'
 import { ViewModeSelector } from '@/components/agendamentos'
+import { SkeletonListStack } from '@/components/skeleton'
 import { useAppointmentsFilter } from '@/hooks/useAppointmentsFilter'
 import { navigateDate, type ViewMode } from '@/lib/utils/date'
 import { SIZE_EMOJIS, SIZE_COLORS } from '@/lib/types/service-prices'
@@ -219,11 +220,8 @@ export default function AgendamentosPage() {
 
           {/* Content */}
           {loading ? (
-            <div className="flex items-center justify-center py-20 animate-in fade-in">
-              <div className="relative">
-                <div className="w-16 h-16 border-4 border-[#f183ff]/20 border-t-[#f183ff] rounded-full animate-spin" />
-                <div className="absolute inset-0 w-16 h-16 border-4 border-transparent border-r-[#d946ef]/40 rounded-full animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }} />
-              </div>
+            <div className="animate-in fade-in">
+              <SkeletonListStack count={6} />
             </div>
           ) : error ? (
             <GlassCard

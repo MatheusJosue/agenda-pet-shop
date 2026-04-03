@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { GlassCard } from "@/components/ui/glass-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { SkeletonListCard } from "@/components/skeleton";
 import { ChevronDown, ChevronUp, Scissors, Package, Edit3, Check, X } from "lucide-react";
 import {
   SIZE_LABELS,
@@ -123,12 +124,30 @@ export function ServicePricesList({ billingType, onBillingTypeChange }: ServiceP
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <div className="relative w-12 h-12">
-          <div className="absolute inset-0 border-4 border-[#f183ff]/30 rounded-full" />
-          <div className="absolute inset-0 border-4 border-transparent border-t-[#f183ff] rounded-full animate-spin" />
-          <div className="absolute inset-2 border-4 border-transparent border-b-[#d946ef] rounded-full animate-spin [animation-duration:_1.5s] animation-direction-reverse" />
-        </div>
+      <div className="space-y-3">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div
+            key={i}
+            className="p-4 rounded-2xl border backdrop-blur-sm bg-[#2d1b4e]/30 border-white/10"
+          >
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-11 h-11 rounded-xl bg-[#2b2041]/40 animate-pulse" />
+              <div className="flex-1">
+                <div className="h-4 w-32 bg-[#2b2041]/40 rounded animate-pulse mb-2" />
+                <div className="h-3 w-20 bg-[#2b2041]/40 rounded animate-pulse" />
+              </div>
+              <div className="w-8 h-8 rounded-lg bg-[#2b2041]/40 animate-pulse" />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+              {Array.from({ length: 3 }).map((_, j) => (
+                <div key={j} className="p-3 rounded-lg bg-white/5 border border-white/10">
+                  <div className="h-4 w-20 bg-[#2b2041]/40 rounded animate-pulse mb-2" />
+                  <div className="h-6 w-16 bg-[#2b2041]/40 rounded animate-pulse" />
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
     );
   }

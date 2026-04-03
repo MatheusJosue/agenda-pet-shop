@@ -10,6 +10,7 @@ import { AppLayout } from "@/components/layout/app-layout";
 import { GlassCard } from "@/components/ui/glass-card";
 import { Button } from "@/components/ui/button";
 import { WhatsAppButton } from "@/components/ui/whatsapp-button";
+import { SkeletonListStack } from "@/components/skeleton";
 import type { LucideIcon } from "lucide-react";
 import {
   Search,
@@ -130,12 +131,7 @@ export function ClientesPageContent() {
           </form>
 
           {loading ? (
-            <div className="flex items-center justify-center py-20 animate-in fade-in duration-300">
-              <div className="relative">
-                <div className="w-16 h-16 border-4 border-[#f183ff]/20 border-t-[#f183ff] rounded-full animate-spin" />
-                <div className="absolute inset-0 w-16 h-16 border-4 border-transparent border-r-[#d946ef]/40 rounded-full animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }} />
-              </div>
-            </div>
+            <SkeletonListStack count={8} />
           ) : !clients || clients.length === 0 ? (
             <GlassCard
               variant="elevated"

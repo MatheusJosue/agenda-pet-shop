@@ -8,6 +8,7 @@ import { GlassCard } from "@/components/ui/glass-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { SkeletonListCard } from "@/components/skeleton";
 import { SIZE_LABELS, SIZE_COLORS } from "@/lib/types/service-prices";
 import { HAIR_TYPE_LABELS } from "@/lib/types/pets";
 import type { PetWithClient } from "@/lib/types/pets";
@@ -290,11 +291,26 @@ export function ClientPetsSection({ clientId }: ClientPetsSectionProps) {
 
       {/* Loading State */}
       {loading ? (
-        <div className="flex items-center justify-center py-12">
-          <div className="relative">
-            <div className="w-12 h-12 border-4 border-[#f183ff]/20 border-t-[#f183ff] rounded-full animate-spin" />
-            <div className="absolute inset-0 w-12 h-12 border-4 border-transparent border-r-[#d946ef]/40 rounded-full animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }} />
-          </div>
+        <div className="grid gap-3">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div
+              key={i}
+              className="p-4 rounded-2xl border backdrop-blur-sm bg-[#2d1b4e]/30 border-white/10 animate-pulse"
+              style={{ animationDelay: `${i * 100}ms` }}
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-xl bg-[#2b2041]/40 animate-pulse" />
+                <div className="flex-1 min-w-0 space-y-2">
+                  <div className="h-5 w-24 bg-[#2b2041]/40 rounded animate-pulse" />
+                  <div className="h-4 w-32 bg-[#2b2041]/40 rounded animate-pulse" />
+                </div>
+                <div className="flex gap-1">
+                  <div className="w-8 h-8 rounded-lg bg-[#2b2041]/40 animate-pulse" />
+                  <div className="w-8 h-8 rounded-lg bg-[#2b2041]/40 animate-pulse" />
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       ) : pets.length === 0 ? (
         /* Empty State */

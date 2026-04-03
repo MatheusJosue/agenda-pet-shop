@@ -16,6 +16,7 @@ import { AppHeader } from "@/components/layout/app-header";
 import { AppLayout } from "@/components/layout/app-layout";
 import { BottomNavigation } from "@/components/layout/bottom-navigation";
 import { WhatsAppButton } from "@/components/ui/whatsapp-button";
+import { SkeletonInput, SkeletonForm } from "@/components/skeleton";
 import { Pencil, Trash2, ArrowLeft, Calendar } from "lucide-react";
 import { formatPhone } from "@/lib/utils/phone";
 import { ClientPetsSection } from "./_components/ClientPetsSection";
@@ -149,10 +150,56 @@ export default function ClienteDetailPage() {
           />
 
           <div className="flex-1 overflow-y-auto w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-10 relative z-10">
-            <div className="flex items-center justify-center py-20">
-              <div className="relative">
-                <div className="w-16 h-16 border-4 border-[#f183ff]/20 border-t-[#f183ff] rounded-full animate-spin" />
-                <div className="absolute inset-0 w-16 h-16 border-4 border-transparent border-r-[#d946ef]/40 rounded-full animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }} />
+            {/* Page Header Skeleton */}
+            <div className="mb-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-[#2b2041]/40 animate-pulse" />
+                <div className="h-7 w-32 bg-[#2b2041]/40 rounded animate-pulse" />
+              </div>
+            </div>
+
+            {/* Client Profile Card Skeleton */}
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-100">
+              <div className="rounded-2xl border backdrop-blur-sm bg-[#2d1b4e]/30 border-white/10 overflow-hidden">
+                {/* Profile Header with Gradient Background Skeleton */}
+                <div className="h-32 bg-gradient-to-br from-[#f183ff]/30 via-[#d946ef]/20 to-[#8b5cf6]/30">
+                  <div className="absolute top-4 right-4 w-16 h-16 bg-[#f183ff]/20 rounded-full blur-xl animate-pulse" />
+                  <div className="absolute bottom-4 left-4 w-12 h-12 bg-[#d946ef]/20 rounded-full blur-lg animate-pulse" />
+                </div>
+
+                {/* Client Avatar Skeleton */}
+                <div className="relative px-6 -mt-16 mb-4">
+                  <div className="relative w-28 h-28 mx-auto">
+                    <div className="absolute inset-0 rounded-full bg-[#2b2041]/40 animate-pulse" />
+                    <div className="relative w-full h-full rounded-full bg-[#120a21] border-4 border-white/10 animate-pulse" />
+                  </div>
+                </div>
+
+                {/* Client Info Skeleton */}
+                <div className="px-6 pb-6 text-center space-y-3">
+                  <div className="h-8 w-40 bg-[#2b2041]/40 rounded animate-pulse mx-auto" />
+                  <div className="h-5 w-32 bg-[#2b2041]/40 rounded animate-pulse mx-auto" />
+                </div>
+              </div>
+            </div>
+
+            {/* Contact Info Card Skeleton */}
+            <div className="mt-4 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-150">
+              <div className="p-5 rounded-2xl border backdrop-blur-sm bg-[#2d1b4e]/30 border-white/10">
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <div className="h-4 w-20 bg-[#2b2041]/40 rounded animate-pulse" />
+                    <div className="h-10 w-full bg-[#2b2041]/40 rounded-xl animate-pulse" />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="h-4 w-24 bg-[#2b2041]/40 rounded animate-pulse" />
+                    <div className="h-10 w-full bg-[#2b2041]/40 rounded-xl animate-pulse" />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="h-4 w-16 bg-[#2b2041]/40 rounded animate-pulse" />
+                    <div className="h-24 w-full bg-[#2b2041]/40 rounded-xl animate-pulse" />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -184,7 +231,11 @@ export default function ClienteDetailPage() {
             <div className="mb-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
               <div className="flex items-center gap-3">
                 <Link href="/app/clientes">
-                  <Button variant="ghost" size="sm" className="p-2 rounded-xl hover:bg-white/10">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="p-2 rounded-xl hover:bg-white/10"
+                  >
                     <ArrowLeft size={20} className="text-white/70" />
                   </Button>
                 </Link>
@@ -199,7 +250,9 @@ export default function ClienteDetailPage() {
                 {error || "Cliente não encontrado"}
               </p>
               <Link href="/app/clientes">
-                <Button variant="secondary" className="rounded-xl">Voltar</Button>
+                <Button variant="secondary" className="rounded-xl">
+                  Voltar
+                </Button>
               </Link>
             </GlassCard>
           </div>
@@ -228,12 +281,18 @@ export default function ClienteDetailPage() {
         <div className="sticky top-0 z-50 px-4 py-4 bg-[#120a21]/80 backdrop-blur-xl border-b border-white/5">
           <div className="flex items-center justify-between max-w-7xl mx-auto">
             <Link href="/app/clientes">
-              <Button variant="ghost" size="sm" className="p-2 rounded-xl hover:bg-white/10">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="p-2 rounded-xl hover:bg-white/10"
+              >
                 <ArrowLeft size={22} className="text-white/70" />
               </Button>
             </Link>
 
-            <h1 className="text-lg font-semibold text-white tracking-wide">Detalhes do Cliente</h1>
+            <h1 className="text-lg font-semibold text-white tracking-wide">
+              Detalhes do Cliente
+            </h1>
 
             <div className="flex gap-1">
               {editing ? (
@@ -311,7 +370,10 @@ export default function ClienteDetailPage() {
               <div className="relative h-32 bg-gradient-to-br from-[#f183ff]/30 via-[#d946ef]/20 to-[#8b5cf6]/30">
                 {/* Decorative elements */}
                 <div className="absolute top-4 right-4 w-16 h-16 bg-[#f183ff]/20 rounded-full blur-xl animate-pulse" />
-                <div className="absolute bottom-4 left-4 w-12 h-12 bg-[#d946ef]/20 rounded-full blur-lg animate-pulse" style={{ animationDelay: '0.5s' }} />
+                <div
+                  className="absolute bottom-4 left-4 w-12 h-12 bg-[#d946ef]/20 rounded-full blur-lg animate-pulse"
+                  style={{ animationDelay: "0.5s" }}
+                />
               </div>
 
               {/* Client Avatar */}
@@ -348,7 +410,9 @@ export default function ClienteDetailPage() {
                   </div>
                 ) : (
                   <>
-                    <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">{client.name}</h2>
+                    <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">
+                      {client.name}
+                    </h2>
                     <div className="flex items-center justify-center gap-2 flex-wrap">
                       <span className="px-3 py-1.5 rounded-full bg-[#f183ff]/20 border border-[#f183ff]/30 text-[#f183ff] text-xs font-semibold uppercase tracking-wide">
                         Cliente Premium
@@ -370,7 +434,9 @@ export default function ClienteDetailPage() {
                     📱
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-white/50 text-[10px] font-semibold uppercase tracking-wider mb-0.5">Telefone</p>
+                    <p className="text-white/50 text-[10px] font-semibold uppercase tracking-wider mb-0.5">
+                      Telefone
+                    </p>
                     {editing ? (
                       <Input
                         type="tel"
@@ -382,7 +448,9 @@ export default function ClienteDetailPage() {
                       />
                     ) : (
                       <div className="flex items-center gap-2 flex-wrap">
-                        <p className="text-white text-sm font-medium">{formatPhone(client.phone)}</p>
+                        <p className="text-white text-sm font-medium">
+                          {formatPhone(client.phone)}
+                        </p>
                         <WhatsAppButton
                           phone={client.phone}
                           message={`Olá ${client.name}!`}
@@ -404,7 +472,9 @@ export default function ClienteDetailPage() {
                     ✉️
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-white/50 text-[10px] font-semibold uppercase tracking-wider mb-0.5">Email</p>
+                    <p className="text-white/50 text-[10px] font-semibold uppercase tracking-wider mb-0.5">
+                      Email
+                    </p>
                     {editing ? (
                       <Input
                         type="email"
@@ -414,7 +484,9 @@ export default function ClienteDetailPage() {
                         placeholder="email@exemplo.com"
                       />
                     ) : (
-                      <p className="text-white text-sm font-medium truncate">{client.email}</p>
+                      <p className="text-white text-sm font-medium truncate">
+                        {client.email}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -431,7 +503,9 @@ export default function ClienteDetailPage() {
                     📝
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-white/50 text-[10px] font-semibold uppercase tracking-wider mb-2">Observações</p>
+                    <p className="text-white/50 text-[10px] font-semibold uppercase tracking-wider mb-2">
+                      Observações
+                    </p>
                     {editing ? (
                       <textarea
                         value={formData.notes}
@@ -442,7 +516,11 @@ export default function ClienteDetailPage() {
                       />
                     ) : (
                       <p className="text-white/80 text-sm whitespace-pre-wrap leading-relaxed">
-                        {client.notes || <span className="text-white/30 italic">Nenhuma observação</span>}
+                        {client.notes || (
+                          <span className="text-white/30 italic">
+                            Nenhuma observação
+                          </span>
+                        )}
                       </p>
                     )}
                   </div>
@@ -455,7 +533,8 @@ export default function ClienteDetailPage() {
           <div className="pt-2 text-center animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
             <p className="text-white/20 text-xs flex items-center justify-center gap-1.5">
               <Calendar size={12} />
-              Cadastrado em {new Date(client.created_at).toLocaleDateString('pt-BR')}
+              Cadastrado em{" "}
+              {new Date(client.created_at).toLocaleDateString("pt-BR")}
             </p>
           </div>
 
