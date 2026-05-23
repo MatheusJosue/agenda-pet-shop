@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Menu } from "lucide-react";
+import { Menu, PawPrint } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AppDrawer } from "./app-drawer";
 
@@ -19,32 +19,28 @@ export function AppHeader({ companyName, user }: AppHeaderProps) {
   return (
     <>
       <header className="flex xl:hidden sticky top-0 z-30 w-full">
-        {/* Glassmorphism header with bottom rounded corners */}
-        <div className="relative w-full">
-          <div className="mx-3 mt-2 bg-[#2b2041]/70 backdrop-blur-2xl rounded-b-3xl border-b border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_-1px_0_rgba(255,255,255,0.05)]">
-            {/* Subtle inner glow effect */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#f183ff]/5 to-transparent rounded-b-3xl pointer-events-none" />
-
-            {/* Header content */}
-            <div className="relative flex items-center justify-between px-4 py-4 gap-3">
-              {/* Left: Menu */}
+        <div className="w-full px-3 pt-2">
+          <div className="bg-[#fff9fb]/94 backdrop-blur-2xl rounded-2xl border border-[rgba(232,50,123,0.22)] shadow-[0_8px_24px_rgba(33,54,58,0.08)]">
+            <div className="flex items-center justify-between px-3 py-2.5 gap-3">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsDrawerOpen(true)}
-                className="p-2 text-white hover:bg-white/10 hover:text-white flex-shrink-0"
+                className="p-2 flex-shrink-0 text-[#006c73] hover:bg-[#ffe0ec]"
+                aria-label="Abrir menu"
               >
                 <Menu size={24} />
               </Button>
 
-              {/* Center: Brand/Logo */}
-              <div className="flex items-center justify-center min-w-0 flex-1">
-                <h1 className="text-sm font-semibold text-white truncate tracking-tight">
+              <div className="flex items-center justify-center gap-2 min-w-0 flex-1">
+                <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#ffe0ec]">
+                  <PawPrint size={17} className="text-[#e8327b] flex-shrink-0" />
+                </span>
+                <h1 className="text-base font-extrabold text-[#21363a] truncate">
                   {companyName}
                 </h1>
               </div>
 
-              {/* Right: Spacer for balance (no icons) */}
               <div className="w-9 flex-shrink-0" />
             </div>
           </div>

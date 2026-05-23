@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { createClient as createSupabaseClient } from '@/lib/supabase/server'
 import { appointmentSchema } from '@/lib/validation/appointments'
-import { usePackageCredit } from './packages'
+import { usePackageCredit as consumePackageCredit } from './packages'
 import type { Appointment, AppointmentInput, AppointmentWithRelations, AppointmentsListResponse } from '@/lib/types/appointments'
 
 export interface AppointmentResponse {
@@ -181,6 +181,8 @@ export async function createAppointment(input: AppointmentInput): Promise<Appoin
     clientId: input.clientId,
     petId: input.petId,
     servicePriceIds: input.servicePriceIds,
+    servicePrices: input.servicePrices,
+    totalPrice: input.totalPrice,
     date: input.date,
     time: input.time,
     useCredit: input.useCredit || false,
@@ -222,8 +224,23 @@ export async function createAppointment(input: AppointmentInput): Promise<Appoin
     return { error: 'Serviços não encontrados' }
   }
 
-  // Calculate total price
-  const totalPrice = servicePrices.reduce((sum, sp) => sum + Number(sp.price), 0)
+  const customPrices = new Map(
+    (validatedFields.data.servicePrices || []).map((item) => [
+      item.servicePriceId,
+      Number(item.price),
+    ])
+  )
+
+  // Calculate total price using appointment-level overrides when provided.
+  const servicePricesWithAppointmentPrice = servicePrices.map((sp) => ({
+    ...sp,
+    appointment_price: customPrices.get(sp.id) ?? Number(sp.price),
+  }))
+  const servicesTotalPrice = servicePricesWithAppointmentPrice.reduce(
+    (sum, sp) => sum + Number(sp.appointment_price),
+    0
+  )
+  const totalPrice = validatedFields.data.totalPrice ?? servicesTotalPrice
 
   // Check if using pet package credit
   let finalPrice = totalPrice
@@ -248,7 +265,7 @@ export async function createAppointment(input: AppointmentInput): Promise<Appoin
       return { error: 'Pacote expirado' }
     }
 
-    finalPrice = 0
+    finalPrice = totalPrice
   }
 
   // Check if using credit
@@ -284,7 +301,7 @@ export async function createAppointment(input: AppointmentInput): Promise<Appoin
       service_price_id: validatedFields.data.servicePriceIds[0], // Keep first for backward compatibility
       date: validatedFields.data.date,
       time: validatedFields.data.time,
-      price: servicePrices[0].price, // Keep individual price for backward compatibility
+      price: servicePricesWithAppointmentPrice[0].appointment_price, // Keep individual price for backward compatibility
       total_price: finalPrice,
       status: 'scheduled',
       used_credit: validatedFields.data.useCredit,
@@ -302,10 +319,10 @@ export async function createAppointment(input: AppointmentInput): Promise<Appoin
   }
 
   // Insert all services into appointment_services junction table
-  const appointmentServices = servicePrices.map(sp => ({
+  const appointmentServices = servicePricesWithAppointmentPrice.map(sp => ({
     appointment_id: appointment.id,
     service_price_id: sp.id,
-    price: sp.price
+    price: sp.appointment_price
   }))
 
   const { error: servicesError } = await supabase
@@ -322,7 +339,7 @@ export async function createAppointment(input: AppointmentInput): Promise<Appoin
   // Deduct pet package credit if used
   if (input.petPackageId) {
     for (let i = 0; i < validatedFields.data.servicePriceIds.length; i++) {
-      const creditResult = await usePackageCredit(input.petPackageId)
+      const creditResult = await consumePackageCredit(input.petPackageId)
       if (creditResult.error) {
         return { error: creditResult.error }
       }

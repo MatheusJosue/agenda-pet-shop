@@ -1,34 +1,33 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { GlassCard } from '@/components/ui/glass-card'
+import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import {
+  createPetPackage,
+  getPackageTypes,
+  getPackageWithClient,
   markPackageExhausted,
   renewPackage,
-  getPackageWithClient,
-  getPackageTypes,
-  createPetPackage,
 } from '@/lib/actions/packages'
-import type { PetPackageWithRelations } from '@/lib/types/packages'
-import type { PackageType } from '@/lib/types/packages'
+import type { PackageType, PetPackageWithRelations } from '@/lib/types/packages'
 import {
-  Sparkles,
-  Calendar,
   AlertCircle,
-  RefreshCw,
-  MessageCircle,
-  X,
+  Calendar,
   Check,
   Loader2,
+  MessageCircle,
+  RefreshCw,
+  Sparkles,
+  X,
 } from 'lucide-react'
+import type { SizeCategory } from '@/lib/types/service-prices'
 
 interface ManagePackageModalProps {
   packageData: PetPackageWithRelations | null
   petId: string
   petName: string
+  petSize: SizeCategory
   onClose: () => void
   onUpdate: () => void
 }
@@ -37,10 +36,10 @@ export function ManagePackageModal({
   packageData,
   petId,
   petName,
+  petSize,
   onClose,
   onUpdate,
 }: ManagePackageModalProps) {
-  const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
@@ -57,26 +56,25 @@ export function ManagePackageModal({
   const progressPercentage =
     creditsTotal > 0 ? (creditsUsed / creditsTotal) * 100 : 0
   const isExhausted = packageData?.credits_remaining === 0
+  const isCreatingPackage = showNewPackage || !packageData
+  const filteredPackageTypes = packageTypes.filter((type) =>
+    packageTypeMatchesPetSize(type.name, petSize)
+  )
 
-  // Load package types for new package or when pet has no active package
   useEffect(() => {
-    if (showNewPackage || !packageData) {
-      getPackageTypes().then((result) => {
-        if (result.data) {
-          setPackageTypes(result.data)
-        }
-      })
-    }
-  }, [showNewPackage, packageData])
+    if (!isCreatingPackage || packageTypes.length > 0) return
+
+    getPackageTypes().then((result) => {
+      if (result.data) setPackageTypes(result.data)
+    })
+  }, [isCreatingPackage, packageTypes.length])
 
   const handleMarkExhausted = async () => {
     if (!packageData) return
 
     setLoading(true)
     setError(null)
-
     const result = await markPackageExhausted(packageData.id)
-
     setLoading(false)
 
     if (result.error) {
@@ -96,9 +94,7 @@ export function ManagePackageModal({
 
     setLoading(true)
     setError(null)
-
     const result = await renewPackage(packageData.id)
-
     setLoading(false)
 
     if (result.error) {
@@ -118,10 +114,7 @@ export function ManagePackageModal({
 
     setLoading(true)
     setError(null)
-
-    // Get package with client info
     const result = await getPackageWithClient(packageData.id)
-
     setLoading(false)
 
     if (result.error || !result.data?.client) {
@@ -130,11 +123,9 @@ export function ManagePackageModal({
     }
 
     const { client, pet, package_type } = result.data
-
-    // Format phone number for WhatsApp
     const phone = client.phone.replace(/\D/g, '')
     const message = encodeURIComponent(
-      `Olá ${client.name}! 👋\n\nGostaríamos de avisar que o pacote de banho e tosa do(a) ${pet.name} está com os créditos esgotados. \n\nPacote: ${package_type.name}\n\nEntre em contato para renovar! 🐾`
+      `Olá ${client.name}!\n\nGostaríamos de avisar que o pacote de banho e tosa do(a) ${pet.name} está com os créditos esgotados.\n\nPacote: ${package_type.name}\n\nEntre em contato para renovar!`
     )
 
     window.open(`https://wa.me/55${phone}?text=${message}`, '_blank')
@@ -145,13 +136,11 @@ export function ManagePackageModal({
 
     setLoading(true)
     setError(null)
-
     const result = await createPetPackage({
       petId,
       packageTypeId: selectedType.id,
       startsAt: new Date(),
     })
-
     setLoading(false)
 
     if (result.error) {
@@ -178,268 +167,114 @@ export function ManagePackageModal({
 
   return (
     <>
-      <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 z-50 animate-in fade-in">
-        <div className="w-full sm:max-w-lg max-h-[90vh] overflow-y-auto bg-[#120a21] rounded-t-3xl sm:rounded-3xl border-t sm:border border-white/10">
-          {/* Header */}
-          <div className="sticky top-0 bg-[#120a21]/95 backdrop-blur-xl px-6 py-5 border-b border-white/5 rounded-t-3xl z-10">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#f183ff]/20 to-[#d946ef]/20 flex items-center justify-center shadow-lg shadow-[#f183ff]/10">
-                  <Sparkles size={24} className="text-[#f183ff]" />
+      <div className="fixed inset-0 z-50 flex items-end justify-center bg-[#21363a]/45 p-0 backdrop-blur-sm sm:items-center sm:p-4">
+        <div className="max-h-[92dvh] w-full overflow-hidden rounded-t-3xl border-t border-[rgba(232,50,123,0.26)] bg-[#fff9fb] shadow-[0_24px_70px_rgba(33,54,58,0.24)] sm:max-w-lg sm:rounded-3xl sm:border">
+          <header className="border-b border-[rgba(232,50,123,0.18)] bg-white/95 px-5 py-4 backdrop-blur-xl sm:px-6">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex min-w-0 items-center gap-3">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#e8327b] text-white shadow-[0_12px_28px_rgba(232,50,123,0.25)]">
+                  <Sparkles size={24} />
                 </div>
-                <div>
-                  <h2 className="text-xl font-bold text-white">Gerenciar Pacote</h2>
-                  <p className="text-white/50 text-sm">{petName}</p>
+                <div className="min-w-0">
+                  <h2 className="truncate text-xl font-extrabold text-[#006c73]">
+                    Gerenciar Pacote
+                  </h2>
+                  <p className="truncate text-sm font-semibold text-[#68797d]">
+                    {petName}
+                  </p>
                 </div>
               </div>
               <button
+                type="button"
                 onClick={onClose}
-                className="p-2 rounded-xl text-white/50 hover:text-white hover:bg-white/10 transition-all"
+                className="rounded-xl p-2 text-[#68797d] transition-colors hover:bg-[#ffe0ec] hover:text-[#bf185d]"
+                aria-label="Fechar"
               >
                 <X size={20} />
               </button>
             </div>
-          </div>
+          </header>
 
-          <div className="p-6 space-y-5">
-            {packageData && !showNewPackage ? (
-              <>
-                {/* Current Package Info */}
-                <div className="p-5 rounded-2xl bg-gradient-to-br from-[#f183ff]/10 via-[#d946ef]/5 to-[#8b5cf6]/10 border border-[#f183ff]/20">
-                  <div className="flex items-center justify-between mb-4">
-                    <div>
-                      <p className="text-white/50 text-xs font-semibold uppercase tracking-wider">
-                        Pacote Ativo
-                      </p>
-                      <h3 className="text-white font-bold text-lg mt-1">
-                        {packageData.package_type.name}
-                      </h3>
-                    </div>
-                    <div className={`px-3 py-1.5 rounded-full text-xs font-bold border ${
-                      isExhausted
-                        ? 'bg-red-500/20 text-red-300 border-red-500/30'
-                        : 'bg-[#00ffa3]/20 text-[#00ffa3] border-[#00ffa3]/30'
-                    }`}>
-                      {isExhausted ? 'Esgotado' : 'Ativo'}
-                    </div>
-                  </div>
+          <div className="max-h-[calc(92dvh-81px)] overflow-y-auto p-5 sm:p-6">
+            <div className="space-y-5">
+              {isCreatingPackage ? (
+                <NewPackageView
+                  packageData={packageData}
+                  packageTypes={filteredPackageTypes}
+                  selectedType={selectedType}
+                  onBack={() => {
+                    setShowNewPackage(false)
+                    setSelectedType(null)
+                  }}
+                  onSelect={setSelectedType}
+                  calculateExpiryDate={calculateExpiryDate}
+                />
+              ) : (
+                <CurrentPackageView
+                  packageData={packageData}
+                  creditsTotal={creditsTotal}
+                  progressPercentage={progressPercentage}
+                  isExhausted={isExhausted}
+                  loading={loading}
+                  onMarkExhausted={() => setShowExhaustedConfirm(true)}
+                  onSendWhatsApp={handleSendWhatsApp}
+                  onRenew={() => setShowRenewConfirm(true)}
+                  onNewPackage={() => setShowNewPackage(true)}
+                />
+              )}
 
-                  {/* Progress Bar */}
-                  <div className="mb-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-white/70 text-sm">Créditos</span>
-                      <span className="text-white font-semibold">
-                        <span className={isExhausted ? 'text-red-400' : 'text-[#f183ff]'}>
-                          {packageData.credits_remaining}
-                        </span>
-                        <span className="text-white/30 mx-1">/</span>
-                        <span className="text-white/60">{creditsTotal}</span>
-                      </span>
-                    </div>
-                    <div className="relative h-3 bg-white/5 rounded-full overflow-hidden">
-                      <div
-                        className={`h-full rounded-full transition-all duration-700 ${
-                          isExhausted
-                            ? 'bg-gradient-to-r from-red-500 to-red-400'
-                            : 'bg-gradient-to-r from-[#f183ff] via-[#d946ef] to-[#8b5cf6]'
-                        }`}
-                        style={{ width: `${progressPercentage}%` }}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Expiry Date */}
-                  <div className="flex items-center gap-2 text-white/40 text-sm">
-                    <Calendar size={14} />
-                    Expira em{' '}
-                    {new Date(packageData.expires_at).toLocaleDateString('pt-BR')}
-                  </div>
-                </div>
-
-                {/* Actions Grid */}
-                <div className="space-y-3">
-                  <p className="text-white/50 text-xs font-semibold uppercase tracking-wider px-1">
-                    Ações do Pacote
-                  </p>
-
-                  {/* Mark Exhausted */}
-                  {!isExhausted && (
-                    <button
-                      onClick={() => setShowExhaustedConfirm(true)}
-                      disabled={loading}
-                      className="w-full flex items-center gap-4 p-4 rounded-2xl bg-white/5 hover:bg-orange-500/10 border border-white/5 hover:border-orange-500/30 transition-all group disabled:opacity-50"
-                    >
-                      <div className="w-11 h-11 rounded-xl bg-orange-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <AlertCircle size={22} className="text-orange-400" />
-                      </div>
-                      <div className="flex-1 text-left">
-                        <p className="text-white font-semibold">Marcar como Esgotado</p>
-                        <p className="text-white/40 text-sm">Zera os créditos do pacote</p>
-                      </div>
-                    </button>
+              {selectedType && isCreatingPackage && (
+                <Button
+                  variant="primary"
+                  onClick={handleCreateNewPackage}
+                  disabled={loading}
+                  className="w-full rounded-2xl bg-[#e8327b] text-white shadow-[0_12px_28px_rgba(232,50,123,0.25)] hover:bg-[#bf185d]"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 size={18} className="mr-2 animate-spin" />
+                      Criando...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles size={18} className="mr-2" />
+                      Confirmar Novo Pacote
+                    </>
                   )}
+                </Button>
+              )}
 
-                  {/* Send WhatsApp */}
-                  <button
-                    onClick={handleSendWhatsApp}
-                    disabled={loading}
-                    className="w-full flex items-center gap-4 p-4 rounded-2xl bg-white/5 hover:bg-green-500/10 border border-white/5 hover:border-green-500/30 transition-all group disabled:opacity-50"
-                  >
-                    <div className="w-11 h-11 rounded-xl bg-green-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                      <MessageCircle size={22} className="text-green-400" />
-                    </div>
-                    <div className="flex-1 text-left">
-                      <p className="text-white font-semibold">Enviar WhatsApp</p>
-                      <p className="text-white/40 text-sm">Avisar cliente sobre pacote</p>
-                    </div>
-                  </button>
-
-                  {/* Renew Package */}
-                  <button
-                    onClick={() => setShowRenewConfirm(true)}
-                    disabled={loading}
-                    className="w-full flex items-center gap-4 p-4 rounded-2xl bg-white/5 hover:bg-[#f183ff]/10 border border-white/5 hover:border-[#f183ff]/30 transition-all group disabled:opacity-50"
-                  >
-                    <div className="w-11 h-11 rounded-xl bg-[#f183ff]/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                      <RefreshCw size={22} className="text-[#f183ff]" />
-                    </div>
-                    <div className="flex-1 text-left">
-                      <p className="text-white font-semibold">Renovar Pacote</p>
-                      <p className="text-white/40 text-sm">
-                        Reiniciar créditos e nova data de expiração
-                      </p>
-                    </div>
-                  </button>
-
-                  {/* Create New Package */}
-                  <button
-                    onClick={() => setShowNewPackage(true)}
-                    disabled={loading}
-                    className="w-full flex items-center gap-4 p-4 rounded-2xl bg-gradient-to-r from-[#f183ff]/10 to-[#d946ef]/10 hover:from-[#f183ff]/20 hover:to-[#d946ef]/20 border border-[#f183ff]/30 hover:border-[#f183ff]/50 transition-all group disabled:opacity-50"
-                  >
-                    <div className="w-11 h-11 rounded-xl bg-[#f183ff] flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg shadow-[#f183ff]/30">
-                      <Sparkles size={22} className="text-white" />
-                    </div>
-                    <div className="flex-1 text-left">
-                      <p className="text-white font-semibold">Novo Pacote</p>
-                      <p className="text-white/40 text-sm">
-                        Criar um novo pacote (substitui o atual)
-                      </p>
-                    </div>
-                  </button>
+              {error && (
+                <div className="rounded-2xl border border-red-200 bg-red-50 p-4">
+                  <p className="flex items-center gap-2 text-sm font-semibold text-red-600">
+                    <AlertCircle size={16} />
+                    {error}
+                  </p>
                 </div>
-              </>
-            ) : (
-              <>
-                {/* New Package Selection */}
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3 mb-4">
-                    {packageData && (
-                      <button
-                        onClick={() => {
-                          setShowNewPackage(false)
-                          setSelectedType(null)
-                        }}
-                        className="p-2 rounded-xl text-white/50 hover:text-white hover:bg-white/10 transition-all"
-                      >
-                        <X size={18} />
-                      </button>
-                    )}
-                    <div>
-                      <h3 className="text-white font-semibold">Criar Novo Pacote</h3>
-                      <p className="text-white/40 text-sm">
-                        {packageData
-                          ? 'Este substituirá o pacote atual'
-                          : 'Selecione um pacote para adicionar ao pet'
-                        }
-                      </p>
-                    </div>
-                  </div>
+              )}
 
-                  {packageTypes.map((type) => (
-                    <button
-                      key={type.id}
-                      onClick={() => setSelectedType(type)}
-                      className={`w-full p-4 rounded-2xl border text-left transition-all ${
-                        selectedType?.id === type.id
-                          ? 'bg-[#f183ff]/20 border-[#f183ff]'
-                          : 'bg-white/5 border-white/10 hover:bg-white/10'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-semibold text-white">{type.name}</p>
-                          <div className="flex items-center gap-4 mt-2 text-sm text-white/60">
-                            <span>{type.credits} créditos</span>
-                            <span>R$ {type.price.toFixed(2)}</span>
-                            <span>Vence em {calculateExpiryDate(type.interval_days)}</span>
-                          </div>
-                        </div>
-                        {selectedType?.id === type.id && (
-                          <Check size={20} className="text-[#f183ff]" />
-                        )}
-                      </div>
-                    </button>
-                  ))}
+              {success && (
+                <div className="rounded-2xl border border-[#91e8bf] bg-[#e7fff4] p-4">
+                  <p className="flex items-center gap-2 text-sm font-semibold text-[#0b8b58]">
+                    <Check size={16} />
+                    {success}
+                  </p>
                 </div>
+              )}
 
-                {selectedType && (
-                  <Button
-                    variant="primary"
-                    onClick={handleCreateNewPackage}
-                    disabled={loading}
-                    className="w-full rounded-2xl bg-gradient-to-r from-[#f183ff] to-[#d946ef] hover:from-[#f183ff]/90 hover:to-[#d946ef]/90 border-0 shadow-lg shadow-[#f183ff]/30"
-                  >
-                    {loading ? (
-                      <>
-                        <Loader2 size={18} className="mr-2 animate-spin" />
-                        Criando...
-                      </>
-                    ) : (
-                      <>
-                        <Sparkles size={18} className="mr-2" />
-                        Confirmar Novo Pacote
-                      </>
-                    )}
-                  </Button>
-                )}
-              </>
-            )}
-
-            {/* Error */}
-            {error && (
-              <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/30">
-                <p className="text-red-300 text-sm flex items-center gap-2">
-                  <AlertCircle size={16} />
-                  {error}
-                </p>
-              </div>
-            )}
-
-            {/* Success */}
-            {success && (
-              <div className="p-4 rounded-2xl bg-[#00ffa3]/10 border border-[#00ffa3]/30">
-                <p className="text-[#00ffa3] text-sm flex items-center gap-2">
-                  <Check size={16} />
-                  {success}
-                </p>
-              </div>
-            )}
-
-            {/* Close Button */}
-            <Button
-              variant="secondary"
-              onClick={onClose}
-              disabled={loading}
-              className="w-full rounded-2xl"
-            >
-              Fechar
-            </Button>
+              <Button
+                variant="secondary"
+                onClick={onClose}
+                disabled={loading}
+                className="w-full rounded-2xl"
+              >
+                Fechar
+              </Button>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Confirm Exhausted Dialog */}
       <ConfirmDialog
         open={showExhaustedConfirm}
         onOpenChange={setShowExhaustedConfirm}
@@ -453,7 +288,6 @@ export function ManagePackageModal({
         loading={loading}
       />
 
-      {/* Confirm Renew Dialog */}
       <ConfirmDialog
         open={showRenewConfirm}
         onOpenChange={setShowRenewConfirm}
@@ -468,4 +302,257 @@ export function ManagePackageModal({
       />
     </>
   )
+}
+
+function CurrentPackageView({
+  packageData,
+  creditsTotal,
+  progressPercentage,
+  isExhausted,
+  loading,
+  onMarkExhausted,
+  onSendWhatsApp,
+  onRenew,
+  onNewPackage,
+}: {
+  packageData: PetPackageWithRelations
+  creditsTotal: number
+  progressPercentage: number
+  isExhausted: boolean
+  loading: boolean
+  onMarkExhausted: () => void
+  onSendWhatsApp: () => void
+  onRenew: () => void
+  onNewPackage: () => void
+}) {
+  return (
+    <>
+      <section className="rounded-2xl border border-[rgba(232,50,123,0.24)] bg-white p-5 shadow-[0_12px_30px_rgba(232,50,123,0.08)]">
+        <div className="mb-4 flex items-start justify-between gap-3">
+          <div>
+            <p className="text-xs font-extrabold uppercase tracking-wider text-[#006c73]">
+              Pacote Ativo
+            </p>
+            <h3 className="mt-1 text-lg font-extrabold text-[#21363a]">
+              {packageData.package_type.name}
+            </h3>
+          </div>
+          <span
+            className={`rounded-full border px-3 py-1.5 text-xs font-extrabold ${
+              isExhausted
+                ? 'border-red-200 bg-red-50 text-red-600'
+                : 'border-[#91e8bf] bg-[#e7fff4] text-[#0b8b58]'
+            }`}
+          >
+            {isExhausted ? 'Esgotado' : 'Ativo'}
+          </span>
+        </div>
+
+        <div className="mb-4">
+          <div className="mb-2 flex items-center justify-between">
+            <span className="text-sm font-semibold text-[#68797d]">Créditos</span>
+            <span className="font-extrabold text-[#21363a]">
+              <span className={isExhausted ? 'text-red-600' : 'text-[#e8327b]'}>
+                {packageData.credits_remaining}
+              </span>
+              <span className="mx-1 text-[#9aa8ab]">/</span>
+              <span className="text-[#68797d]">{creditsTotal}</span>
+            </span>
+          </div>
+          <div className="h-3 overflow-hidden rounded-full bg-[#ffe0ec]">
+            <div
+              className={`h-full rounded-full transition-all duration-700 ${
+                isExhausted ? 'bg-red-500' : 'bg-[#e8327b]'
+              }`}
+              style={{ width: `${progressPercentage}%` }}
+            />
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 text-sm font-semibold text-[#68797d]">
+          <Calendar size={14} />
+          Expira em {new Date(packageData.expires_at).toLocaleDateString('pt-BR')}
+        </div>
+      </section>
+
+      <section className="space-y-3">
+        <p className="px-1 text-xs font-extrabold uppercase tracking-wider text-[#006c73]">
+          Ações do pacote
+        </p>
+
+        {!isExhausted && (
+          <ActionButton
+            icon={<AlertCircle size={22} className="text-orange-500" />}
+            title="Marcar como Esgotado"
+            description="Zera os créditos do pacote"
+            disabled={loading}
+            onClick={onMarkExhausted}
+          />
+        )}
+
+        <ActionButton
+          icon={<MessageCircle size={22} className="text-[#18b96f]" />}
+          title="Enviar WhatsApp"
+          description="Avisar cliente sobre pacote"
+          disabled={loading}
+          onClick={onSendWhatsApp}
+        />
+
+        <ActionButton
+          icon={<RefreshCw size={22} className="text-[#006c73]" />}
+          title="Renovar Pacote"
+          description="Reiniciar créditos e nova data de expiração"
+          disabled={loading}
+          onClick={onRenew}
+        />
+
+        <ActionButton
+          icon={<Sparkles size={22} className="text-white" />}
+          title="Novo Pacote"
+          description="Criar um novo pacote para este pet"
+          disabled={loading}
+          onClick={onNewPackage}
+          accent
+        />
+      </section>
+    </>
+  )
+}
+
+function NewPackageView({
+  packageData,
+  packageTypes,
+  selectedType,
+  onBack,
+  onSelect,
+  calculateExpiryDate,
+}: {
+  packageData: PetPackageWithRelations | null
+  packageTypes: PackageType[]
+  selectedType: PackageType | null
+  onBack: () => void
+  onSelect: (type: PackageType) => void
+  calculateExpiryDate: (intervalDays: number) => string
+}) {
+  return (
+    <section className="space-y-4">
+      <div className="flex items-start gap-3">
+        {packageData && (
+          <button
+            type="button"
+            onClick={onBack}
+            className="rounded-xl p-2 text-[#68797d] transition-colors hover:bg-[#ffe0ec] hover:text-[#bf185d]"
+            aria-label="Voltar"
+          >
+            <X size={18} />
+          </button>
+        )}
+        <div>
+          <h3 className="text-lg font-extrabold text-[#006c73]">
+            Criar Novo Pacote
+          </h3>
+          <p className="text-sm font-semibold text-[#68797d]">
+            {packageData
+              ? 'Este substituirá o pacote atual'
+              : 'Selecione um pacote para adicionar ao pet'}
+          </p>
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        {packageTypes.map((type) => {
+          const selected = selectedType?.id === type.id
+
+          return (
+            <button
+              key={type.id}
+              type="button"
+              onClick={() => onSelect(type)}
+              className={`w-full rounded-2xl border p-4 text-left transition-all ${
+                selected
+                  ? 'border-[#e8327b] bg-[#ffe0ec] shadow-[0_10px_24px_rgba(232,50,123,0.12)]'
+                  : 'border-[rgba(232,50,123,0.22)] bg-white hover:border-[#ff8cba] hover:bg-[#fff1f6]'
+              }`}
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="font-extrabold text-[#006c73]">{type.name}</p>
+                  <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm font-semibold text-[#68797d]">
+                    <span>{type.credits} créditos</span>
+                    <span>R$ {type.price.toFixed(2)}</span>
+                    <span>Vence em {calculateExpiryDate(type.interval_days)}</span>
+                  </div>
+                </div>
+                {selected && <Check size={20} className="shrink-0 text-[#e8327b]" />}
+              </div>
+            </button>
+          )
+        })}
+      </div>
+    </section>
+  )
+}
+
+function ActionButton({
+  icon,
+  title,
+  description,
+  disabled,
+  onClick,
+  accent = false,
+}: {
+  icon: React.ReactNode
+  title: string
+  description: string
+  disabled: boolean
+  onClick: () => void
+  accent?: boolean
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className={`flex w-full items-center gap-4 rounded-2xl border p-4 text-left transition-all disabled:opacity-50 ${
+        accent
+          ? 'border-[rgba(232,50,123,0.28)] bg-[#fff1f6] hover:border-[#e8327b] hover:bg-[#ffe0ec]'
+          : 'border-[rgba(232,50,123,0.18)] bg-white hover:border-[#ff8cba] hover:bg-[#fff1f6]'
+      }`}
+    >
+      <span
+        className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${
+          accent ? 'bg-[#e8327b]' : 'bg-[#fff1f6]'
+        }`}
+      >
+        {icon}
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block font-extrabold text-[#21363a]">{title}</span>
+        <span className="block text-sm text-[#68797d]">{description}</span>
+      </span>
+    </button>
+  )
+}
+
+function packageTypeMatchesPetSize(name: string, petSize: SizeCategory) {
+  const normalizedName = normalizeText(name)
+  const expectedSize = getPackageSizeLabel(petSize)
+
+  if (!expectedSize) return true
+
+  return normalizedName.includes(expectedSize)
+}
+
+function getPackageSizeLabel(petSize: SizeCategory) {
+  if (petSize === 'tiny' || petSize === 'small') return 'pequeno'
+  if (petSize === 'medium') return 'medio'
+  if (petSize === 'large' || petSize === 'giant') return 'grande'
+  return null
+}
+
+function normalizeText(value: string) {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
 }

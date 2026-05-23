@@ -1,143 +1,147 @@
-'use client'
+"use client";
 
-import { useRouter } from 'next/navigation'
-import { logout } from '@/lib/actions/auth'
-import { User, HelpCircle, LogOut, X, PawPrint, Sparkles } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { GlassCard } from '@/components/ui/glass-card'
+import { usePathname, useRouter } from "next/navigation";
+import { logout } from "@/lib/actions/auth";
+import { Calendar, HelpCircle, Home, LogOut, PawPrint, Scissors, User, Users, X } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface AppDrawerProps {
-  isOpen: boolean
-  onClose: () => void
-  companyName: string
+  isOpen: boolean;
+  onClose: () => void;
+  companyName: string;
   user: {
-    name?: string
-    email?: string
-  }
+    name?: string;
+    email?: string;
+  };
 }
 
-const accountItems = [
-  { label: 'Meu Perfil', href: '/app/perfil', icon: User },
-  { label: 'Ajuda', href: '/app/ajuda', icon: HelpCircle },
-]
-
-function getInitials(name?: string): string {
-  if (!name) return 'U'
-  const parts = name.trim().split(' ')
-  if (parts.length === 1) return parts[0].charAt(0).toUpperCase()
-  return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase()
-}
+const navItems = [
+  { label: "Início", href: "/app", icon: Home },
+  { label: "Agenda", href: "/app/agendamentos", icon: Calendar },
+  { label: "Clientes", href: "/app/clientes", icon: Users },
+  { label: "Serviços", href: "/app/servicos", icon: Scissors },
+  { label: "Perfil", href: "/app/perfil", icon: User },
+  { label: "Ajuda", href: "/app/ajuda", icon: HelpCircle },
+];
 
 export function AppDrawer({ isOpen, onClose, companyName, user }: AppDrawerProps) {
-  const router = useRouter()
+  const router = useRouter();
+  const pathname = usePathname();
 
   async function handleLogout() {
-    await logout()
+    await logout();
+    router.push("/login");
   }
 
   function navigate(href: string) {
-    router.push(href)
-    onClose()
+    router.push(href);
+    onClose();
   }
 
   return (
     <>
-      {/* Backdrop */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 animate-in fade-in duration-300"
+          className="fixed inset-0 z-40 bg-[#21363a]/35 backdrop-blur-sm animate-in fade-in duration-300"
           onClick={onClose}
         />
       )}
 
-      {/* Drawer - opens from LEFT with V2 dark background */}
       <div
-        className={`fixed top-0 left-0 h-full w-[85%] max-w-sm bg-[#120a21] z-50 shadow-2xl transition-transform duration-300 ease-out ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
+        className={cn(
+          "fixed left-0 top-0 z-50 h-full w-[86%] max-w-sm border-r border-[rgba(232,50,123,0.24)] bg-[#fff9fb] shadow-2xl transition-transform duration-300 ease-out",
+          isOpen ? "translate-x-0" : "-translate-x-full",
+        )}
       >
-        <div className="flex flex-col h-full">
-          {/* Header with close button */}
-          <div className="flex items-center justify-end p-4 border-b border-white/10">
+        <div className="flex h-full flex-col">
+          <div className="flex items-center justify-between border-b border-[rgba(232,50,123,0.18)] p-4">
+            <div className="flex min-w-0 items-center gap-3">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#e8327b]">
+                <PawPrint size={21} className="text-white" />
+              </div>
+              <div className="min-w-0">
+                <h2 className="truncate text-base font-extrabold text-[#006c73]">
+                  {companyName}
+                </h2>
+                <p className="text-xs font-bold text-[#68797d]">
+                  Onde seu pet se sente em casa
+                </p>
+              </div>
+            </div>
             <button
+              type="button"
               onClick={onClose}
-              className="p-2 hover:bg-white/10 rounded-full transition-colors text-white/70 hover:text-white"
+              className="rounded-xl p-2 text-[#006c73] transition-colors hover:bg-[#ffe0ec] hover:text-[#bf185d]"
+              aria-label="Fechar menu"
             >
               <X size={20} />
             </button>
           </div>
 
-          {/* Company Info Header */}
-          <div className="px-5 py-6 border-b border-white/10">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#f183ff] to-[#d946ef] flex items-center justify-center shadow-lg shadow-[#f183ff]/20">
-                <PawPrint size={22} className="text-white" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <h2 className="text-lg font-semibold text-white truncate">
-                  {companyName}
-                </h2>
-                <p className="text-white/50 text-sm">
-                  Bem-vindo de volta! 👋
-                </p>
+          <div className="px-4 py-4">
+            <div className="rounded-2xl border border-[rgba(232,50,123,0.18)] bg-white/80 p-3">
+              <div className="flex items-center gap-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#006c73] text-sm font-extrabold text-white">
+                  {getInitials(user?.name)}
+                </div>
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-extrabold text-[#21363a]">
+                    {user?.name || "Usuário"}
+                  </p>
+                  <p className="truncate text-xs font-semibold text-[#68797d]">
+                    {user?.email || "usuario@email.com"}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* User Profile Card */}
-          <div className="px-5 py-4">
-            <GlassCard variant="elevated" className="p-4 bg-gradient-to-r from-[#f183ff]/10 to-[#d946ef]/10 border-[#f183ff]/20">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#f183ff] to-[#d946ef] flex items-center justify-center text-white text-base font-bold shadow-lg shadow-[#f183ff]/20">
-                  {getInitials(user?.name)}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium text-white text-sm truncate">
-                    {user?.name || 'Usuário'}
-                  </p>
-                  <p className="text-xs text-white/50 truncate">
-                    {user?.email || 'usuario@email.com'}
-                  </p>
-                </div>
-                <div className="w-8 h-8 rounded-full bg-[#f183ff]/20 flex items-center justify-center">
-                  <Sparkles size={14} className="text-[#f183ff]" />
-                </div>
-              </div>
-            </GlassCard>
-          </div>
-
-          {/* Menu Items */}
-          <nav className="flex-1 overflow-y-auto px-4 py-4">
-            <p className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-3 px-3">
-              Conta
-            </p>
+          <nav className="flex-1 overflow-y-auto px-4 py-2">
             <ul className="space-y-1">
-              {accountItems.map((item) => (
-                <li key={item.href}>
-                  <button
-                    onClick={() => navigate(item.href)}
-                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:text-white hover:bg-[#f183ff]/10 transition-all text-sm font-medium group"
-                  >
-                    <item.icon size={18} className="group-hover:text-[#f183ff] transition-colors" />
-                    <span>{item.label}</span>
-                  </button>
-                </li>
-              ))}
+              {navItems.map((item) => {
+                const active = pathname === item.href;
+                const Icon = item.icon;
+
+                return (
+                  <li key={item.href}>
+                    <button
+                      type="button"
+                      onClick={() => navigate(item.href)}
+                      className={cn(
+                        "flex w-full items-center gap-3 rounded-xl border px-4 py-3 text-sm font-extrabold transition-all",
+                        active
+                          ? "border-[rgba(232,50,123,0.28)] bg-[#ffe0ec] text-[#bf185d]"
+                          : "border-transparent text-[#006c73] hover:border-[rgba(232,50,123,0.18)] hover:bg-white hover:text-[#bf185d]",
+                      )}
+                    >
+                      <Icon size={19} />
+                      <span>{item.label}</span>
+                    </button>
+                  </li>
+                );
+              })}
             </ul>
           </nav>
 
-          {/* Logout Button */}
-          <div className="p-4 border-t border-white/10 pb-24">
-            <GlassCard variant="elevated" className="p-1">
-              <button
-                onClick={handleLogout}
-                className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl text-red-300/80 hover:text-red-200 hover:bg-red-500/10 transition-all text-sm font-medium"
-              >
-                <LogOut size={18} />
-                <span>Sair da Conta</span>
-              </button>
-            </GlassCard>
+          <div className="border-t border-[rgba(232,50,123,0.18)] p-4 pb-24">
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="flex w-full items-center justify-center gap-3 rounded-xl border border-[rgba(232,50,123,0.24)] px-4 py-3 text-sm font-extrabold text-[#bf185d] transition-colors hover:bg-[#ffe0ec]"
+            >
+              <LogOut size={18} />
+              Sair da conta
+            </button>
           </div>
         </div>
       </div>
     </>
-  )
+  );
+}
+
+function getInitials(name?: string): string {
+  if (!name) return "U";
+  const parts = name.trim().split(" ");
+  if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+  return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
 }

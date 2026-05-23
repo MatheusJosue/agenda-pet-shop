@@ -1,11 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import { Package, Calendar, Edit, AlertCircle, CheckCircle, XCircle, ExternalLink } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { AlertCircle, Calendar, CheckCircle, Edit, Package, XCircle } from "lucide-react";
 import { getPetPackageStatus, updatePetPackage } from "@/lib/actions/packages";
 import { GlassCard } from "@/components/ui/glass-card";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
@@ -24,7 +22,7 @@ interface PackageStatus {
     };
     expires_at: string;
   } | null;
-  status?: 'active' | 'exhausted' | 'expired';
+  status?: "active" | "exhausted" | "expired";
   creditsRemaining?: number;
   totalCredits?: number;
   daysUntilExpiry?: number;
@@ -37,13 +35,8 @@ export function PetPackageCard({ petId, petName }: PetPackageCardProps) {
   const [showExpireConfirm, setShowExpireConfirm] = useState(false);
   const [saving, setSaving] = useState(false);
   const [credits, setCredits] = useState<number>(0);
-  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadPackageStatus();
-  }, [petId]);
-
-  const loadPackageStatus = async () => {
+  const loadPackageStatus = useCallback(async () => {
     setLoading(true);
     const result = await getPetPackageStatus(petId);
     setStatus(result);
@@ -51,21 +44,21 @@ export function PetPackageCard({ petId, petName }: PetPackageCardProps) {
       setCredits(result.creditsRemaining || 0);
     }
     setLoading(false);
-  };
+  }, [petId]);
+
+  useEffect(() => {
+    void Promise.resolve().then(loadPackageStatus);
+  }, [loadPackageStatus]);
 
   const handleUpdateCredits = async () => {
     if (!status?.package) return;
 
     setSaving(true);
-    setError(null);
-
     const result = await updatePetPackage(status.package.id, {
-      credits_remaining: credits
+      credits_remaining: credits,
     });
 
-    if (result.error) {
-      setError(result.error);
-    } else {
+    if (!result.error) {
       await loadPackageStatus();
       setShowEditModal(false);
     }
@@ -76,15 +69,11 @@ export function PetPackageCard({ petId, petName }: PetPackageCardProps) {
     if (!status?.package) return;
 
     setSaving(true);
-    setError(null);
-
     const result = await updatePetPackage(status.package.id, {
-      active: false
+      active: false,
     });
 
-    if (result.error) {
-      setError(result.error);
-    } else {
+    if (!result.error) {
       await loadPackageStatus();
       setShowExpireConfirm(false);
     }
@@ -93,12 +82,12 @@ export function PetPackageCard({ petId, petName }: PetPackageCardProps) {
 
   if (loading) {
     return (
-      <GlassCard variant="default" className="p-4 animate-pulse">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-white/10" />
+      <GlassCard className="p-4">
+        <div className="flex animate-pulse items-center gap-3">
+          <div className="h-11 w-11 rounded-full bg-[#ffe0ec]" />
           <div className="flex-1">
-            <div className="h-4 bg-white/10 rounded w-32 mb-2" />
-            <div className="h-3 bg-white/10 rounded w-24" />
+            <div className="mb-2 h-4 w-36 rounded bg-[#ffe0ec]" />
+            <div className="h-3 w-28 rounded bg-[#fff1f6]" />
           </div>
         </div>
       </GlassCard>
@@ -107,119 +96,85 @@ export function PetPackageCard({ petId, petName }: PetPackageCardProps) {
 
   if (!status?.hasActivePackage || !status.package) {
     return (
-      <GlassCard variant="default" className="p-4 border-dashed border-white/20">
+      <GlassCard className="border-dashed border-[rgba(232,50,123,0.34)] p-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center">
-            <Package size={18} className="text-white/40" />
+          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#fff1f6]">
+            <Package size={20} className="text-[#e8327b]" />
           </div>
-          <div className="flex-1">
-            <p className="text-white/60 text-sm">Nenhum pacote ativo</p>
-            <p className="text-white/40 text-xs">{petName} não possui pacote cadastrado</p>
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-extrabold text-[#21363a]">Nenhum pacote ativo</p>
+            <p className="text-xs font-semibold text-[#68797d]">
+              {petName} não possui pacote cadastrado
+            </p>
           </div>
         </div>
       </GlassCard>
     );
   }
 
-  const { package: pkg, creditsRemaining = 0, totalCredits = 0, daysUntilExpiry = 0, status: pkgStatus = 'active' } = status;
-
-  const getStatusConfig = () => {
-    switch (pkgStatus) {
-      case 'exhausted':
-        return {
-          icon: <XCircle size={20} className="text-red-400" />,
-          label: 'Esgotado',
-          bgColor: 'bg-red-500/20',
-          borderColor: 'border-red-500/30',
-          textColor: 'text-red-300'
-        };
-      case 'expired':
-        return {
-          icon: <AlertCircle size={20} className="text-amber-400" />,
-          label: 'Vencido',
-          bgColor: 'bg-amber-500/20',
-          borderColor: 'border-amber-500/30',
-          textColor: 'text-amber-300'
-        };
-      default:
-        return {
-          icon: <CheckCircle size={20} className="text-green-400" />,
-          label: 'Ativo',
-          bgColor: 'bg-green-500/20',
-          borderColor: 'border-green-500/30',
-          textColor: 'text-green-300'
-        };
-    }
-  };
-
-  const statusConfig = getStatusConfig();
+  const {
+    package: pkg,
+    creditsRemaining = 0,
+    totalCredits = 0,
+    daysUntilExpiry = 0,
+    status: pkgStatus = "active",
+  } = status;
+  const statusConfig = getStatusConfig(pkgStatus);
   const creditsPercentage = totalCredits > 0 ? (creditsRemaining / totalCredits) * 100 : 0;
 
   return (
     <>
-      <GlassCard
-        variant="elevated"
-        className={`p-4 ${pkgStatus === 'active' ? 'border-[#f183ff]/30' : ''}`}
-      >
-
+      <GlassCard className="border-[rgba(232,50,123,0.34)] bg-white/90 p-4">
         <div className="flex items-start gap-3">
-          <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${statusConfig.bgColor} ${statusConfig.borderColor} border`}>
-            <Package size={18} className={statusConfig.textColor} />
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#dffbea]">
+            <Package size={22} className="text-[#18b96f]" />
           </div>
 
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
-              <span className={`text-sm font-semibold ${statusConfig.textColor}`}>
+          <div className="min-w-0 flex-1">
+            <div className="mb-2 flex flex-wrap items-center gap-2">
+              <span className="font-extrabold leading-tight text-[#18b96f]">
                 {pkg.package_type.name}
               </span>
-              <span className={`px-2 py-0.5 rounded-full text-xs font-medium border ${statusConfig.bgColor} ${statusConfig.borderColor} ${statusConfig.textColor}`}>
+              <span className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-extrabold ${statusConfig.badge}`}>
                 {statusConfig.icon}
-                <span className="ml-1">{statusConfig.label}</span>
+                {statusConfig.label}
               </span>
             </div>
 
-            <div className="flex items-center gap-3 text-xs text-white/60">
-              <span className="flex items-center gap-1">
-                <Calendar size={12} />
-                Vence em {daysUntilExpiry > 0 ? `${daysUntilExpiry} dias` : 'hoje'}
+            <div className="grid grid-cols-2 gap-2 text-xs font-semibold text-[#68797d]">
+              <span className="flex items-center gap-1.5">
+                <Calendar size={13} className="text-[#68797d]" />
+                Vence em {daysUntilExpiry > 0 ? `${daysUntilExpiry} dias` : "hoje"}
               </span>
-              <span>•</span>
-              <span className={creditsRemaining === 0 ? 'text-red-400' : ''}>
+              <span>
                 {creditsRemaining} de {totalCredits} créditos
               </span>
             </div>
 
-            {/* Credits bar */}
             {totalCredits > 0 && (
-              <div className="mt-2 w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+              <div className="mt-3 h-2 overflow-hidden rounded-full bg-[#ffe0ec]">
                 <div
-                  className={`h-full rounded-full transition-all ${
-                    creditsRemaining === 0
-                      ? 'bg-red-500'
-                      : creditsPercentage <= 25
-                      ? 'bg-amber-500'
-                      : 'bg-gradient-to-r from-[#f183ff] to-[#d946ef]'
-                  }`}
+                  className={`h-full rounded-full transition-all ${statusConfig.bar}`}
                   style={{ width: `${Math.max(creditsPercentage, 0)}%` }}
                 />
               </div>
             )}
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex shrink-0 gap-1">
             <button
               type="button"
               onClick={() => setShowEditModal(true)}
-              className="p-2 rounded-lg text-white/60 hover:text-[#f183ff] hover:bg-white/10 transition-all"
+              className="rounded-lg p-2 text-[#68797d] transition-colors hover:bg-[#ffe0ec] hover:text-[#bf185d]"
               title="Editar créditos"
             >
               <Edit size={16} />
             </button>
-            {pkgStatus === 'active' && (
+            {pkgStatus === "active" && (
               <button
                 type="button"
                 onClick={() => setShowExpireConfirm(true)}
-                className="p-2 rounded-lg text-white/60 hover:text-amber-400 hover:bg-amber-500/10 transition-all"
+                className="rounded-lg p-2 text-[#68797d] transition-colors hover:bg-amber-50 hover:text-amber-600"
                 title="Marcar como vencido"
               >
                 <XCircle size={16} />
@@ -229,7 +184,6 @@ export function PetPackageCard({ petId, petName }: PetPackageCardProps) {
         </div>
       </GlassCard>
 
-      {/* Edit Credits Modal */}
       <ConfirmDialog
         open={showEditModal}
         onOpenChange={setShowEditModal}
@@ -237,22 +191,25 @@ export function PetPackageCard({ petId, petName }: PetPackageCardProps) {
         title="Editar créditos do pacote"
         description={
           <div className="space-y-4">
-            <p className="text-white/70 text-sm">
-              Ajuste a quantidade de créditos restantes para <span className="text-white font-semibold">{petName}</span>
+            <p className="text-sm text-[#68797d]">
+              Ajuste a quantidade de créditos restantes para{" "}
+              <span className="font-extrabold text-[#21363a]">{petName}</span>.
             </p>
             <div>
-              <label className="block text-white/80 text-sm font-semibold mb-2">
-                Créditos Restantes
+              <label className="mb-2 block text-sm font-extrabold text-[#006c73]">
+                Créditos restantes
               </label>
               <Input
                 type="number"
                 min={0}
                 max={totalCredits}
                 value={credits}
-                onChange={(e) => setCredits(Math.max(0, Math.min(totalCredits, parseInt(e.target.value) || 0)))}
+                onChange={(event) =>
+                  setCredits(Math.max(0, Math.min(totalCredits, parseInt(event.target.value) || 0)))
+                }
                 className="w-full"
               />
-              <p className="text-white/50 text-xs mt-1">
+              <p className="mt-1 text-xs font-semibold text-[#68797d]">
                 Total do pacote: {totalCredits} créditos
               </p>
             </div>
@@ -265,7 +222,6 @@ export function PetPackageCard({ petId, petName }: PetPackageCardProps) {
         loading={saving}
       />
 
-      {/* Expire Confirm Dialog */}
       <ConfirmDialog
         open={showExpireConfirm}
         onOpenChange={setShowExpireConfirm}
@@ -280,4 +236,31 @@ export function PetPackageCard({ petId, petName }: PetPackageCardProps) {
       />
     </>
   );
+}
+
+function getStatusConfig(status: "active" | "exhausted" | "expired") {
+  if (status === "exhausted") {
+    return {
+      label: "Esgotado",
+      icon: <XCircle size={15} />,
+      badge: "border-red-200 bg-red-50 text-red-600",
+      bar: "bg-red-500",
+    };
+  }
+
+  if (status === "expired") {
+    return {
+      label: "Vencido",
+      icon: <AlertCircle size={15} />,
+      badge: "border-amber-200 bg-amber-50 text-amber-600",
+      bar: "bg-amber-500",
+    };
+  }
+
+  return {
+    label: "Ativo",
+    icon: <CheckCircle size={15} />,
+    badge: "border-[#91e8bf] bg-[#dffbea] text-[#0b8b58]",
+    bar: "bg-[#e8327b]",
+  };
 }

@@ -44,7 +44,7 @@ async function cleanAndSetup() {
   const { data: company } = await supabaseAdmin
     .from('companies')
     .insert({
-      name: 'Pet Shop Exemplo',
+      name: 'Agenda Pet Shop',
       email: 'contato@petshopexemplo.com',
       active: true
     })

@@ -66,6 +66,11 @@ export type AppointmentInput = {
   clientId: string
   petId: string
   servicePriceIds: string[] // Changed to array
+  servicePrices?: Array<{
+    servicePriceId: string
+    price: number
+  }>
+  totalPrice?: number
   date: string
   time: string
   useCredit?: boolean

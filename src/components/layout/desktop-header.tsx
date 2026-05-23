@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, Settings } from "lucide-react";
+import { PawPrint } from "lucide-react";
 
 interface DesktopHeaderProps {
   user?: {
@@ -11,27 +11,25 @@ interface DesktopHeaderProps {
   companyName: string;
 }
 
-export function DesktopHeader({ user, sidebarCollapsed, companyName = "Agenda Pet Shop" }: DesktopHeaderProps) {
+export function DesktopHeader({
+  companyName = "Agenda Pet Shop",
+}: DesktopHeaderProps) {
   return (
-    <header className="hidden xl:flex sticky top-0 z-40 w-full bg-gradient-to-br from-purple-950 via-fuchsia-950/30 to-zinc-950 backdrop-blur-md border-b border-white/10">
-      <div className="flex-1 flex items-center justify-center px-6 py-3">
-        <div className="flex items-center justify-between w-full max-w-12xl">
-          {/* Left: Company Name */}
+    <header className="hidden xl:flex sticky top-0 z-40 w-full bg-[#fff9fb]/88 backdrop-blur-2xl border-b border-[rgba(232,50,123,0.18)]">
+      <div className="flex-1 flex items-center justify-center px-6 py-3.5">
+        <div className="flex items-center justify-between w-full max-w-7xl">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-purple-500/30">
-              <span className="text-lg">🐾</span>
+            <div className="w-10 h-10 rounded-2xl bg-[#e8327b] flex items-center justify-center shadow-[0_10px_24px_rgba(232,50,123,0.18)]">
+              <PawPrint size={21} className="text-white" />
             </div>
-            <h1 className="text-xl font-bold text-white">{companyName}</h1>
-          </div>
-
-          {/* Right: Notifications & Settings */}
-          <div className="flex items-center gap-2">
-            <button className="w-10 h-10 flex items-center justify-center rounded-xl text-purple-200/60 hover:text-white hover:bg-white/10 transition-colors">
-              <Bell size={20} />
-            </button>
-            <button className="w-10 h-10 flex items-center justify-center rounded-xl text-purple-200/60 hover:text-white hover:bg-white/10 transition-colors">
-              <Settings size={20} />
-            </button>
+            <div>
+              <p className="text-xs font-extrabold uppercase text-[#e8327b]">
+                Agenda Pet Shop
+              </p>
+              <h1 className="text-xl font-extrabold text-[#006c73]">
+                {companyName}
+              </h1>
+            </div>
           </div>
         </div>
       </div>

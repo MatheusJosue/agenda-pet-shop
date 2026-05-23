@@ -14,14 +14,10 @@ interface AppLayoutProps {
 }
 
 export function AppLayout({ children, companyName, user }: AppLayoutProps) {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-
-  useEffect(() => {
-    const saved = localStorage.getItem("agenda-pet-shop:sidebar-collapsed");
-    if (saved !== null) {
-      setSidebarCollapsed(saved === "true");
-    }
-  }, []);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return localStorage.getItem("agenda-pet-shop:sidebar-collapsed") === "true";
+  });
 
   // Sincronizar com mudanças no localStorage
   useEffect(() => {
@@ -57,7 +53,7 @@ export function AppLayout({ children, companyName, user }: AppLayoutProps) {
             sidebarCollapsed={sidebarCollapsed}
             companyName={companyName}
           />
-          <main className="flex-1 overflow-auto bg-gradient-to-br from-zinc-950 via-purple-950/20 to-zinc-950">
+          <main className="flex-1 overflow-auto bg-[linear-gradient(135deg,rgba(255,249,251,0.96),rgba(255,224,236,0.82))]">
             <div className="h-full">{children}</div>
           </main>
         </div>

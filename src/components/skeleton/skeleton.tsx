@@ -12,15 +12,13 @@ export function Skeleton({
   return (
     <div
       className={cn(
-        // Base skeleton styling - Ametista Pet Pro theme
         'animate-pulse',
-        'bg-[#2b2041]/40',
+        'bg-[#ffe0ec]',
         'backdrop-blur-sm',
         'relative overflow-hidden',
-        // Shimmer effect overlay
         'before:absolute before:inset-0',
         'before:bg-gradient-to-r',
-        'before:from-transparent before:via-white/5 before:to-transparent',
+        'before:from-transparent before:via-white/65 before:to-transparent',
         'before:translate-x-[-100%] before:animate-[shimmer_1.5s_infinite]',
         // Variant styles
         variant === 'circle' && 'rounded-full',
@@ -58,7 +56,7 @@ export function SkeletonWrapper({
       {...props}
     >
       {label && (
-        <p className="text-white/30 text-xs font-medium uppercase tracking-wider">
+        <p className="text-[#68797d] text-xs font-bold uppercase tracking-wider">
           {label}
         </p>
       )}

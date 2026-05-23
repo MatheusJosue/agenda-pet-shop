@@ -713,6 +713,7 @@ export default function ClientPetDetailPage() {
           packageData={activePackage}
           petId={petId}
           petName={pet?.name || ''}
+          petSize={pet.size}
           onClose={() => setShowPackageModal(false)}
           onUpdate={() => {
             loadActivePackage()

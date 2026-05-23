@@ -17,6 +17,13 @@ export interface ConfirmDialogProps {
   loading?: boolean
 }
 
+const ICONS = {
+  alert: AlertTriangle,
+  trash: Trash2,
+  edit: Edit2,
+  refresh: RefreshCw,
+} as const
+
 export function ConfirmDialog({
   open,
   onOpenChange,
@@ -46,14 +53,7 @@ export function ConfirmDialog({
     await onConfirm()
   }
 
-  const getIcon = () => {
-    if (icon === 'trash') return Trash2
-    if (icon === 'edit') return Edit2
-    if (icon === 'refresh') return RefreshCw
-    return AlertTriangle
-  }
-
-  const Icon = getIcon()
+  const Icon = ICONS[icon]
 
   return (
     <div
@@ -61,37 +61,37 @@ export function ConfirmDialog({
       onClick={() => !loading && onOpenChange(false)}
     >
       {/* Overlay */}
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-md animate-in fade-in duration-200" />
+      <div className="absolute inset-0 bg-[#21363a]/45 backdrop-blur-md animate-in fade-in duration-200" />
 
       {/* Modal */}
       <div
         className={cn(
           "relative w-full max-w-md animate-in fade-in zoom-in-95 duration-200",
-          "bg-[#120a21]/95 backdrop-blur-2xl",
-          "border border-white/10 rounded-[28px]",
-          "shadow-2xl shadow-black/50"
+          "bg-[#fff9fb]/96 backdrop-blur-2xl",
+          "border border-[rgba(232,50,123,0.28)] rounded-[24px]",
+          "shadow-[0_24px_70px_rgba(33,54,58,0.24)]"
         )}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="p-8">
+        <div className="p-6 sm:p-7">
           {/* Icon */}
-          <div className="flex justify-center mb-6">
+          <div className="flex justify-center mb-5">
             <div
               className={cn(
-                "w-20 h-20 rounded-full flex items-center justify-center",
+                "w-16 h-16 rounded-full flex items-center justify-center",
                 "border-2",
                 variant === 'danger'
-                  ? 'bg-[#ff4d4d]/10 border-[#ff4d4d]/30 shadow-[0_0_30px_rgba(255,77,77,0.3)]'
+                  ? 'bg-red-50 border-red-200 shadow-[0_12px_28px_rgba(220,38,38,0.12)]'
                   : variant === 'warning'
-                  ? 'bg-amber-500/10 border-amber-500/30 shadow-[0_0_30px_rgba(245,158,11,0.3)]'
-                  : 'bg-[#f183ff]/10 border-[#f183ff]/30 shadow-[0_0_30px_rgba(241,131,255,0.3)]'
+                  ? 'bg-amber-50 border-amber-200 shadow-[0_12px_28px_rgba(245,158,11,0.14)]'
+                  : 'bg-[#ffe0ec] border-[#ff8cba] shadow-[0_12px_28px_rgba(232,50,123,0.16)]'
               )}
             >
               <Icon
-                size={36}
+                size={30}
                 className={cn(
                   "animate-in spin-in-12 duration-500",
-                  variant === 'danger' ? 'text-[#ff4d4d]' : variant === 'warning' ? 'text-amber-500' : 'text-[#f183ff]',
+                  variant === 'danger' ? 'text-red-600' : variant === 'warning' ? 'text-amber-600' : 'text-[#e8327b]',
                   icon === 'edit' && 'animate-none'
                 )}
               />
@@ -99,17 +99,17 @@ export function ConfirmDialog({
           </div>
 
           {/* Title */}
-          <h2 className="text-2xl font-bold text-white text-center mb-3">
+          <h2 className="text-2xl font-extrabold text-[#006c73] text-center mb-3">
             {title}
           </h2>
 
           {/* Description */}
           {typeof description === 'string' ? (
-            <p className="text-white/60 text-center text-sm leading-relaxed mb-8">
+            <p className="text-[#68797d] text-center text-sm font-semibold leading-relaxed mb-6">
               {description}
             </p>
           ) : (
-            <div className="text-white/60 text-center text-sm leading-relaxed mb-8">
+            <div className="text-[#68797d] text-center text-sm leading-relaxed mb-6">
               {description}
             </div>
           )}
@@ -121,8 +121,8 @@ export function ConfirmDialog({
               disabled={loading}
               className={cn(
                 "flex-1 px-6 py-4 rounded-xl font-semibold text-base",
-                "bg-white/5 border border-white/10 text-white/70",
-                "hover:bg-white/10 hover:text-white",
+                "bg-white border border-[rgba(232,50,123,0.26)] text-[#006c73]",
+                "hover:bg-[#fff1f6] hover:text-[#bf185d]",
                 "disabled:opacity-50 disabled:cursor-not-allowed",
                 "transition-all duration-200"
               )}
@@ -137,10 +137,10 @@ export function ConfirmDialog({
                 "flex items-center justify-center gap-2",
                 "border-0 shadow-lg",
                 variant === 'danger'
-                  ? 'bg-[#ff4d4d] text-white shadow-[#ff4d4d]/40 hover:shadow-[#ff4d4d]/60'
+                  ? 'bg-red-600 text-white shadow-red-500/30 hover:shadow-red-500/45'
                   : variant === 'warning'
-                  ? 'bg-amber-500 text-white shadow-amber-500/40 hover:shadow-amber-500/60'
-                  : 'bg-[#f183ff] text-white shadow-[#f183ff]/40 hover:shadow-[#f183ff]/60',
+                  ? 'bg-amber-500 text-white shadow-amber-500/30 hover:shadow-amber-500/45'
+                  : 'bg-[#e8327b] text-white shadow-[#e8327b]/30 hover:shadow-[#e8327b]/45',
                 "hover:opacity-90",
                 "disabled:opacity-50 disabled:cursor-not-allowed",
                 "transition-all duration-200"

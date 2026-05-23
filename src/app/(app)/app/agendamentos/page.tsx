@@ -1,17 +1,17 @@
-'use client'
+"use client";
 
-import { useState, useCallback, useEffect, useMemo } from 'react'
-import Link from 'next/link'
-import { BottomNavigation } from '@/components/layout/bottom-navigation'
-import { AppHeader } from '@/components/layout/app-header'
-import { AppLayout } from '@/components/layout/app-layout'
-import { GlassCard } from '@/components/ui/glass-card'
-import { Button } from '@/components/ui/button'
-import { ViewModeSelector } from '@/components/agendamentos'
-import { SkeletonListStack } from '@/components/skeleton'
-import { useAppointmentsFilter } from '@/hooks/useAppointmentsFilter'
-import { navigateDate, type ViewMode } from '@/lib/utils/date'
-import { SIZE_EMOJIS, SIZE_COLORS } from '@/lib/types/service-prices'
+import { useState, useCallback, useEffect, useMemo } from "react";
+import Link from "next/link";
+import { BottomNavigation } from "@/components/layout/bottom-navigation";
+import { AppHeader } from "@/components/layout/app-header";
+import { AppLayout } from "@/components/layout/app-layout";
+import { GlassCard } from "@/components/ui/glass-card";
+import { Button } from "@/components/ui/button";
+import { ViewModeSelector } from "@/components/agendamentos";
+import { SkeletonListStack } from "@/components/skeleton";
+import { useAppointmentsFilter } from "@/hooks/useAppointmentsFilter";
+import { navigateDate, type ViewMode } from "@/lib/utils/date";
+import { SIZE_EMOJIS, SIZE_COLORS } from "@/lib/types/service-prices";
 import {
   Clock,
   User,
@@ -23,136 +23,146 @@ import {
   CheckCircle,
   DollarSign,
   Bell,
-} from 'lucide-react'
-import type { AppointmentWithRelations } from '@/lib/types/appointments'
+} from "lucide-react";
+import type { AppointmentWithRelations } from "@/lib/types/appointments";
 
 const statusConfig = {
   scheduled: {
-    label: 'Agendado',
-    bgColor: 'bg-[#f183ff]/20',
-    textColor: 'text-[#f183ff]',
-    borderColor: 'border-[#f183ff]/30'
+    label: "Agendado",
+    bgColor: "bg-[#f183ff]/20",
+    textColor: "text-[#f183ff]",
+    borderColor: "border-[#f183ff]/30",
   },
   completed: {
-    label: 'Concluído',
-    bgColor: 'bg-[#00ffa3]/20',
-    textColor: 'text-[#00ffa3]',
-    borderColor: 'border-[#00ffa3]/30'
+    label: "Concluído",
+    bgColor: "bg-[#00ffa3]/20",
+    textColor: "text-[#00ffa3]",
+    borderColor: "border-[#00ffa3]/30",
   },
   cancelled: {
-    label: 'Cancelado',
-    bgColor: 'bg-red-500/20',
-    textColor: 'text-red-400',
-    borderColor: 'border-red-500/30'
-  }
-}
+    label: "Cancelado",
+    bgColor: "bg-red-500/20",
+    textColor: "text-red-400",
+    borderColor: "border-red-500/30",
+  },
+};
 
 // Helper to format date divider
 function formatDateDivider(dateStr: string) {
-  const date = new Date(dateStr + 'T00:00:00')
-  const day = date.toLocaleDateString('pt-BR', { day: '2-digit' })
-  const month = date.toLocaleDateString('pt-BR', { month: 'short' }).toUpperCase()
-  const weekday = date.toLocaleDateString('pt-BR', { weekday: 'long' }).toUpperCase()
+  const date = new Date(dateStr + "T00:00:00");
+  const day = date.toLocaleDateString("pt-BR", { day: "2-digit" });
+  const month = date
+    .toLocaleDateString("pt-BR", { month: "short" })
+    .toUpperCase();
+  const weekday = date
+    .toLocaleDateString("pt-BR", { weekday: "long" })
+    .toUpperCase();
 
-  return `${day} ${month}, ${weekday}`
+  return `${day} ${month}, ${weekday}`;
 }
 
 // Helper to format time
 function formatTime(time: string) {
-  return time.length === 5 ? `${time}:00` : time
+  return time.length === 5 ? `${time}:00` : time;
 }
 
 // Helper to format price
 function formatPrice(price: number) {
-  return new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL'
-  }).format(price)
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  }).format(price);
 }
 
 export default function AgendamentosPage() {
-  const [viewMode, setViewMode] = useState<ViewMode>('week')
-  const [selectedDate, setSelectedDate] = useState(new Date())
-  const [companyName, setCompanyName] = useState('Luminous Pets')
+  const [viewMode, setViewMode] = useState<ViewMode>("week");
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [companyName, setCompanyName] = useState("Agenda Pet Shop");
   const [user, setUser] = useState<{
-    user_metadata?: { name?: string }
-    email?: string
-  } | null>(null)
+    user_metadata?: { name?: string };
+    email?: string;
+  } | null>(null);
 
   const { appointments, loading, error, periodLabel } = useAppointmentsFilter(
     viewMode,
-    selectedDate
-  )
+    selectedDate,
+  );
 
   useEffect(() => {
     async function loadData() {
       try {
-        const { getAppStats } = await import('@/lib/actions/app')
-        const result = await getAppStats()
+        const { getAppStats } = await import("@/lib/actions/app");
+        const result = await getAppStats();
         if (result.data) {
-          setCompanyName(result.data.companyName || 'Luminous Pets')
-          setUser(result.data.user)
+          setCompanyName(result.data.companyName || "Agenda Pet Shop");
+          setUser(result.data.user);
         }
       } catch (error) {
         // Silenced error for initial load
       }
     }
-    loadData()
-  }, [])
+    loadData();
+  }, []);
 
   const handlePrevious = useCallback(() => {
-    setSelectedDate((prev) => navigateDate(prev, viewMode, -1))
-  }, [viewMode])
+    setSelectedDate((prev) => navigateDate(prev, viewMode, -1));
+  }, [viewMode]);
 
   const handleNext = useCallback(() => {
-    setSelectedDate((prev) => navigateDate(prev, viewMode, 1))
-  }, [viewMode])
+    setSelectedDate((prev) => navigateDate(prev, viewMode, 1));
+  }, [viewMode]);
 
   const handleViewModeChange = useCallback((mode: ViewMode) => {
-    setViewMode(mode)
-  }, [])
+    setViewMode(mode);
+  }, []);
 
   // Group appointments by date
   const groupedAppointments = useMemo(() => {
-    const groups: Record<string, AppointmentWithRelations[]> = {}
+    const groups: Record<string, AppointmentWithRelations[]> = {};
 
     appointments?.forEach((appointment) => {
       if (!groups[appointment.date]) {
-        groups[appointment.date] = []
+        groups[appointment.date] = [];
       }
-      groups[appointment.date].push(appointment)
-    })
+      groups[appointment.date].push(appointment);
+    });
 
-    return groups
-  }, [appointments])
+    return groups;
+  }, [appointments]);
 
   // Calculate weekly stats
   const weeklyStats = useMemo(() => {
-    const completed = appointments?.filter((a) => a.status === 'completed').length || 0
-    const revenue = appointments?.reduce((sum, a) => {
-      if (a.status === 'completed') {
-        return sum + (a.total_price || a.price)
-      }
-      return sum
-    }, 0) || 0
+    const completed =
+      appointments?.filter((a) => a.status === "completed").length || 0;
+    const revenue =
+      appointments?.reduce((sum, a) => {
+        if (a.status === "completed") {
+          return sum + (a.total_price || a.price);
+        }
+        return sum;
+      }, 0) || 0;
 
     return {
       total: appointments?.length || 0,
       completed,
       revenue,
-      pending: (appointments?.filter((a) => a.status === 'scheduled').length || 0)
-    }
-  }, [appointments])
+      pending:
+        appointments?.filter((a) => a.status === "scheduled").length || 0,
+    };
+  }, [appointments]);
 
   // Get service names from appointment
   const getServiceNames = (appointment: AppointmentWithRelations) => {
-    if (appointment.appointment_services && appointment.appointment_services.length > 0) {
+    if (
+      appointment.appointment_services &&
+      appointment.appointment_services.length > 0
+    ) {
       return appointment.appointment_services
         .map((as) => as.service_price.service_name)
-        .join(', ')
+        .join(", ");
     }
-    return appointment.service_price?.service_name || 'Serviço'
-  }
+    return appointment.service_price?.service_name || "Serviço";
+  };
 
   return (
     <AppLayout
@@ -188,10 +198,6 @@ export default function AgendamentosPage() {
             </div>
 
             <div className="flex items-center gap-2">
-              <button className="relative p-2.5 rounded-xl text-white/60 hover:text-white hover:bg-white/10 transition-all">
-                <Bell size={20} />
-                <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#f183ff] animate-pulse" />
-              </button>
               <Link href="/app/agendamentos/novo">
                 <Button
                   variant="primary"
@@ -251,81 +257,98 @@ export default function AgendamentosPage() {
           ) : (
             <div className="space-y-6">
               {/* Appointments grouped by date */}
-              {Object.entries(groupedAppointments).map(([date, dayAppointments], groupIndex) => (
-                <div key={date} className="space-y-3 animate-in fade-in slide-in-from-bottom-4 duration-700" style={{ animationDelay: `${groupIndex * 100}ms` }}>
-                  {/* Date Divider */}
-                  <div className="flex items-center gap-4">
-                    <div className="flex-1 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-                    <span className="text-white/30 text-xs font-semibold tracking-widest whitespace-nowrap">
-                      {formatDateDivider(date)}
-                    </span>
-                    <div className="flex-1 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-                  </div>
+              {Object.entries(groupedAppointments).map(
+                ([date, dayAppointments], groupIndex) => (
+                  <div
+                    key={date}
+                    className="space-y-3 animate-in fade-in slide-in-from-bottom-4 duration-700"
+                    style={{ animationDelay: `${groupIndex * 100}ms` }}
+                  >
+                    {/* Date Divider */}
+                    <div className="flex items-center gap-4">
+                      <div className="flex-1 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+                      <span className="text-white/30 text-xs font-semibold tracking-widest whitespace-nowrap">
+                        {formatDateDivider(date)}
+                      </span>
+                      <div className="flex-1 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+                    </div>
 
-                  {/* Appointment Cards */}
-                  {dayAppointments.map((appointment) => {
-                    const status = statusConfig[appointment.status]
-                    const serviceNames = getServiceNames(appointment)
+                    {/* Appointment Cards */}
+                    {dayAppointments.map((appointment) => {
+                      const status = statusConfig[appointment.status];
+                      const serviceNames = getServiceNames(appointment);
 
-                    return (
-                      <Link key={appointment.id} href={`/app/agendamentos/${appointment.id}`}>
-                        <GlassCard
-                          variant="elevated"
-                          className="p-4 hover:bg-white/5 transition-all cursor-pointer group border-white/5"
+                      return (
+                        <Link
+                          key={appointment.id}
+                          href={`/app/agendamentos/${appointment.id}`}
                         >
-                          <div className="flex items-center gap-4">
-                            {/* Pet Avatar */}
-                            <div className="relative flex-shrink-0">
-                              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#f183ff]/20 to-[#d946ef]/20 flex items-center justify-center text-2xl border border-[#f183ff]/20 shadow-lg shadow-[#f183ff]/10">
-                                {SIZE_EMOJIS[appointment.pet.size]}
+                          <GlassCard
+                            variant="elevated"
+                            className="p-4 hover:bg-white/5 transition-all cursor-pointer group border-white/5"
+                          >
+                            <div className="flex items-center gap-4">
+                              {/* Pet Avatar */}
+                              <div className="relative flex-shrink-0">
+                                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#f183ff]/20 to-[#d946ef]/20 flex items-center justify-center text-2xl border border-[#f183ff]/20 shadow-lg shadow-[#f183ff]/10">
+                                  {SIZE_EMOJIS[appointment.pet.size]}
+                                </div>
+
+                                {/* Status Badge */}
+                                <div
+                                  className={`absolute -top-1.5 -right-1.5 px-2 py-0.5 rounded-lg text-[10px] font-bold border ${status.bgColor} ${status.textColor} ${status.borderColor} shadow-lg`}
+                                >
+                                  {status.label}
+                                </div>
                               </div>
 
-                              {/* Status Badge */}
-                              <div className={`absolute -top-1.5 -right-1.5 px-2 py-0.5 rounded-lg text-[10px] font-bold border ${status.bgColor} ${status.textColor} ${status.borderColor} shadow-lg`}>
-                                {status.label}
+                              {/* Pet Info */}
+                              <div className="flex-1 min-w-0">
+                                <h3 className="text-white font-bold text-base mb-0.5 truncate">
+                                  {appointment.pet.name}
+                                </h3>
+                                <p className="text-white/50 text-sm truncate flex items-center gap-1.5">
+                                  <User size={12} />
+                                  {appointment.client.name}
+                                </p>
+                                <p className="text-white/40 text-xs mt-1 truncate flex items-center gap-1.5">
+                                  <Scissors size={11} />
+                                  {serviceNames}
+                                </p>
                               </div>
-                            </div>
 
-                            {/* Pet Info */}
-                            <div className="flex-1 min-w-0">
-                              <h3 className="text-white font-bold text-base mb-0.5 truncate">
-                                {appointment.pet.name}
-                              </h3>
-                              <p className="text-white/50 text-sm truncate flex items-center gap-1.5">
-                                <User size={12} />
-                                {appointment.client.name}
-                              </p>
-                              <p className="text-white/40 text-xs mt-1 truncate flex items-center gap-1.5">
-                                <Scissors size={11} />
-                                {serviceNames}
-                              </p>
-                            </div>
-
-                            {/* Time & Price */}
-                            <div className="text-right flex-shrink-0">
-                              <div className="flex items-center gap-1 mb-1">
-                                <Clock size={14} className="text-[#f183ff]/70" />
-                                <span className="text-white font-semibold text-sm">
-                                  {formatTime(appointment.time)}
-                                </span>
+                              {/* Time & Price */}
+                              <div className="text-right flex-shrink-0">
+                                <div className="flex items-center gap-1 mb-1">
+                                  <Clock
+                                    size={14}
+                                    className="text-[#f183ff]/70"
+                                  />
+                                  <span className="text-white font-semibold text-sm">
+                                    {formatTime(appointment.time)}
+                                  </span>
+                                </div>
+                                <p className="text-[#f183ff] font-bold text-lg">
+                                  {formatPrice(
+                                    appointment.total_price ||
+                                      appointment.price,
+                                  )}
+                                </p>
                               </div>
-                              <p className="text-[#f183ff] font-bold text-lg">
-                                {formatPrice(appointment.total_price || appointment.price)}
-                              </p>
-                            </div>
 
-                            {/* Chevron */}
-                            <ChevronRight
-                              size={20}
-                              className="text-white/20 group-hover:text-[#f183ff] group-hover:translate-x-1 transition-all"
-                            />
-                          </div>
-                        </GlassCard>
-                      </Link>
-                    )
-                  })}
-                </div>
-              ))}
+                              {/* Chevron */}
+                              <ChevronRight
+                                size={20}
+                                className="text-white/20 group-hover:text-[#f183ff] group-hover:translate-x-1 transition-all"
+                              />
+                            </div>
+                          </GlassCard>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                ),
+              )}
             </div>
           )}
 
@@ -343,10 +366,20 @@ export default function AgendamentosPage() {
                     </div>
                     <div className="flex-1">
                       <p className="text-white/40 text-xs font-semibold uppercase tracking-wider mb-1">
-                        Resumo da {viewMode === 'week' ? 'Semana' : viewMode === 'month' ? 'Mês' : 'Data'}
+                        Resumo da{" "}
+                        {viewMode === "week"
+                          ? "Semana"
+                          : viewMode === "month"
+                            ? "Mês"
+                            : "Data"}
                       </p>
                       <p className="text-white font-semibold">
-                        Você tem <span className="text-[#f183ff]">{weeklyStats.pending}</span> agendamentos{weeklyStats.pending !== 1 ? 's' : ''} pendente{weeklyStats.pending !== 1 ? 's' : ''}
+                        Você tem{" "}
+                        <span className="text-[#f183ff]">
+                          {weeklyStats.pending}
+                        </span>{" "}
+                        agendamentos{weeklyStats.pending !== 1 ? "s" : ""}{" "}
+                        pendente{weeklyStats.pending !== 1 ? "s" : ""}
                       </p>
                     </div>
                   </div>
@@ -378,8 +411,7 @@ export default function AgendamentosPage() {
                     <p className="text-white font-bold text-xl">
                       {weeklyStats.revenue >= 1000
                         ? `R$ ${(weeklyStats.revenue / 1000).toFixed(1)}k`
-                        : `R$ ${weeklyStats.revenue.toFixed(0)}`
-                      }
+                        : `R$ ${weeklyStats.revenue.toFixed(0)}`}
                     </p>
                   </div>
                 </div>
@@ -411,5 +443,5 @@ export default function AgendamentosPage() {
         }
       `}</style>
     </AppLayout>
-  )
+  );
 }

@@ -1,151 +1,80 @@
-// src/app/(app)/app/precos/page.tsx
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { getServicePrices, updateServicePrices } from '@/lib/actions/service-prices'
-import type { ServicePrice } from '@/lib/types/service-prices'
-import { AppLayout } from '@/components/layout/app-layout'
-import { AppHeader } from '@/components/layout/app-header'
-import { BottomNavigation } from '@/components/layout/bottom-navigation'
-import { PriceTable } from '@/components/admin/price-table'
-import { EditPriceModal } from '@/components/admin/edit-price-modal'
-import { Button } from '@/components/ui/button'
-import { Select } from '@/components/ui/select'
-import { Plus } from 'lucide-react'
-import type { SizeCategory } from '@/lib/types/service-prices'
+import { useEffect, useState } from "react";
+import { AppHeader } from "@/components/layout/app-header";
+import { AppLayout } from "@/components/layout/app-layout";
+import { BottomNavigation } from "@/components/layout/bottom-navigation";
+import { ServicePricesList } from "@/components/service-prices/service-prices-list";
+import { Select } from "@/components/ui/select";
+import { PawPrint } from "lucide-react";
 
 export default function PrecosPage() {
-  const [prices, setPrices] = useState<ServicePrice[]>([])
-  const [loading, setLoading] = useState(true)
-  const [filter, setFilter] = useState<'all' | 'avulso' | 'pacote'>('all')
-  const [editingService, setEditingService] = useState<{
-    serviceName: string
-    billingType: 'avulso' | 'pacote'
-  } | null>(null)
+  const [filter, setFilter] = useState<"all" | "avulso" | "pacote">("all");
+  const [companyName, setCompanyName] = useState("Agenda Pet Shop");
+  const [user, setUser] = useState<{
+    user_metadata?: { name?: string };
+    email?: string;
+  } | null>(null);
 
   useEffect(() => {
-    loadPrices()
-  }, [filter])
-
-  const loadPrices = async () => {
-    setLoading(true)
-    const result = await getServicePrices(filter)
-
-    if (result.data) {
-      setPrices(result.data)
-    }
-
-    setLoading(false)
-  }
-
-  const groupedPrices = prices.reduce((acc, price) => {
-    const key = `${price.service_name}-${price.billing_type}`
-
-    if (!acc[key]) {
-      acc[key] = {
-        serviceName: price.service_name,
-        billingType: price.billing_type,
-        prices: []
+    async function loadData() {
+      const { getAppStats } = await import("@/lib/actions/app");
+      const result = await getAppStats();
+      if (result.data) {
+        setCompanyName(result.data.companyName || "Agenda Pet Shop");
+        setUser(result.data.user);
       }
     }
-
-    acc[key].prices.push(price)
-    return acc
-  }, {} as Record<string, { serviceName: string; billingType: 'avulso' | 'pacote'; prices: ServicePrice[] }>)
-
-  const handleSavePrices = async (updates: Array<{
-    serviceName: string
-    billingType: 'avulso' | 'pacote'
-    hairType?: 'PC' | 'PL'
-    sizeCategory: SizeCategory
-    price: number
-  }>) => {
-    const result = await updateServicePrices(updates)
-
-    if (result.error) {
-      alert('Erro ao salvar preços: ' + result.error)
-    } else {
-      await loadPrices()
-    }
-  }
+    loadData();
+  }, []);
 
   return (
-    <AppLayout companyName="Agenda Pet Shop" user={{}}>
-      <AppHeader companyName="Agenda Pet Shop" user={{}} />
+    <AppLayout
+      companyName={companyName}
+      user={{ name: user?.user_metadata?.name, email: user?.email }}
+    >
+      <div className="min-h-dvh bg-transparent relative flex flex-col overflow-hidden">
+        <AppHeader
+          companyName={companyName}
+          user={{ name: user?.user_metadata?.name, email: user?.email }}
+        />
 
-      <div className="h-[calc(100dvh-60px-64px)] xl:h-auto bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent relative flex flex-col xl:block overflow-hidden xl:overflow-visible">
-        <div className="flex-1 overflow-y-auto">
-          <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-            <div className="mb-6">
-              <h1 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-3">
-                <span className="text-3xl">💰</span>
+        <main className="flex-1 overflow-y-auto max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+          <div className="flex flex-col lg:flex-row gap-4 lg:items-end lg:justify-between">
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-[#bf185d] flex items-center gap-3">
+                <span className="w-10 h-10 rounded-xl bg-[#006c73] text-white flex items-center justify-center">
+                  <PawPrint size={21} />
+                </span>
                 Gerenciar Preços
               </h1>
+              <p className="mt-2 text-sm font-bold text-[#68797d]">
+                Edite os valores da tabela oficial da Agenda Pet Shop.
+              </p>
             </div>
 
-            <div className="mb-6">
+            <div className="w-full lg:w-72">
               <Select
                 id="filter"
                 label="Filtrar por"
                 value={filter}
-                onChange={(value) => setFilter(value as 'all' | 'avulso' | 'pacote')}
+                onChange={(value) =>
+                  setFilter(value as "all" | "avulso" | "pacote")
+                }
                 options={[
-                  { value: 'all', label: 'Todos' },
-                  { value: 'avulso', label: 'Avulso' },
-                  { value: 'pacote', label: 'Pacote' }
+                  { value: "all", label: "Todos" },
+                  { value: "avulso", label: "Serviços e extras" },
+                  { value: "pacote", label: "Pacotes" },
                 ]}
               />
             </div>
+          </div>
 
-            {loading ? (
-              <div className="text-center py-12 text-purple-200/70">
-                Carregando preços...
-              </div>
-            ) : Object.keys(groupedPrices).length === 0 ? (
-              <div className="text-center py-12 text-purple-200/70">
-                Nenhum preço encontrado.
-              </div>
-            ) : (
-              <div>
-                {Object.values(groupedPrices).map((group) => (
-                  <PriceTable
-                    key={`${group.serviceName}-${group.billingType}`}
-                    serviceName={group.serviceName}
-                    billingType={group.billingType}
-                    prices={group.prices}
-                    onEdit={() => setEditingService({
-                      serviceName: group.serviceName,
-                      billingType: group.billingType
-                    })}
-                  />
-                ))}
-              </div>
-            )}
+          <ServicePricesList billingType={filter} />
+        </main>
 
-            <div className="mt-8">
-              <Button variant="secondary" className="w-full">
-                <Plus size={20} className="mr-2" />
-                Adicionar Novo Serviço
-              </Button>
-            </div>
-          </main>
-        </div>
-
-        <div className="xl:hidden">
-          <BottomNavigation />
-        </div>
+        <BottomNavigation />
       </div>
-
-      {editingService && (
-        <EditPriceModal
-          serviceName={editingService.serviceName}
-          billingType={editingService.billingType}
-          currentPrices={groupedPrices[`${editingService.serviceName}-${editingService.billingType}`]?.prices || []}
-          open={!!editingService}
-          onClose={() => setEditingService(null)}
-          onSave={handleSavePrices}
-        />
-      )}
     </AppLayout>
-  )
+  );
 }

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createAppointment } from "@/lib/actions/appointments";
 import { getClients } from "@/lib/actions/clients";
+import { getValidPetPackage } from "@/lib/actions/packages";
 import { getPets } from "@/lib/actions/pets";
 import { AppLayout } from "@/components/layout/app-layout";
 import { AppHeader } from "@/components/layout/app-header";
@@ -31,6 +32,7 @@ import { ServiceSelector } from "@/components/appointments/service-selector";
 import { PetPackageCard } from "@/components/appointments/pet-package-card";
 import type { Client } from "@/lib/types/clients";
 import type { Pet } from "@/lib/types/pets";
+import type { PetPackageWithRelations } from "@/lib/types/packages";
 import { SIZE_LABELS, SIZE_EMOJIS, BILLING_TYPE_LABELS } from "@/lib/types/service-prices";
 
 interface SelectedService {
@@ -49,6 +51,8 @@ export default function NovoAgendamentoPage() {
   const [filteredPets, setFilteredPets] = useState<Pet[]>([]);
   const [selectedServices, setSelectedServices] = useState<SelectedService[]>([]);
   const [billingType, setBillingType] = useState<'avulso' | 'pacote'>('avulso');
+  const [activePackage, setActivePackage] = useState<PetPackageWithRelations | null>(null);
+  const [manualTotalPrice, setManualTotalPrice] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     clientId: "",
     petId: "",
@@ -59,6 +63,14 @@ export default function NovoAgendamentoPage() {
 
   useEffect(() => {
     loadClients();
+  }, []);
+
+  useEffect(() => {
+    setFormData((prev) => ({
+      ...prev,
+      date: prev.date || getTodayInputValue(),
+      time: prev.time || getRoundedCurrentTimeInputValue(),
+    }));
   }, []);
 
   useEffect(() => {
@@ -74,10 +86,20 @@ export default function NovoAgendamentoPage() {
   useEffect(() => {
     if (!formData.petId) {
       setSelectedServices([]);
+      setActivePackage(null);
+      setManualTotalPrice(null);
+      return;
     }
+
+    getValidPetPackage(formData.petId).then((result) => {
+      setActivePackage(result.data || null);
+    });
   }, [formData.petId]);
 
-  const totalPrice = selectedServices.reduce((sum, s) => sum + s.price, 0);
+  const servicesTotalPrice = selectedServices.reduce((sum, s) => sum + s.price, 0);
+  const totalPrice = manualTotalPrice !== null
+    ? Math.max(0, Number(manualTotalPrice) || 0)
+    : servicesTotalPrice;
 
   const loadClients = async () => {
     const result = await getClients();
@@ -104,6 +126,17 @@ export default function NovoAgendamentoPage() {
         billingType,
       }]);
     }
+    setManualTotalPrice(null);
+  };
+
+  const handleServicePriceChange = (servicePriceId: string, value: string) => {
+    const price = Math.max(0, Number(value) || 0);
+    setManualTotalPrice(null);
+    setSelectedServices(prev => prev.map(service =>
+      service.servicePriceId === servicePriceId
+        ? { ...service, price }
+        : service
+    ));
   };
 
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
@@ -117,13 +150,25 @@ export default function NovoAgendamentoPage() {
       return;
     }
 
+    if (billingType === 'pacote' && !activePackage) {
+      setError("Este pet não possui pacote ativo para usar nesta cobrança");
+      setLoading(false);
+      return;
+    }
+
     try {
       const result = await createAppointment({
         clientId: formData.clientId,
         petId: formData.petId,
         servicePriceIds: selectedServices.map(s => s.servicePriceId),
+        servicePrices: selectedServices.map(s => ({
+          servicePriceId: s.servicePriceId,
+          price: s.price,
+        })),
+        totalPrice,
         date: formData.date,
         time: formData.time,
+        petPackageId: billingType === 'pacote' ? activePackage?.id : undefined,
         notes: formData.notes || undefined,
       });
 
@@ -132,7 +177,7 @@ export default function NovoAgendamentoPage() {
       } else {
         router.push("/app/agendamentos");
       }
-    } catch (err) {
+    } catch {
       setError("Erro ao criar agendamento");
     } finally {
       setLoading(false);
@@ -158,7 +203,7 @@ export default function NovoAgendamentoPage() {
 
         {/* Scrollable content area */}
         <div className="flex-1 overflow-y-auto">
-          <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 relative z-10">
+          <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-36 sm:pb-8 lg:py-8 relative z-10">
             {/* Page Header */}
             <div className="mb-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
               <div className="flex items-center gap-3">
@@ -290,6 +335,7 @@ export default function NovoAgendamentoPage() {
                       onClick={() => {
                         setBillingType('avulso');
                         setSelectedServices([]);
+                        setManualTotalPrice(null);
                       }}
                       className={`
                         relative p-3 rounded-xl text-sm font-medium transition-all duration-300
@@ -306,6 +352,7 @@ export default function NovoAgendamentoPage() {
                       onClick={() => {
                         setBillingType('pacote');
                         setSelectedServices([]);
+                        setManualTotalPrice(null);
                       }}
                       className={`
                         relative p-3 rounded-xl text-sm font-medium transition-all duration-300
@@ -369,9 +416,20 @@ export default function NovoAgendamentoPage() {
                             </div>
                           </div>
                           <div className="flex items-center gap-3">
-                            <span className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#f183ff] to-[#d946ef]">
-                              R$ {service.price.toFixed(2)}
-                            </span>
+                            <label className="relative block w-28">
+                              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-[#68797d]">
+                                R$
+                              </span>
+                              <input
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                value={service.price}
+                                onChange={(event) => handleServicePriceChange(service.servicePriceId, event.target.value)}
+                                className="w-full rounded-lg border border-[rgba(232,50,123,0.28)] bg-white px-3 py-2 pl-8 text-right text-sm font-extrabold text-[#21363a] outline-none focus:border-[#e8327b] focus:ring-2 focus:ring-[#e8327b]/15"
+                                aria-label={`Preço de ${service.serviceName}`}
+                              />
+                            </label>
                             <button
                               type="button"
                               onClick={() => handleServiceToggle(
@@ -442,12 +500,14 @@ export default function NovoAgendamentoPage() {
                     </span>
                     <Input
                       id="totalPrice"
-                      type="text"
-                      value={totalPrice > 0 ? totalPrice.toFixed(2) : ""}
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={manualTotalPrice ?? (totalPrice > 0 ? totalPrice.toFixed(2) : "")}
+                      onChange={(event) => setManualTotalPrice(event.target.value)}
                       placeholder="0.00"
-                      disabled
                       required
-                      className="w-full pl-12 text-lg font-semibold disabled:opacity-70 disabled:cursor-not-allowed"
+                      className="w-full pl-12 text-lg font-semibold"
                     />
                   </div>
                   {selectedServices.length > 0 && (
@@ -506,4 +566,28 @@ export default function NovoAgendamentoPage() {
       </div>
     </AppLayout>
   );
+}
+
+function getTodayInputValue() {
+  const date = new Date();
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function getRoundedCurrentTimeInputValue() {
+  const date = new Date();
+  const minutes = date.getMinutes();
+  const roundedMinutes = Math.ceil(minutes / 15) * 15;
+
+  if (roundedMinutes === 60) {
+    date.setHours(date.getHours() + 1, 0, 0, 0);
+  } else {
+    date.setMinutes(roundedMinutes, 0, 0);
+  }
+
+  const hours = String(date.getHours()).padStart(2, "0");
+  const nextMinutes = String(date.getMinutes()).padStart(2, "0");
+  return `${hours}:${nextMinutes}`;
 }

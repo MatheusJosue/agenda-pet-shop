@@ -13,7 +13,7 @@
   gap: 4px;
   font-size: 14px;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--carol-ink);
 }
 
 :global(.light-input) .label {
@@ -25,7 +25,7 @@
 }
 
 .required {
-  color: rgb(236, 72, 153);
+  color: var(--carol-pink);
   font-weight: 600;
 }
 
@@ -49,7 +49,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--carol-muted);
   pointer-events: none;
   transition: color 0.2s;
   z-index: 10;
@@ -114,7 +114,7 @@
   background: transparent !important;
   border: none;
   outline: none;
-  color: white;
+  color: var(--carol-ink);
   font-size: 15px;
   transition: all 0.2s;
 }
@@ -136,7 +136,7 @@
 }
 
 .input::placeholder {
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(104, 121, 125, 0.72);
 }
 
 .input:focus {
@@ -231,24 +231,24 @@
 
 /* Variants */
 .variant-default {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid var(--carol-line);
+  box-shadow: 0 6px 18px rgba(232, 50, 123, 0.08);
 }
 
 .variant-default:focus-within {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(168, 85, 247, 0.6);
+  background: white;
+  border-color: rgba(232, 50, 123, 0.62);
   box-shadow:
-    0 4px 16px rgba(0, 0, 0, 0.15),
-    0 0 0 3px rgba(168, 85, 247, 0.1);
+    0 8px 20px rgba(232, 50, 123, 0.12),
+    0 0 0 3px rgba(232, 50, 123, 0.1);
 }
 
 /* Light Mode */
 .lightMode {
   background: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(168, 85, 247, 0.2);
-  box-shadow: 0 2px 8px rgba(168, 85, 247, 0.08);
+  border: 1px solid var(--carol-line);
+  box-shadow: 0 2px 8px rgba(232, 50, 123, 0.08);
 }
 
 :global(.dark) .lightMode {
@@ -258,10 +258,10 @@
 
 .lightMode:focus-within {
   background: rgba(255, 255, 255, 1);
-  border-color: rgba(168, 85, 247, 0.5);
+  border-color: rgba(232, 50, 123, 0.5);
   box-shadow:
-    0 4px 16px rgba(168, 85, 247, 0.12),
-    0 0 0 3px rgba(168, 85, 247, 0.08);
+    0 4px 16px rgba(232, 50, 123, 0.12),
+    0 0 0 3px rgba(232, 50, 123, 0.08);
 }
 
 :global(.dark) .lightMode:focus-within {

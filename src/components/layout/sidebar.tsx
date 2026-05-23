@@ -1,18 +1,20 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
-  Home,
   Calendar,
-  Users,
-  Scissors,
-  UserCircle,
-  HelpCircle,
   ChevronsLeft,
   ChevronsRight,
+  HelpCircle,
+  Home,
   LogOut,
+  PawPrint,
+  Scissors,
+  UserCircle,
+  Users,
+  type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { logout } from "@/lib/actions/auth";
@@ -26,7 +28,7 @@ const mainNavItems = [
   { href: "/app/servicos", icon: Scissors, label: "Serviços" },
 ];
 
-const baseNavItems = [
+const accountNavItems = [
   { href: "/app/perfil", icon: UserCircle, label: "Perfil" },
   { href: "/app/ajuda", icon: HelpCircle, label: "Ajuda" },
 ];
@@ -35,138 +37,109 @@ export function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      return saved === "true";
-    }
-    return false;
+    if (typeof window === "undefined") return false;
+    return localStorage.getItem(STORAGE_KEY) === "true";
   });
 
-  // Save to localStorage when collapsed state changes
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, String(collapsed));
   }, [collapsed]);
 
-  const toggleCollapsed = () => setCollapsed(!collapsed);
-
   const width = collapsed ? "w-20" : "w-64";
+  const userData =
+    typeof window !== "undefined"
+      ? {
+          name: localStorage.getItem("user_name") || "",
+          email: localStorage.getItem("user_email") || "",
+        }
+      : { name: "", email: "" };
 
   async function handleLogout() {
     await logout();
     router.push("/login");
   }
 
-  function getInitials(name?: string): string {
-    if (!name) return "U";
-    const parts = name.trim().split(" ");
-    if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
-    return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
-  }
-
-  // Get user data from localStorage (saved during login)
-  const getUserData = () => {
-    if (typeof window !== "undefined") {
-      const name = localStorage.getItem("user_name") || "";
-      const email = localStorage.getItem("user_email") || "";
-      return { name, email };
-    }
-    return { name: "", email: "" };
-  };
-
-  const userData = getUserData();
-
   return (
     <aside
       className={cn(
-        "hidden xl:flex flex-col fixed left-0 top-0 bottom-0 bg-gradient-to-br from-purple-950 via-fuchsia-950/30 to-zinc-950 backdrop-blur-md border-r border-white/10 transition-all duration-300 ease-in-out z-50",
+        "hidden xl:flex fixed inset-y-0 left-0 z-50 flex-col border-r transition-all duration-300",
+        "bg-[#fff9fb]/95 backdrop-blur-2xl border-[rgba(232,50,123,0.22)] shadow-[12px_0_32px_rgba(33,54,58,0.08)]",
         width,
       )}
     >
-      {/* Header com Logo + Toggle */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
-        <div className="flex items-center gap-3 min-w-0">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-purple-500/30 flex-shrink-0">
-            <span className="text-lg">🐾</span>
+      <div className="flex items-center justify-between gap-2 border-b border-[rgba(232,50,123,0.18)] px-4 py-4">
+        <div className="flex min-w-0 items-center gap-3">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#e8327b] shadow-[0_10px_24px_rgba(232,50,123,0.22)]">
+            <PawPrint size={21} className="text-white" />
           </div>
           {!collapsed && (
-            <span className="text-lg font-bold text-white whitespace-nowrap">
-              Pet Shop
-            </span>
+            <div className="min-w-0">
+              <span className="block truncate text-lg font-extrabold text-[#006c73]">
+                Agenda Pet Shop
+              </span>
+              <span className="block text-xs font-bold text-[#68797d]">
+                Gestão de banho e tosa
+              </span>
+            </div>
           )}
         </div>
 
-        {/* Toggle Button */}
         <button
-          onClick={toggleCollapsed}
+          type="button"
+          onClick={() => setCollapsed(!collapsed)}
           aria-label={collapsed ? "Expandir sidebar" : "Colapsar sidebar"}
-          className="w-9 h-9 flex items-center justify-center rounded-xl text-purple-200/60 hover:text-white hover:bg-white/10 transition-colors flex-shrink-0"
+          className="flex h-9 w-9 items-center justify-center rounded-xl text-[#006c73] transition-colors hover:bg-[#ffe0ec] hover:text-[#bf185d]"
         >
           {collapsed ? <ChevronsRight size={20} /> : <ChevronsLeft size={20} />}
         </button>
       </div>
 
-      {/* Navigation */}
       <nav
         className="flex-1 overflow-y-auto px-3 py-4"
         aria-label="Navegação principal"
       >
-        <ul className="space-y-1">
-          {mainNavItems.map((item) => (
-            <li key={item.href}>
-              <NavItem
-                href={item.href}
-                icon={item.icon}
-                label={item.label}
-                active={pathname === item.href}
-                collapsed={collapsed}
-              />
-            </li>
-          ))}
-        </ul>
-
-        {/* Divider */}
-        <div className="my-4 border-t border-white/10" />
-
-        <ul className="space-y-1">
-          {baseNavItems.map((item) => (
-            <li key={item.href}>
-              <NavItem
-                href={item.href}
-                icon={item.icon}
-                label={item.label}
-                active={pathname === item.href}
-                collapsed={collapsed}
-              />
-            </li>
-          ))}
-        </ul>
+        <NavSection
+          items={mainNavItems}
+          pathname={pathname}
+          collapsed={collapsed}
+        />
+        <div className="my-4 border-t border-[rgba(232,50,123,0.18)]" />
+        <NavSection
+          items={accountNavItems}
+          pathname={pathname}
+          collapsed={collapsed}
+        />
       </nav>
 
-      {/* User Section - Bottom */}
-      <div className="p-3 border-t border-white/10">
-        <div className="flex items-center gap-3 px-2 py-2">
-          {/* Avatar */}
-          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white text-sm font-bold shadow-lg shadow-purple-500/30 flex-shrink-0">
+      <div className="border-t border-[rgba(232,50,123,0.18)] p-3">
+        <div
+          className={cn(
+            "flex items-center gap-3 rounded-2xl bg-white/72 p-2",
+            collapsed && "justify-center",
+          )}
+        >
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#006c73] text-sm font-extrabold text-white">
             {getInitials(userData.name)}
           </div>
 
-          {/* User Info - only when expanded */}
           {!collapsed && (
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-white truncate">
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-extrabold text-[#21363a]">
                 {userData.name || "Usuário"}
               </p>
-              <p className="text-xs text-purple-200/60 truncate">{userData.email}</p>
+              <p className="truncate text-xs font-semibold text-[#68797d]">
+                {userData.email}
+              </p>
             </div>
           )}
 
-          {/* Logout Button */}
           <button
+            type="button"
             onClick={handleLogout}
             aria-label="Sair"
             className={cn(
-              "flex items-center justify-center rounded-xl text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors",
-              collapsed ? "w-9 h-9" : "w-8 h-8",
+              "flex items-center justify-center rounded-xl text-[#bf185d] transition-colors hover:bg-[#ffe0ec]",
+              collapsed ? "h-9 w-9" : "h-8 w-8",
             )}
           >
             <LogOut size={18} />
@@ -174,6 +147,32 @@ export function Sidebar() {
         </div>
       </div>
     </aside>
+  );
+}
+
+function NavSection({
+  items,
+  pathname,
+  collapsed,
+}: {
+  items: Array<{ href: string; icon: LucideIcon; label: string }>;
+  pathname: string;
+  collapsed: boolean;
+}) {
+  return (
+    <ul className="space-y-1">
+      {items.map((item) => (
+        <li key={item.href}>
+          <NavItem
+            href={item.href}
+            icon={item.icon}
+            label={item.label}
+            active={pathname === item.href}
+            collapsed={collapsed}
+          />
+        </li>
+      ))}
+    </ul>
   );
 }
 
@@ -185,7 +184,7 @@ function NavItem({
   collapsed,
 }: {
   href: string;
-  icon: any;
+  icon: LucideIcon;
   label: string;
   active: boolean;
   collapsed: boolean;
@@ -196,25 +195,29 @@ function NavItem({
         href={href}
         aria-current={active ? "page" : undefined}
         className={cn(
-          "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 relative",
+          "flex w-full items-center gap-3 rounded-xl border px-3 py-2.5 transition-all duration-200",
           active
-            ? "bg-gradient-to-r from-purple-500/20 to-fuchsia-500/20 border-l-4 border-purple-400 text-white"
-            : "text-purple-200/60 hover:text-white hover:bg-white/10",
+            ? "border-[rgba(232,50,123,0.28)] bg-[#ffe0ec] text-[#bf185d] shadow-[0_8px_18px_rgba(232,50,123,0.10)]"
+            : "border-transparent text-[#006c73] hover:border-[rgba(232,50,123,0.18)] hover:bg-white hover:text-[#bf185d]",
           collapsed ? "justify-center" : "justify-start",
         )}
       >
         <Icon size={22} strokeWidth={active ? 2.5 : 2} />
-        {!collapsed && <span className="text-sm font-medium">{label}</span>}
+        {!collapsed && <span className="text-sm font-extrabold">{label}</span>}
       </Link>
 
-      {/* Tooltip - only when collapsed */}
       {collapsed && (
-        <div className="absolute left-full ml-3 px-3 py-1.5 bg-zinc-900/95 backdrop-blur-xl text-white text-sm rounded-lg whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[60] shadow-lg border border-white/10 pointer-events-none">
+        <div className="invisible absolute left-full z-[60] ml-3 whitespace-nowrap rounded-lg border border-[rgba(232,50,123,0.24)] bg-white px-3 py-1.5 text-sm font-bold text-[#21363a] opacity-0 shadow-lg transition-all duration-200 group-hover:visible group-hover:opacity-100">
           {label}
-          {/* Arrow */}
-          <div className="absolute right-full top-1/2 -translate-y-1/2 border-8 border-transparent border-r-zinc-900" />
         </div>
       )}
     </div>
   );
+}
+
+function getInitials(name?: string): string {
+  if (!name) return "U";
+  const parts = name.trim().split(" ");
+  if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+  return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
 }

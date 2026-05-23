@@ -18,8 +18,8 @@ export function SkeletonMetricCard({
     <div
       className={cn(
         // Match MetricCard base styling
-        'p-6 rounded-2xl border backdrop-blur-sm',
-        'bg-[#2d1b4e]/30 border-white/10',
+        'p-5 rounded-2xl border backdrop-blur-sm',
+        'bg-white/86 border-[rgba(232,50,123,0.22)] shadow-[0_10px_28px_rgba(232,50,123,0.08)]',
         className
       )}
     >
