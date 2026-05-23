@@ -23,6 +23,9 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   title: "Agenda Pet Shop",
   description: "Sistema de gestão para pet shops",
+  icons: {
+    icon: "/favicon.svg",
+  },
 };
 
 export default function RootLayout({

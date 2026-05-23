@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFD6E8;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FFCCE0;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Fundo rosa -->
+  <rect width="200" height="200" fill="url(#bgGrad)"/>
+  
+  <!-- Base/Fundação verde-teal -->
+  <ellipse cx="100" cy="155" rx="90" ry="30" fill="#008B9E"/>
+  
+  <!-- Paredes da casa -->
+  <rect x="50" y="85" width="100" height="70" fill="#17B8CC" rx="2"/>
+  
+  <!-- Coluna esquerda -->
+  <rect x="45" y="85" width="12" height="70" fill="#008B9E"/>
+  
+  <!-- Coluna direita -->
+  <rect x="143" y="85" width="12" height="70" fill="#008B9E"/>
+  
+  <!-- Telhado esquerdo -->
+  <path d="M 50 85 L 100 35 L 100 85 Z" fill="#E84B7C"/>
+  
+  <!-- Telhado direito -->
+  <path d="M 100 85 L 150 35 L 150 85 Z" fill="#E84B7C"/>
+  
+  <!-- Pequeno coração no canto do telhado -->
+  <g transform="translate(70, 55)">
+    <path d="M 0 2 C 0 1 -2 0 -4 0 C -6 0 -8 2 -8 4 C -8 8 0 12 0 12 C 0 12 8 8 8 4 C 8 2 6 0 4 0 C 2 0 0 1 0 2 Z" fill="#E84B7C"/>
+  </g>
+  
+  <!-- Pata de cachorro em marrom -->
+  <g transform="translate(100, 68)">
+    <!-- Dedo superior esquerdo -->
+    <ellipse cx="-16" cy="-14" rx="8" ry="12" fill="#8B6F47"/>
+    <!-- Dedo superior central esquerdo -->
+    <ellipse cx="-6" cy="-18" rx="8" ry="14" fill="#8B6F47"/>
+    <!-- Dedo superior central direito -->
+    <ellipse cx="6" cy="-18" rx="8" ry="14" fill="#8B6F47"/>
+    <!-- Dedo superior direito -->
+    <ellipse cx="16" cy="-14" rx="8" ry="12" fill="#8B6F47"/>
+    <!-- Almofada central grande -->
+    <ellipse cx="0" cy="6" rx="12" ry="14" fill="#8B6F47"/>
+  </g>
+  
+  <!-- Coração grande embaixo -->
+  <g transform="translate(100, 118)">
+    <path d="M 0 8 C 0 8 -28 -5 -28 -18 C -28 -28 -20 -35 -12 -35 C -4 -35 0 -28 0 -28 C 0 -28 4 -35 12 -35 C 20 -35 28 -28 28 -18 C 28 -5 0 8 0 8 Z" fill="#E84B7C" stroke="#D63B6C" stroke-width="2"/>
+  </g>
+</svg>
