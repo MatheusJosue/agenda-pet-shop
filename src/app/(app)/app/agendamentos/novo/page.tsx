@@ -217,7 +217,7 @@ export default function NovoAgendamentoPage() {
         date: formData.date,
         time: formData.time,
         petPackageId: billingType === "pacote" ? activePackage?.id : undefined,
-        notes: formData.notes?.trim() || null,
+        notes: formData.notes?.trim() || undefined,
       });
 
       if (result.error) {
