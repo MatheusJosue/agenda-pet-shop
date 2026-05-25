@@ -1,6 +1,7 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
+import { SERVICE_ALIASES, serviceNameMatches } from '@/lib/service-catalog'
 import { redirect } from 'next/navigation'
 
 export interface AppStats {
@@ -36,14 +37,18 @@ export async function getAppStats(): Promise<{ data?: AppStats; error?: string }
     // Fetch stats and data in parallel
     const [
       { count: clients },
-      { count: services },
+      { data: serviceRows },
       { count: todayCount },
       { data: todayAppointments },
       { data: monthlyAppointments },
       { data: userData }
     ] = await Promise.all([
       supabase.from('clients').select('*', { count: 'exact', head: true }),
-      supabase.from('service_prices').select('*', { count: 'exact', head: true }),
+      supabase
+        .from('service_prices')
+        .select('service_name')
+        .eq('billing_type', 'avulso')
+        .eq('active', true),
       supabase.from('appointments').select('*', { count: 'exact', head: true }).eq('date', today).eq('status', 'scheduled'),
       supabase
         .from('appointments')
@@ -86,12 +91,16 @@ export async function getAppStats(): Promise<{ data?: AppStats; error?: string }
 
     // Calculate monthly revenue (use total_price if available, otherwise price)
     const monthlyRevenue = monthlyAppointments?.reduce((sum, apt) => sum + (apt.total_price || apt.price || 0), 0) || 0
+    const serviceAliasGroups = Object.values(SERVICE_ALIASES)
+    const servicesCount = serviceAliasGroups.filter((aliases) =>
+      serviceRows?.some((service) => serviceNameMatches(service.service_name, aliases))
+    ).length
 
     return {
       data: {
         todayCount: todayCount || 0,
         clientsCount: clients || 0,
-        servicesCount: services || 0,
+        servicesCount,
         monthlyRevenue,
         todayAppointments: todayAppointments || [],
         user: user ? {
