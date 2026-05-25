@@ -96,12 +96,9 @@ export default function NovoTipoPacotePage() {
                     <ArrowLeft size={20} />
                   </Button>
                 </Link>
-                <div>
-                  <h1 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-3">
-                    <span className="text-3xl">📦</span>
-                    Novo Tipo de Pacote
-                  </h1>
-                </div>
+                <p className="text-sm font-bold text-[#68797d]">
+                  Cadastre um novo tipo de pacote
+                </p>
               </div>
             </div>
 

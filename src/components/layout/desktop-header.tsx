@@ -1,6 +1,8 @@
 "use client";
 
 import { PawPrint } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { getAppPageTitle } from "@/lib/page-title";
 
 interface DesktopHeaderProps {
   user?: {
@@ -11,9 +13,10 @@ interface DesktopHeaderProps {
   companyName: string;
 }
 
-export function DesktopHeader({
-  companyName = "Agenda Pet Shop",
-}: DesktopHeaderProps) {
+export function DesktopHeader({}: DesktopHeaderProps) {
+  const pathname = usePathname();
+  const pageTitle = getAppPageTitle(pathname);
+
   return (
     <header className="hidden xl:flex sticky top-0 z-40 w-full bg-[#fff9fb]/88 backdrop-blur-2xl border-b border-[rgba(232,50,123,0.18)]">
       <div className="flex-1 flex items-center justify-center px-6 py-3.5">
@@ -23,11 +26,8 @@ export function DesktopHeader({
               <PawPrint size={21} className="text-white" />
             </div>
             <div>
-              <p className="text-xs font-extrabold uppercase text-[#e8327b]">
-                Agenda Pet Shop
-              </p>
               <h1 className="text-xl font-extrabold text-[#006c73]">
-                {companyName}
+                {pageTitle}
               </h1>
             </div>
           </div>

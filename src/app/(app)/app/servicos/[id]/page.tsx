@@ -246,10 +246,6 @@ export default function ServicoDetailPage() {
                   </Button>
                 </Link>
                 <div>
-                  <h1 className="text-2xl font-bold text-white flex items-center gap-3">
-                    <span className="text-3xl">✂️</span>
-                    Serviço
-                  </h1>
                   <p className="text-[#68797d] text-sm">Erro</p>
                 </div>
               </div>
@@ -301,10 +297,6 @@ export default function ServicoDetailPage() {
                   </Button>
                 </Link>
                 <div>
-                  <h1 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-3">
-                    <span className="text-3xl">✂️</span>
-                    {service.name}
-                  </h1>
                   <p className="text-[#68797d] text-sm">
                     {editing ? "Editando" : "Detalhes do serviço"}
                   </p>

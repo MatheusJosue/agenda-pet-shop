@@ -282,7 +282,6 @@ export default function PetDetailPage() {
                   </Button>
                 </Link>
                 <div>
-                  <h1 className="text-2xl font-semibold text-white">Pet</h1>
                   <p className="text-white/50 text-sm">Erro</p>
                 </div>
               </div>
@@ -325,7 +324,7 @@ export default function PetDetailPage() {
               </Button>
             </Link>
 
-            <h1 className="text-lg font-semibold text-white tracking-wide">Detalhes do Pet</h1>
+            <div className="flex-1" />
 
             <div className="flex gap-1">
               <button

@@ -147,26 +147,15 @@ export default function PerfilPage() {
         {/* Scrollable content area */}
         <div className="flex-1 overflow-y-auto pb-28 xl:pb-8">
           <main className="flex-1 overflow-y-auto w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-28 lg:py-8 space-y-6 relative z-10 custom-scrollbar">
-            {/* Header */}
-            <div className="mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-              <div className="flex items-center gap-3">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => router.back()}
-                  className="p-2 rounded-xl hover:bg-white/10"
-                >
-                  <ArrowLeft size={20} className="text-white/70" />
-                </Button>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#e8327b]/20 to-[#bf185d]/20 flex items-center justify-center border border-[#e8327b]/20">
-                    <User size={20} className="text-[#e8327b]" />
-                  </div>
-                  <h1 className="text-xl font-semibold text-white">
-                    Meu Perfil
-                  </h1>
-                </div>
-              </div>
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => router.back()}
+                className="p-2 rounded-xl text-[#006c73] hover:bg-[#ffe0ec]"
+              >
+                <ArrowLeft size={20} />
+              </Button>
             </div>
 
             <div className="grid gap-4">

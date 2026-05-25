@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { GlassCard } from "@/components/ui/glass-card";
 import {
   ArrowLeft,
-  HelpCircle,
   Mail,
   MessageCircle,
   Phone,
@@ -107,13 +106,7 @@ export default function AjudaPage() {
                   <ArrowLeft size={20} />
                 </Button>
                 <div>
-                  <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#ffe0ec] text-[#bf185d]">
-                    <HelpCircle size={24} />
-                  </div>
-                  <h1 className="text-3xl font-extrabold text-[#21363a]">
-                    Central de Ajuda
-                  </h1>
-                  <p className="mt-2 text-sm font-semibold text-[#68797d]">
+                  <p className="text-sm font-semibold text-[#68797d]">
                     Encontre suporte para cadastros, pacotes, preços e
                     agendamentos.
                   </p>

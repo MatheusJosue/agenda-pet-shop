@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import { Menu, PawPrint } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { getAppPageTitle } from "@/lib/page-title";
 import { AppDrawer } from "./app-drawer";
 
 interface AppHeaderProps {
@@ -15,6 +17,8 @@ interface AppHeaderProps {
 
 export function AppHeader({ companyName, user }: AppHeaderProps) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const pathname = usePathname();
+  const pageTitle = getAppPageTitle(pathname);
 
   return (
     <>
@@ -37,7 +41,7 @@ export function AppHeader({ companyName, user }: AppHeaderProps) {
                   <PawPrint size={17} className="text-[#e8327b] flex-shrink-0" />
                 </span>
                 <h1 className="text-base font-extrabold text-[#21363a] truncate">
-                  {companyName}
+                  {pageTitle}
                 </h1>
               </div>
 

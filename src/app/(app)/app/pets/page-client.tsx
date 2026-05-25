@@ -79,22 +79,12 @@ export function PetsPageContent() {
 
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 space-y-6 relative z-10 custom-scrollbar">
-        {/* Page Header */}
+        {/* Page actions */}
         <section className="animate-in fade-in slide-in-from-bottom-4 duration-700">
           <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#e8327b]/20 to-[#bf185d]/20 flex items-center justify-center border border-[#e8327b]/20">
-                <PawPrint className="w-6 h-6 text-[#e8327b]" />
-              </div>
-              <div>
-                <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-white">
-                  Pets
-                </h1>
-                <p className="text-white/50 text-sm mt-0.5">
-                  {pets?.length || 0} cadastrado{pets?.length !== 1 ? 's' : ''}
-                </p>
-              </div>
-            </div>
+            <p className="text-sm font-bold text-[#68797d]">
+              {pets?.length || 0} cadastrado{pets?.length !== 1 ? 's' : ''}
+            </p>
             <Link href="/app/pets/novo">
               <Button
                 variant="primary"

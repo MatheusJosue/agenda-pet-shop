@@ -79,9 +79,6 @@ export default function NovoServicoPage() {
                     <Scissors size={24} className="text-[#e8327b]" />
                   </div>
                   <div>
-                    <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-white">
-                      Novo Serviço
-                    </h1>
                     <p className="text-white/50 text-sm mt-0.5">Cadastre um novo serviço</p>
                   </div>
                 </div>

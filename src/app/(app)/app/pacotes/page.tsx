@@ -15,7 +15,7 @@ import {
   type CatalogSize,
 } from "@/lib/service-catalog";
 import type { PackageType } from "@/lib/types/packages";
-import { Calendar, Package, PawPrint, Plus } from "lucide-react";
+import { Calendar, PawPrint, Plus } from "lucide-react";
 
 const SIZES: CatalogSize[] = ["small", "medium", "large"];
 
@@ -110,17 +110,9 @@ export default function PacotesPage() {
 
         <main className="flex-1 overflow-y-auto w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 relative">
           <div className="flex items-center justify-between gap-4">
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-[#bf185d] flex items-center gap-3">
-                <span className="w-10 h-10 rounded-xl bg-[#006c73] text-white flex items-center justify-center">
-                  <Package size={21} />
-                </span>
-                Pacotes
-              </h1>
-              <p className="mt-2 text-sm font-bold text-[#68797d]">
-                Mais cuidado, mais economia.
-              </p>
-            </div>
+            <p className="text-sm font-bold text-[#68797d]">
+              Mais cuidado, mais economia.
+            </p>
             <Link href="/app/pacotes/novo">
               <Button variant="primary" size="sm">
                 <Plus size={16} />

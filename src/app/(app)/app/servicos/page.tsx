@@ -62,17 +62,9 @@ export default function ServicosPage() {
         <main className="flex-1 overflow-y-auto w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-28 lg:py-8 space-y-6 relative z-10 custom-scrollbar">
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
             <div className="flex items-center justify-between gap-4 mb-6">
-              <div>
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-[#bf185d] flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-[#006c73] flex items-center justify-center">
-                    <Sparkles size={20} className="text-white" />
-                  </div>
-                  Tabela de Preços
-                </h1>
-                <p className="text-[#68797d] text-sm font-bold mt-2">
-                  Serviços, extras e pacotes no formato Agenda Pet Shop.
-                </p>
-              </div>
+              <p className="text-[#68797d] text-sm font-bold">
+                Serviços, extras e pacotes no formato Agenda Pet Shop.
+              </p>
               <Link href="/app/precos">
                 <Button variant="primary" size="sm">
                   Gerenciar

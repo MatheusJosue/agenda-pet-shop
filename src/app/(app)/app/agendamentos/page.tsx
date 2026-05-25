@@ -186,16 +186,11 @@ export default function AgendamentosPage() {
 
         {/* Main Content */}
         <main className="flex-1 overflow-y-auto pb-24 px-4 sm:px-6 lg:px-8 py-6 space-y-6 relative z-10 max-w-7xl mx-auto">
-          {/* Page Header */}
+          {/* Page actions */}
           <div className="flex items-center justify-between gap-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-white">
-                Agendamentos
-              </h1>
-              <p className="text-white/40 text-sm mt-1">
-                Gerencie sua agenda de banho e tosa
-              </p>
-            </div>
+            <p className="text-sm font-bold text-[#68797d]">
+              Gerencie sua agenda de banho e tosa
+            </p>
 
             <div className="flex items-center gap-2">
               <Link href="/app/agendamentos/novo">

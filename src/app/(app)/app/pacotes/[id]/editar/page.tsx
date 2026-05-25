@@ -221,13 +221,9 @@ export default function EditarTipoPacotePage() {
                   <ArrowLeft size={20} />
                 </Button>
               </Link>
-              <div>
-                <h1 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-3">
-                  <span className="text-3xl">✏️</span>
-                  {packageType?.name || 'Editar Tipo de Pacote'}
-                </h1>
-                <p className="text-[#68797d] text-sm">Altere as informações do tipo de pacote</p>
-              </div>
+              <p className="text-[#68797d] text-sm font-bold">
+                Altere as informações do tipo de pacote
+              </p>
             </div>
           </div>
           {error && (

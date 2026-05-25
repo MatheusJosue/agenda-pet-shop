@@ -10,7 +10,7 @@ import { BottomNavigation } from '@/components/layout/bottom-navigation'
 import { GlassCard } from '@/components/ui/glass-card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { ArrowLeft, UserPlus, User, Phone, Mail, FileText, Sparkles } from 'lucide-react'
+import { ArrowLeft, User, Phone, Mail, FileText, Sparkles } from 'lucide-react'
 
 export default function NovoClientePage() {
   const router = useRouter()
@@ -74,12 +74,8 @@ export default function NovoClientePage() {
                 </Link>
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#e8327b]/20 to-[#bf185d]/20 flex items-center justify-center border border-[#e8327b]/20">
-                    <UserPlus size={24} className="text-[#e8327b]" />
                   </div>
                   <div>
-                    <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-white">
-                      Novo Cliente
-                    </h1>
                     <p className="text-white/50 text-sm mt-0.5">Cadastre as informações do cliente</p>
                   </div>
                 </div>
