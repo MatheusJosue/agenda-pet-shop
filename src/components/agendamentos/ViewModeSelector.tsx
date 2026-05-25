@@ -1,24 +1,24 @@
-'use client'
+"use client";
 
-import { cn } from '@/lib/utils'
-import type { ViewMode } from '@/lib/utils/date'
-import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react'
+import { cn } from "@/lib/utils";
+import type { ViewMode } from "@/lib/utils/date";
+import { ChevronLeft, ChevronRight, Calendar } from "lucide-react";
 
 export interface ViewModeSelectorProps {
-  viewMode: ViewMode
-  selectedDate: Date
-  periodLabel: string
-  onViewModeChange: (mode: ViewMode) => void
-  onPrevious: () => void
-  onNext: () => void
-  loading?: boolean
+  viewMode: ViewMode;
+  selectedDate: Date;
+  periodLabel: string;
+  onViewModeChange: (mode: ViewMode) => void;
+  onPrevious: () => void;
+  onNext: () => void;
+  loading?: boolean;
 }
 
 const viewModeLabels: Record<ViewMode, string> = {
-  day: 'Dia',
-  week: 'Semana',
-  month: 'Mês'
-}
+  day: "Dia",
+  week: "Semana",
+  month: "Mês",
+};
 
 export function ViewModeSelector({
   viewMode,
@@ -26,7 +26,7 @@ export function ViewModeSelector({
   onViewModeChange,
   onPrevious,
   onNext,
-  loading = false
+  loading = false,
 }: ViewModeSelectorProps) {
   return (
     <div className="space-y-4">
@@ -39,10 +39,10 @@ export function ViewModeSelector({
             onClick={() => onViewModeChange(mode)}
             disabled={loading}
             className={cn(
-              'flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 relative',
+              "flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 relative",
               viewMode === mode
-                ? 'bg-[#e8327b] text-black shadow-lg shadow-[#e8327b]/40'
-                : 'text-white/50 hover:text-white/80 hover:bg-white/5'
+                ? "bg-[#e8327b] text-white shadow-lg shadow-[#e8327b]/40"
+                : "text-white/50 hover:text-white/80 hover:bg-white/5",
             )}
           >
             {viewModeLabels[mode]}
@@ -80,5 +80,5 @@ export function ViewModeSelector({
         </button>
       </div>
     </div>
-  )
+  );
 }

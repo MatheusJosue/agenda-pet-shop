@@ -23,6 +23,7 @@ import {
   CheckCircle,
   DollarSign,
   Bell,
+  Plus,
 } from "lucide-react";
 import type { AppointmentWithRelations } from "@/lib/types/appointments";
 
@@ -360,7 +361,7 @@ export default function AgendamentosPage() {
                       <TrendingUp size={24} className="text-[#00ffa3]" />
                     </div>
                     <div className="flex-1">
-                      <p className="text-white/40 text-xs font-semibold uppercase tracking-wider mb-1">
+                      <p className="text-gray-700 text-xs font-semibold uppercase tracking-wider mb-2">
                         Resumo da{" "}
                         {viewMode === "week"
                           ? "Semana"
@@ -368,12 +369,12 @@ export default function AgendamentosPage() {
                             ? "Mês"
                             : "Data"}
                       </p>
-                      <p className="text-white font-semibold">
+                      <p className="text-gray-900 font-semibold text-lg leading-relaxed">
                         Você tem{" "}
                         <span className="text-[#e8327b]">
                           {weeklyStats.pending}
                         </span>{" "}
-                        agendamentos{weeklyStats.pending !== 1 ? "s" : ""}{" "}
+                        agendamento{weeklyStats.pending !== 1 ? "s" : ""}{" "}
                         pendente{weeklyStats.pending !== 1 ? "s" : ""}
                       </p>
                     </div>
@@ -386,11 +387,11 @@ export default function AgendamentosPage() {
                   <div className="p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/[0.07] transition-all">
                     <div className="flex items-center gap-2 mb-2">
                       <CheckCircle size={16} className="text-[#00ffa3]/70" />
-                      <p className="text-white/50 text-xs font-semibold uppercase tracking-wider">
+                      <p className="text-gray-700 text-xs font-semibold uppercase tracking-wider">
                         Concluídos
                       </p>
                     </div>
-                    <p className="text-white font-bold text-2xl">
+                    <p className="text-gray-900 font-bold text-2xl">
                       {weeklyStats.completed}
                     </p>
                   </div>
@@ -399,11 +400,11 @@ export default function AgendamentosPage() {
                   <div className="p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/[0.07] transition-all">
                     <div className="flex items-center gap-2 mb-2">
                       <DollarSign size={16} className="text-[#e8327b]/70" />
-                      <p className="text-white/50 text-xs font-semibold uppercase tracking-wider">
+                      <p className="text-gray-700 text-xs font-semibold uppercase tracking-wider">
                         Receita
                       </p>
                     </div>
-                    <p className="text-white font-bold text-xl">
+                    <p className="text-gray-900 font-bold text-xl">
                       {weeklyStats.revenue >= 1000
                         ? `R$ ${(weeklyStats.revenue / 1000).toFixed(1)}k`
                         : `R$ ${weeklyStats.revenue.toFixed(0)}`}
@@ -420,7 +421,7 @@ export default function AgendamentosPage() {
           href="/app/agendamentos/novo"
           className="fixed bottom-24 right-4 z-40 w-14 h-14 rounded-full bg-gradient-to-br from-[#e8327b] to-[#bf185d] flex items-center justify-center shadow-lg shadow-[#e8327b]/40 hover:scale-110 active:scale-95 transition-all"
         >
-          <span className="text-white text-3xl font-light leading-none">+</span>
+          <Plus size={28} className="text-white" strokeWidth={3} />
         </Link>
 
         <BottomNavigation />

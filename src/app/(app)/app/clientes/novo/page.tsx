@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/actions/clients'
@@ -16,6 +16,8 @@ export default function NovoClientePage() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [companyName, setCompanyName] = useState("Agenda Pet Shop")
+  const [user, setUser] = useState<{ user_metadata?: { name?: string }; email?: string } | null>(null)
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -47,8 +49,20 @@ export default function NovoClientePage() {
     setFormData(prev => ({ ...prev, [field]: value }))
   }
 
+  useEffect(() => {
+    async function loadData() {
+      const { getAppStats } = await import("@/lib/actions/app")
+      const result = await getAppStats()
+      if (result.data) {
+        setCompanyName(result.data.companyName || "Agenda Pet Shop")
+        setUser(result.data.user)
+      }
+    }
+    loadData()
+  }, [])
+
   return (
-    <AppLayout companyName="Agenda Pet Shop" user={{}}>
+    <AppLayout companyName={companyName} user={{ name: user?.user_metadata?.name, email: user?.email }}>
       <div className="min-h-dvh bg-transparent relative flex flex-col overflow-hidden">
         {/* Premium animated background layers */}
         <div className="fixed inset-0 pointer-events-none overflow-hidden">
@@ -58,42 +72,38 @@ export default function NovoClientePage() {
           <div className="absolute inset-0 bg-[linear-gradient(rgba(241,131,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(241,131,255,0.02)_1px,transparent_1px)] bg-[size:80px_80px]" />
         </div>
 
-        <AppHeader companyName="Agenda Pet Shop" user={{}} />
+        <AppHeader companyName={companyName} user={{ name: user?.user_metadata?.name, email: user?.email }} />
 
         {/* Scrollable content area */}
         <div className="flex-1 overflow-y-auto">
           {/* Main Content */}
-          <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 relative z-10">
+          <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-28 lg:py-8 relative z-10">
+            <div className="grid grid-cols-1 lg:grid-cols-12">
+              <div className="lg:col-span-10 lg:col-start-2 space-y-6">
             {/* Page Header */}
-            <div className="mb-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
               <div className="flex items-center gap-3">
                 <Link href="/app/clientes">
                   <Button variant="ghost" size="sm" className="p-2 rounded-xl hover:bg-white/10">
-                    <ArrowLeft size={20} className="text-white/70" />
+                    <ArrowLeft size={20} className="text-[#006c73]" />
                   </Button>
                 </Link>
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#e8327b]/20 to-[#bf185d]/20 flex items-center justify-center border border-[#e8327b]/20">
-                  </div>
-                  <div>
-                    <p className="text-white/50 text-sm mt-0.5">Cadastre as informações do cliente</p>
-                  </div>
-                </div>
+                <p className="text-[#68797d] text-sm font-semibold">Cadastre as informações do cliente</p>
               </div>
             </div>
 
             {/* Hero Welcome Card */}
-            <div className="mb-6 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
-              <GlassCard variant="elevated" className="p-6 bg-gradient-to-r from-[#e8327b]/10 to-[#bf185d]/10 border-[#e8327b]/20">
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
+              <GlassCard variant="elevated" className="p-5">
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 rounded-xl bg-[#e8327b]/20 flex items-center justify-center flex-shrink-0 border border-[#e8327b]/20">
                     <Sparkles size={24} className="text-[#e8327b]" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="font-semibold text-white mb-1">
+                    <h3 className="font-extrabold text-[#21363a] mb-1">
                       Bem-vindo ao cadastro de clientes!
                     </h3>
-                    <p className="text-xs text-white/60">
+                    <p className="text-xs font-semibold text-[#68797d]">
                       Preencha as informações abaixo para adicionar um novo cliente
                       ao sistema.
                     </p>
@@ -115,7 +125,7 @@ export default function NovoClientePage() {
               <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Name */}
                 <div className="animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '150ms' }}>
-                  <label htmlFor="name" className="block text-white/80 text-sm font-semibold mb-2.5 flex items-center gap-2">
+                  <label htmlFor="name" className="block text-[#21363a] text-sm font-bold mb-2.5 flex items-center gap-2">
                     <span className="w-7 h-7 rounded-xl bg-[#e8327b]/20 flex items-center justify-center">
                       <User size={14} className="text-[#e8327b]" />
                     </span>
@@ -135,7 +145,7 @@ export default function NovoClientePage() {
 
                 {/* Phone */}
                 <div className="animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '200ms' }}>
-                  <label htmlFor="phone" className="block text-white/80 text-sm font-semibold mb-2.5 flex items-center gap-2">
+                  <label htmlFor="phone" className="block text-[#21363a] text-sm font-bold mb-2.5 flex items-center gap-2">
                     <span className="w-7 h-7 rounded-xl bg-[#bf185d]/20 flex items-center justify-center">
                       <Phone size={14} className="text-[#bf185d]" />
                     </span>
@@ -154,7 +164,7 @@ export default function NovoClientePage() {
 
                 {/* Email */}
                 <div className="animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '250ms' }}>
-                  <label htmlFor="email" className="block text-white/80 text-sm font-semibold mb-2.5 flex items-center gap-2">
+                  <label htmlFor="email" className="block text-[#21363a] text-sm font-bold mb-2.5 flex items-center gap-2">
                     <span className="w-7 h-7 rounded-xl bg-[#006c73]/20 flex items-center justify-center">
                       <Mail size={14} className="text-[#006c73]" />
                     </span>
@@ -172,7 +182,7 @@ export default function NovoClientePage() {
 
                 {/* Notes */}
                 <div className="animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '300ms' }}>
-                  <label htmlFor="notes" className="block text-white/80 text-sm font-semibold mb-2.5 flex items-center gap-2">
+                  <label htmlFor="notes" className="block text-[#21363a] text-sm font-bold mb-2.5 flex items-center gap-2">
                     <span className="w-7 h-7 rounded-xl bg-[#078f96]/20 flex items-center justify-center">
                       <FileText size={14} className="text-[#078f96]" />
                     </span>
@@ -184,7 +194,7 @@ export default function NovoClientePage() {
                     onChange={(e) => handleChange('notes', e.target.value)}
                     placeholder="Adicione observações sobre o cliente..."
                     rows={3}
-                    className="w-full px-4 py-3.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#e8327b]/50 focus:border-[#e8327b]/50 backdrop-blur-sm resize-none transition-all hover:bg-white/[0.07]"
+                    className="w-full px-4 py-3.5 rounded-xl bg-white/86 border border-[rgba(232,50,123,0.22)] text-[#21363a] placeholder-[#68797d]/70 focus:outline-none focus:ring-2 focus:ring-[#e8327b]/20 focus:border-[#e8327b]/60 backdrop-blur-sm resize-none transition-all hover:bg-white"
                   />
                 </div>
 
@@ -212,6 +222,8 @@ export default function NovoClientePage() {
                 </div>
               </form>
             </GlassCard>
+              </div>
+            </div>
           </main>
         </div>
 

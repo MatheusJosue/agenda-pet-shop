@@ -44,6 +44,10 @@ const petIcons = {
   giant: "🐕",
 };
 
+function capitalize(str: string): string {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 export default function AppPage() {
   const router = useRouter();
   const [user, setUser] = useState<DashboardUser | null>(null);
@@ -85,8 +89,6 @@ export default function AppPage() {
     loadData();
   }, [router]);
 
-  const firstName = user?.user_metadata?.name?.split(" ")[0] || "Bem-vindo";
-
   return (
     <AppLayout
       companyName={companyName}
@@ -109,7 +111,7 @@ export default function AppPage() {
                     Agenda Pet Shop
                   </p>
                   <h1 className="text-3xl font-extrabold text-[#21363a] sm:text-4xl">
-                    Olá, {firstName}
+                    Olá, {capitalize(companyName)}
                   </h1>
                   <p className="mt-2 text-sm font-semibold text-[#68797d]">
                     {todayCount > 0

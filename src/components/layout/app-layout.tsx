@@ -44,7 +44,7 @@ export function AppLayout({ children, companyName, user }: AppLayoutProps) {
     <>
       {/* Desktop Layout */}
       <div className="hidden xl:flex h-screen">
-        <Sidebar />
+        <Sidebar companyName={companyName} user={user} />
         <div
           className={`flex-1 flex flex-col transition-all duration-300 ${marginClass}`}
         >

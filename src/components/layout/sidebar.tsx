@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -22,7 +22,7 @@ import { logout } from "@/lib/actions/auth";
 const STORAGE_KEY = "agenda-pet-shop:sidebar-collapsed";
 
 const mainNavItems = [
-  { href: "/app", icon: Home, label: "Início" },
+  { href: "/app", icon: Home, label: "Iní­cio" },
   { href: "/app/agendamentos", icon: Calendar, label: "Agenda" },
   { href: "/app/clientes", icon: Users, label: "Clientes" },
   { href: "/app/servicos", icon: Scissors, label: "Serviços" },
@@ -33,7 +33,20 @@ const accountNavItems = [
   { href: "/app/ajuda", icon: HelpCircle, label: "Ajuda" },
 ];
 
-export function Sidebar() {
+function capitalize(str: string): string {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+export function Sidebar({
+  companyName,
+  user,
+}: {
+  companyName: string;
+  user: {
+    name?: string;
+    email?: string;
+  };
+}) {
   const pathname = usePathname();
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(() => {
@@ -46,13 +59,6 @@ export function Sidebar() {
   }, [collapsed]);
 
   const width = collapsed ? "w-20" : "w-64";
-  const userData =
-    typeof window !== "undefined"
-      ? {
-          name: localStorage.getItem("user_name") || "",
-          email: localStorage.getItem("user_email") || "",
-        }
-      : { name: "", email: "" };
 
   async function handleLogout() {
     await logout();
@@ -75,10 +81,10 @@ export function Sidebar() {
           {!collapsed && (
             <div className="min-w-0">
               <span className="block truncate text-lg font-extrabold text-[#006c73]">
-                Agenda Pet Shop
+                {capitalize(companyName)}
               </span>
-              <span className="block text-xs font-bold text-[#68797d]">
-                Gestão de banho e tosa
+              <span className="block truncate text-xs font-bold text-[#68797d]">
+                Sistema de gestão
               </span>
             </div>
           )}
@@ -96,7 +102,7 @@ export function Sidebar() {
 
       <nav
         className="flex-1 overflow-y-auto px-3 py-4"
-        aria-label="Navegação principal"
+        aria-label="NavegaÃ§Ã£o principal"
       >
         <NavSection
           items={mainNavItems}
@@ -119,16 +125,16 @@ export function Sidebar() {
           )}
         >
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#006c73] text-sm font-extrabold text-white">
-            {getInitials(userData.name)}
+            {getInitials(companyName)}
           </div>
 
           {!collapsed && (
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-extrabold text-[#21363a]">
-                {userData.name || "Usuário"}
+                {capitalize(companyName)}
               </p>
               <p className="truncate text-xs font-semibold text-[#68797d]">
-                {userData.email}
+                {user.name || user.email || "Conta da empresa"}
               </p>
             </div>
           )}
