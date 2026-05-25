@@ -49,11 +49,11 @@ const statusLabels: Record<string, string> = {
 
 const statusStyles: Record<string, string> = {
   scheduled:
-    "bg-gradient-to-r from-[#e8327b]/20 to-[#bf185d]/20 border-[#e8327b]/30 text-[#e8327b]",
+    "bg-gradient-to-r from-[#e8327b]/20 to-[#bf185d]/20 border-[#e8327b]/30 text-black-300",
   completed:
-    "bg-gradient-to-r from-green-500/20 to-emerald-500/20 border-green-500/30 text-green-300",
+    "bg-gradient-to-r from-green-500/20 to-emerald-500/20 border-green-500/30 text-black-300",
   cancelled:
-    "bg-gradient-to-r from-red-500/20 to-rose-500/20 border-red-500/30 text-red-300",
+    "bg-gradient-to-r from-red-500/20 to-rose-500/20 border-red-500/30 text-black-300",
 };
 
 const statusIcons: Record<string, string> = {
@@ -687,7 +687,7 @@ export default function AgendamentoDetailPage() {
                 size="lg"
                 onClick={() => setShowCancelConfirm(true)}
                 disabled={saving}
-                className="rounded-2xl border border-white/20 bg-white/5 hover:bg-white/10 hover:border-white/30 py-5 text-base font-semibold"
+                className="rounded-2xl border border-white/20 bg-white/5 hover:bg-white/10 hover:border-white/30 py-5 text-base font-semibold text-white"
               >
                 <X size={20} className="mr-2" />
                 Cancelar
