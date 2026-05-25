@@ -51,27 +51,27 @@ export function CompanyDetailHeader({ company }: CompanyDetailHeaderProps) {
         <form onSubmit={handleUpdate} className="bg-white/10 border border-white/20 rounded-2xl p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="block text-purple-200 text-sm mb-2">Nome</label>
+              <label className="block text-[#006c73] text-sm mb-2">Nome</label>
               <input
                 name="name"
                 defaultValue={company.name}
-                className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-[#e8327b]"
                 required
               />
             </div>
             <div>
-              <label className="block text-purple-200 text-sm mb-2">Email</label>
+              <label className="block text-[#006c73] text-sm mb-2">Email</label>
               <input
                 name="email"
                 type="email"
                 defaultValue={company.email}
-                className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-[#e8327b]"
                 required
               />
             </div>
           </div>
           <div className="flex gap-3">
-            <button type="submit" className="px-6 py-2 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium">
+            <button type="submit" className="px-6 py-2 rounded-xl bg-gradient-to-r from-[#e8327b] to-[#bf185d] text-white font-medium">
               Salvar
             </button>
             <button
@@ -87,7 +87,7 @@ export function CompanyDetailHeader({ company }: CompanyDetailHeaderProps) {
         <div className="flex items-start justify-between">
           <div>
             <h1 className="text-3xl font-bold text-white mb-2">{company.name}</h1>
-            <p className="text-purple-200/60">{company.email}</p>
+            <p className="text-[#68797d]">{company.email}</p>
           </div>
           <div className="flex items-center gap-3">
             <span className={cn(
@@ -100,7 +100,7 @@ export function CompanyDetailHeader({ company }: CompanyDetailHeaderProps) {
             </span>
             <button
               onClick={() => setIsEditing(true)}
-              className="p-2 rounded-lg bg-purple-500/20 text-purple-300 hover:bg-purple-500/30"
+              className="p-2 rounded-lg bg-[#ffe0ec] text-[#bf185d] hover:bg-[#ffb7d2]"
               title="Editar"
             >
               <Edit2 size={20} />

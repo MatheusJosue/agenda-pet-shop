@@ -8,7 +8,7 @@ A comprehensive skeleton loading system designed to match the dark glassmorphism
 
 | Element | Color | Usage |
 |---------|-------|-------|
-| Background | `#120a21` | Ultra-dark purple/black base |
+| Background | `#fff9fb` | Ultra-dark purple/black base |
 | Skeleton Base | `#2b2041/40` | Deep purple with 40% opacity |
 | Shimmer Effect | `white/5` | Subtle gradient overlay |
 

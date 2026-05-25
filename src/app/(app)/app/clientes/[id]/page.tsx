@@ -137,11 +137,11 @@ export default function ClienteDetailPage() {
         companyName={companyName}
         user={{ name: user?.user_metadata?.name, email: user?.email }}
       >
-        <div className="min-h-dvh bg-[#120a21] relative overflow-hidden">
+        <div className="min-h-dvh bg-transparent relative overflow-hidden">
           <div className="fixed inset-0 pointer-events-none overflow-hidden">
-            <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-[#f183ff]/10 rounded-full blur-[120px] animate-[float_8s_ease-in-out_infinite]" />
-            <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] bg-[#d946ef]/10 rounded-full blur-[120px] animate-[float_10s_ease-in-out_infinite_reverse]" />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-[#8b5cf6]/5 rounded-full blur-[100px] animate-[pulse-glow_6s_ease-in-out_infinite]" />
+            <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-[#e8327b]/10 rounded-full blur-[120px] animate-[float_8s_ease-in-out_infinite]" />
+            <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] bg-[#bf185d]/10 rounded-full blur-[120px] animate-[float_10s_ease-in-out_infinite_reverse]" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-[#006c73]/5 rounded-full blur-[100px] animate-[pulse-glow_6s_ease-in-out_infinite]" />
           </div>
 
           <AppHeader
@@ -162,16 +162,16 @@ export default function ClienteDetailPage() {
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-100">
               <div className="rounded-2xl border backdrop-blur-sm bg-[#2d1b4e]/30 border-white/10 overflow-hidden">
                 {/* Profile Header with Gradient Background Skeleton */}
-                <div className="h-32 bg-gradient-to-br from-[#f183ff]/30 via-[#d946ef]/20 to-[#8b5cf6]/30">
-                  <div className="absolute top-4 right-4 w-16 h-16 bg-[#f183ff]/20 rounded-full blur-xl animate-pulse" />
-                  <div className="absolute bottom-4 left-4 w-12 h-12 bg-[#d946ef]/20 rounded-full blur-lg animate-pulse" />
+                <div className="h-32 bg-gradient-to-br from-[#e8327b]/30 via-[#bf185d]/20 to-[#006c73]/30">
+                  <div className="absolute top-4 right-4 w-16 h-16 bg-[#e8327b]/20 rounded-full blur-xl animate-pulse" />
+                  <div className="absolute bottom-4 left-4 w-12 h-12 bg-[#bf185d]/20 rounded-full blur-lg animate-pulse" />
                 </div>
 
                 {/* Client Avatar Skeleton */}
                 <div className="relative px-6 -mt-16 mb-4">
                   <div className="relative w-28 h-28 mx-auto">
                     <div className="absolute inset-0 rounded-full bg-[#2b2041]/40 animate-pulse" />
-                    <div className="relative w-full h-full rounded-full bg-[#120a21] border-4 border-white/10 animate-pulse" />
+                    <div className="relative w-full h-full rounded-full bg-transparent border-4 border-white/10 animate-pulse" />
                   </div>
                 </div>
 
@@ -216,10 +216,10 @@ export default function ClienteDetailPage() {
         companyName={companyName}
         user={{ name: user?.user_metadata?.name, email: user?.email }}
       >
-        <div className="min-h-dvh bg-[#120a21] relative overflow-hidden">
+        <div className="min-h-dvh bg-transparent relative overflow-hidden">
           <div className="fixed inset-0 pointer-events-none overflow-hidden">
-            <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-[#f183ff]/10 rounded-full blur-[120px] animate-[float_8s_ease-in-out_infinite]" />
-            <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] bg-[#d946ef]/10 rounded-full blur-[120px] animate-[float_10s_ease-in-out_infinite_reverse]" />
+            <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-[#e8327b]/10 rounded-full blur-[120px] animate-[float_8s_ease-in-out_infinite]" />
+            <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] bg-[#bf185d]/10 rounded-full blur-[120px] animate-[float_10s_ease-in-out_infinite_reverse]" />
           </div>
 
           <AppHeader
@@ -268,17 +268,17 @@ export default function ClienteDetailPage() {
       companyName={companyName}
       user={{ name: user?.user_metadata?.name, email: user?.email }}
     >
-      <div className="min-h-dvh bg-[#120a21] relative overflow-hidden">
+      <div className="min-h-dvh bg-transparent relative overflow-hidden">
         {/* Premium animated background layers */}
         <div className="fixed inset-0 pointer-events-none overflow-hidden">
-          <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-[#f183ff]/10 rounded-full blur-[120px] animate-[float_8s_ease-in-out_infinite]" />
-          <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] bg-[#d946ef]/10 rounded-full blur-[120px] animate-[float_10s_ease-in-out_infinite_reverse]" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-[#8b5cf6]/5 rounded-full blur-[100px] animate-[pulse-glow_6s_ease-in-out_infinite]" />
+          <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-[#e8327b]/10 rounded-full blur-[120px] animate-[float_8s_ease-in-out_infinite]" />
+          <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] bg-[#bf185d]/10 rounded-full blur-[120px] animate-[float_10s_ease-in-out_infinite_reverse]" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-[#006c73]/5 rounded-full blur-[100px] animate-[pulse-glow_6s_ease-in-out_infinite]" />
           <div className="absolute inset-0 bg-[linear-gradient(rgba(241,131,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(241,131,255,0.02)_1px,transparent_1px)] bg-[size:80px_80px]" />
         </div>
 
         {/* Header App Bar */}
-        <div className="sticky top-0 z-50 px-4 py-4 bg-[#120a21]/80 backdrop-blur-xl border-b border-white/5">
+        <div className="sticky top-0 z-50 px-4 py-4 bg-[#fff9fb]/90 backdrop-blur-xl border-b border-white/5">
           <div className="flex items-center justify-between max-w-7xl mx-auto">
             <Link href="/app/clientes">
               <Button
@@ -320,7 +320,7 @@ export default function ClienteDetailPage() {
                     size="sm"
                     onClick={handleSave}
                     disabled={saving}
-                    className="rounded-xl bg-[#f183ff] hover:bg-[#f183ff]/90 text-white border-0 shadow-lg shadow-[#f183ff]/30"
+                    className="rounded-xl bg-[#e8327b] hover:bg-[#e8327b]/90 text-white border-0 shadow-lg shadow-[#e8327b]/30"
                   >
                     {saving ? "Salvando..." : "Salvar"}
                   </Button>
@@ -331,7 +331,7 @@ export default function ClienteDetailPage() {
                     type="button"
                     onClick={() => setEditing(true)}
                     disabled={saving}
-                    className="p-2 rounded-xl text-white/60 hover:text-[#f183ff] hover:bg-white/10 transition-all disabled:opacity-50"
+                    className="p-2 rounded-xl text-white/60 hover:text-[#e8327b] hover:bg-white/10 transition-all disabled:opacity-50"
                   >
                     <Pencil size={20} />
                   </button>
@@ -367,11 +367,11 @@ export default function ClienteDetailPage() {
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
             <GlassCard variant="elevated" className="overflow-hidden">
               {/* Profile Header with Gradient Background */}
-              <div className="relative h-32 bg-gradient-to-br from-[#f183ff]/30 via-[#d946ef]/20 to-[#8b5cf6]/30">
+              <div className="relative h-32 bg-gradient-to-br from-[#e8327b]/30 via-[#bf185d]/20 to-[#006c73]/30">
                 {/* Decorative elements */}
-                <div className="absolute top-4 right-4 w-16 h-16 bg-[#f183ff]/20 rounded-full blur-xl animate-pulse" />
+                <div className="absolute top-4 right-4 w-16 h-16 bg-[#e8327b]/20 rounded-full blur-xl animate-pulse" />
                 <div
-                  className="absolute bottom-4 left-4 w-12 h-12 bg-[#d946ef]/20 rounded-full blur-lg animate-pulse"
+                  className="absolute bottom-4 left-4 w-12 h-12 bg-[#bf185d]/20 rounded-full blur-lg animate-pulse"
                   style={{ animationDelay: "0.5s" }}
                 />
               </div>
@@ -380,16 +380,11 @@ export default function ClienteDetailPage() {
               <div className="relative px-6 -mt-16 mb-4">
                 <div className="relative w-28 h-28 mx-auto">
                   {/* Avatar glow ring */}
-                  <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#f183ff] via-[#d946ef] to-[#8b5cf6] blur-lg opacity-60 animate-pulse" />
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#e8327b] via-[#bf185d] to-[#006c73] blur-lg opacity-60 animate-pulse" />
 
                   {/* Avatar container */}
-                  <div className="relative w-full h-full rounded-full bg-[#120a21] border-4 border-[#f183ff]/30 flex items-center justify-center text-4xl shadow-2xl">
+                  <div className="relative w-full h-full rounded-full bg-transparent border-4 border-[#e8327b]/30 flex items-center justify-center text-4xl shadow-2xl">
                     👤
-                  </div>
-
-                  {/* Premium badge */}
-                  <div className="absolute -bottom-1 -right-1 px-2.5 py-1 rounded-full bg-gradient-to-r from-[#f183ff] to-[#d946ef] text-white text-xs font-bold shadow-lg">
-                    VIP
                   </div>
                 </div>
               </div>
@@ -414,7 +409,7 @@ export default function ClienteDetailPage() {
                       {client.name}
                     </h2>
                     <div className="flex items-center justify-center gap-2 flex-wrap">
-                      <span className="px-3 py-1.5 rounded-full bg-[#f183ff]/20 border border-[#f183ff]/30 text-[#f183ff] text-xs font-semibold uppercase tracking-wide">
+                      <span className="px-3 py-1.5 rounded-full bg-[#e8327b]/20 border border-[#e8327b]/30 text-[#e8327b] text-xs font-semibold uppercase tracking-wide">
                         Cliente Premium
                       </span>
                     </div>
@@ -430,7 +425,7 @@ export default function ClienteDetailPage() {
             {client.phone && (
               <GlassCard variant="default" className="p-4">
                 <div className="flex items-center gap-4">
-                  <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#d946ef]/20 to-[#a855f7]/20 flex items-center justify-center text-xl shadow-lg shadow-[#d946ef]/10 flex-shrink-0">
+                  <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#bf185d]/20 to-[#e8327b]/20 flex items-center justify-center text-xl shadow-lg shadow-[#bf185d]/10 flex-shrink-0">
                     📱
                   </div>
                   <div className="flex-1 min-w-0">
@@ -468,7 +463,7 @@ export default function ClienteDetailPage() {
             {client.email && (
               <GlassCard variant="default" className="p-4">
                 <div className="flex items-center gap-4">
-                  <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#8b5cf6]/20 to-[#6366f1]/20 flex items-center justify-center text-xl shadow-lg shadow-[#8b5cf6]/10 flex-shrink-0">
+                  <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#006c73]/20 to-[#078f96]/20 flex items-center justify-center text-xl shadow-lg shadow-[#006c73]/10 flex-shrink-0">
                     ✉️
                   </div>
                   <div className="flex-1 min-w-0">
@@ -499,7 +494,7 @@ export default function ClienteDetailPage() {
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150">
               <GlassCard variant="default" className="p-4">
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#f183ff]/20 to-[#d946ef]/20 flex items-center justify-center text-lg shadow-lg shadow-[#f183ff]/10 flex-shrink-0 mt-0.5">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#e8327b]/20 to-[#bf185d]/20 flex items-center justify-center text-lg shadow-lg shadow-[#e8327b]/10 flex-shrink-0 mt-0.5">
                     📝
                   </div>
                   <div className="flex-1 min-w-0">
@@ -512,7 +507,7 @@ export default function ClienteDetailPage() {
                         onChange={(e) => handleChange("notes", e.target.value)}
                         placeholder="Adicione observações sobre o cliente..."
                         rows={3}
-                        className="w-full px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-sm placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#f183ff]/50 focus:border-[#f183ff]/50 backdrop-blur-sm resize-none transition-all hover:bg-white/[0.07]"
+                        className="w-full px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-sm placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#e8327b]/50 focus:border-[#e8327b]/50 backdrop-blur-sm resize-none transition-all hover:bg-white/[0.07]"
                       />
                     ) : (
                       <p className="text-white/80 text-sm whitespace-pre-wrap leading-relaxed">

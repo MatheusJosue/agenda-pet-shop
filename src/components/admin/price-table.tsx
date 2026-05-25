@@ -36,7 +36,7 @@ export function PriceTable({ serviceName, billingType, prices, onEdit }: PriceTa
       <div className="flex justify-between items-center mb-4">
         <div>
           <h3 className="text-lg font-semibold text-white">{serviceName}</h3>
-          <p className="text-sm text-purple-300/70">
+          <p className="text-sm text-[#68797d]">
             {billingType === 'avulso' ? 'Avulso' : 'Pacote'}
           </p>
         </div>
@@ -53,11 +53,11 @@ export function PriceTable({ serviceName, billingType, prices, onEdit }: PriceTa
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-white/10">
-              <th className="text-left p-2 text-purple-200/70 font-medium">
+              <th className="text-left p-2 text-[#006c73]/70 font-medium">
                 Tipo de Pelo
               </th>
               {SIZES.map(size => (
-                <th key={size} className="p-2 text-center text-purple-200/70 font-medium">
+                <th key={size} className="p-2 text-center text-[#006c73]/70 font-medium">
                   {SIZE_LABELS[size]}
                 </th>
               ))}
@@ -76,11 +76,11 @@ export function PriceTable({ serviceName, billingType, prices, onEdit }: PriceTa
                   return (
                     <td key={size} className="p-2 text-center">
                       {price !== undefined ? (
-                        <span className="text-purple-300">
+                        <span className="text-[#bf185d]">
                           R$ {price.toFixed(2)}
                         </span>
                       ) : (
-                        <span className="text-purple-200/30">—</span>
+                        <span className="text-[#006c73]/30">—</span>
                       )}
                     </td>
                   )

@@ -124,8 +124,8 @@ export function ClientPetsSection({ clientId }: ClientPetsSectionProps) {
       {/* Header */}
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#f183ff]/20 to-[#d946ef]/20 flex items-center justify-center border border-[#f183ff]/20">
-            <PawPrint size={20} className="text-[#f183ff]" />
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#e8327b]/20 to-[#bf185d]/20 flex items-center justify-center border border-[#e8327b]/20">
+            <PawPrint size={20} className="text-[#e8327b]" />
           </div>
           <div>
             <h2 className="text-lg font-semibold text-white">Pets</h2>
@@ -211,7 +211,7 @@ export function ClientPetsSection({ clientId }: ClientPetsSectionProps) {
                     onClick={() => setFormData({ ...formData, size: option.value })}
                     className={`px-2 py-2.5 rounded-xl border transition-all text-xs font-medium ${
                       formData.size === option.value
-                        ? "bg-gradient-to-br from-[#f183ff] to-[#d946ef] border-[#f183ff] text-white shadow-lg shadow-[#f183ff]/20"
+                        ? "bg-gradient-to-br from-[#e8327b] to-[#bf185d] border-[#e8327b] text-white shadow-lg shadow-[#e8327b]/20"
                         : "bg-white/5 border-white/10 text-white/70 hover:border-white/30 hover:bg-white/10"
                     }`}
                   >
@@ -234,7 +234,7 @@ export function ClientPetsSection({ clientId }: ClientPetsSectionProps) {
                     onClick={() => setFormData({ ...formData, hairType: value })}
                     className={`px-4 py-3 rounded-xl border transition-all text-sm font-medium ${
                       formData.hairType === value
-                        ? "bg-gradient-to-br from-[#f183ff] to-[#d946ef] border-[#f183ff] text-white shadow-lg shadow-[#f183ff]/20"
+                        ? "bg-gradient-to-br from-[#e8327b] to-[#bf185d] border-[#e8327b] text-white shadow-lg shadow-[#e8327b]/20"
                         : "bg-white/5 border-white/10 text-white/70 hover:border-white/30 hover:bg-white/10"
                     }`}
                   >
@@ -255,7 +255,7 @@ export function ClientPetsSection({ clientId }: ClientPetsSectionProps) {
                 }
                 placeholder="Ex: Alérgico a certos alimentos, prefere banho rápido..."
                 rows={3}
-                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#f183ff]/50 focus:border-[#f183ff]/50 backdrop-blur-sm resize-none transition-all hover:bg-white/[0.07]"
+                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#e8327b]/50 focus:border-[#e8327b]/50 backdrop-blur-sm resize-none transition-all hover:bg-white/[0.07]"
               />
             </div>
 
@@ -264,7 +264,7 @@ export function ClientPetsSection({ clientId }: ClientPetsSectionProps) {
                 variant="primary"
                 onClick={handleCreatePet}
                 disabled={saving || !formData.name.trim()}
-                className="flex-1 rounded-xl bg-gradient-to-r from-[#f183ff] to-[#d946ef] hover:from-[#f183ff]/90 hover:to-[#d946ef]/90 border-0 shadow-[0_0_20px_rgba(241,131,255,0.3)]"
+                className="flex-1 rounded-xl bg-gradient-to-r from-[#e8327b] to-[#bf185d] hover:from-[#e8327b]/90 hover:to-[#bf185d]/90 border-0 shadow-[0_0_20px_rgba(241,131,255,0.3)]"
               >
                 {saving ? "Salvando..." : "Salvar"}
               </Button>
@@ -316,10 +316,10 @@ export function ClientPetsSection({ clientId }: ClientPetsSectionProps) {
         /* Empty State */
         <GlassCard variant="elevated" className="p-10 text-center">
           <div className="relative inline-block mb-4">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#f183ff]/10 to-[#d946ef]/10 flex items-center justify-center border border-[#f183ff]/20">
-              <PawPrint size={32} className="text-[#f183ff]/60" />
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#e8327b]/10 to-[#bf185d]/10 flex items-center justify-center border border-[#e8327b]/20">
+              <PawPrint size={32} className="text-[#e8327b]/60" />
             </div>
-            <div className="absolute inset-0 w-16 h-16 rounded-2xl bg-[#f183ff]/10 animate-ping" />
+            <div className="absolute inset-0 w-16 h-16 rounded-2xl bg-[#e8327b]/10 animate-ping" />
           </div>
           <p className="text-white/60 font-medium">Nenhum pet cadastrado</p>
           <p className="text-white/40 text-sm mt-2">
@@ -342,11 +342,11 @@ export function ClientPetsSection({ clientId }: ClientPetsSectionProps) {
                   className="flex-1 hover:opacity-90 transition-opacity"
                 >
                   <div className="flex items-center gap-3 mb-2">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#f183ff]/20 to-[#d946ef]/20 flex items-center justify-center text-2xl border-2 border-[#f183ff]/20 shadow-lg shadow-[#f183ff]/10">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#e8327b]/20 to-[#bf185d]/20 flex items-center justify-center text-2xl border-2 border-[#e8327b]/20 shadow-lg shadow-[#e8327b]/10">
                       {PET_EMOJIS[pet.size] || '🐾'}
                     </div>
                     <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-white group-hover:text-[#f183ff] transition-colors">
+                      <h3 className="text-lg font-semibold text-white group-hover:text-[#e8327b] transition-colors">
                         {pet.name}
                       </h3>
                       <span

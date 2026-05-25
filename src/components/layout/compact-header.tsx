@@ -25,23 +25,23 @@ export function CompactHeader({
   action,
 }: CompactHeaderProps) {
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-purple-200/50 dark:border-purple-900/50 backdrop-blur-xl bg-white/80 dark:bg-gray-900/80 supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-gray-900/60">
+    <header className="sticky top-0 z-40 w-full border-b border-[rgba(232,50,123,0.22)] backdrop-blur-xl bg-[#fff9fb]/90 supports-[backdrop-filter]:bg-[#fff9fb]/80">
       <div className="flex items-center justify-between px-4 py-3 sm:px-6 max-w-lg mx-auto">
         {/* Left side - Back button or Logo */}
         <div className="flex items-center gap-3 flex-1 min-w-0">
           {showBackButton ? (
             <Link
               href={backHref}
-              className="flex items-center justify-center w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-950/30 hover:bg-purple-200 dark:hover:bg-purple-900/50 transition-all hover:scale-105 active:scale-95 flex-shrink-0 group"
+              className="flex items-center justify-center w-10 h-10 rounded-full bg-[#ffe0ec] hover:bg-[#ffb7d2] transition-all hover:scale-105 active:scale-95 flex-shrink-0 group"
             >
               <ChevronLeft
                 size={20}
-                className="text-purple-600 dark:text-purple-400 group-hover:-translate-x-0.5 transition-transform"
+                className="text-[#006c73] group-hover:-translate-x-0.5 transition-transform"
               />
             </Link>
           ) : (
             <div className="relative">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0 shadow-lg shadow-purple-500/25">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#e8327b] to-[#006c73] flex items-center justify-center flex-shrink-0 shadow-lg shadow-[#e8327b]/25">
                 <PawPrint size={18} className="text-white" strokeWidth={2.5} />
               </div>
               <div className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-gradient-to-r from-pink-400 to-purple-400 rounded-full animate-pulse" />
@@ -77,7 +77,7 @@ export function CompactHeader({
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="p-2 hover:bg-purple-100 dark:hover:bg-purple-950/30 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+                    className="p-2 hover:bg-[#ffe0ec] hover:text-[#bf185d] transition-colors"
                   >
                     <LogOut size={18} />
                   </Button>

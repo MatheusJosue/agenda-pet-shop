@@ -22,9 +22,9 @@ function LoadingSpinnerExample() {
   return (
     <div className="flex items-center justify-center py-20">
       <div className="relative">
-        <div className="w-16 h-16 border-4 border-[#f183ff]/20 border-t-[#f183ff] rounded-full animate-spin" />
+        <div className="w-16 h-16 border-4 border-[#e8327b]/20 border-t-[#e8327b] rounded-full animate-spin" />
         <div
-          className="absolute inset-0 w-16 h-16 border-4 border-transparent border-r-[#d946ef]/40 rounded-full animate-spin"
+          className="absolute inset-0 w-16 h-16 border-4 border-transparent border-r-[#bf185d]/40 rounded-full animate-spin"
           style={{
             animationDirection: 'reverse',
             animationDuration: '1.5s',
@@ -47,12 +47,12 @@ function LoadingSpinnerExample() {
  */
 function AgendamentoDetailSkeleton() {
   return (
-    <div className="min-h-dvh bg-[#120a21] relative overflow-hidden">
+    <div className="min-h-dvh bg-transparent relative overflow-hidden">
       {/* Background effects */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-[#f183ff]/10 rounded-full blur-[120px] animate-[float_8s_ease-in-out_infinite]" />
-        <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] bg-[#d946ef]/10 rounded-full blur-[120px] animate-[float_10s_ease-in-out_infinite_reverse]" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-[#8b5cf6]/5 rounded-full blur-[100px] animate-[pulse-glow_6s_ease-in-out_infinite]" />
+        <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-[#e8327b]/10 rounded-full blur-[120px] animate-[float_8s_ease-in-out_infinite]" />
+        <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] bg-[#bf185d]/10 rounded-full blur-[120px] animate-[float_10s_ease-in-out_infinite_reverse]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-[#006c73]/5 rounded-full blur-[100px] animate-[pulse-glow_6s_ease-in-out_infinite]" />
       </div>
 
       {/* Header */}
@@ -63,12 +63,12 @@ function AgendamentoDetailSkeleton() {
         {/* Profile Card Skeleton */}
         <div className="p-6 rounded-2xl border backdrop-blur-sm bg-[#2d1b4e]/30 border-white/10">
           {/* Gradient header placeholder */}
-          <div className="h-32 rounded-t-2xl bg-gradient-to-br from-[#f183ff]/20 via-[#d946ef]/15 to-[#8b5cf6]/20 mb-4" />
+          <div className="h-32 rounded-t-2xl bg-gradient-to-br from-[#e8327b]/20 via-[#bf185d]/15 to-[#006c73]/20 mb-4" />
 
           {/* Center icon skeleton */}
           <div className="flex justify-center -mt-16 mb-4">
-            <div className="w-28 h-28 rounded-full bg-[#2b2041]/40 border-4 border-[#f183ff]/20 animate-pulse relative">
-              <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#f183ff]/30 via-[#d946ef]/20 to-[#8b5cf6]/30 animate-pulse" />
+            <div className="w-28 h-28 rounded-full bg-[#2b2041]/40 border-4 border-[#e8327b]/20 animate-pulse relative">
+              <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#e8327b]/30 via-[#bf185d]/20 to-[#006c73]/30 animate-pulse" />
             </div>
           </div>
 

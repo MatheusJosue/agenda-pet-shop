@@ -48,8 +48,8 @@ export function ServiceCard({
       className={`
         relative p-4 rounded-xl border-2 transition-all duration-200 text-left cursor-pointer
         ${selected
-          ? 'bg-purple-500/30 border-purple-400 text-white'
-          : 'bg-white/5 border-white/10 text-purple-100/70 hover:bg-white/10 hover:border-white/20'
+          ? 'bg-[#ffb7d2] border-[#e8327b] text-white'
+          : 'bg-white/5 border-white/10 text-[#68797d] hover:bg-white/10 hover:border-white/20'
         }
         ${!onSelect ? 'cursor-not-allowed opacity-60' : ''}
       `}
@@ -67,7 +67,7 @@ export function ServiceCard({
           <h3 className="font-medium text-sm">{serviceName}</h3>
           <p className="text-xs opacity-70">{billingType === 'avulso' ? 'Avulso' : 'Pacote'}</p>
         </div>
-        <span className="text-lg font-bold text-purple-400">
+        <span className="text-lg font-bold text-[#e8327b]">
           R$ {currentPrice.toFixed(2)}
         </span>
       </div>
@@ -80,8 +80,8 @@ export function ServiceCard({
         <div className="mt-3">
           {petHairType ? (
             // Show badge when pet's hair type is known
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-purple-500/20 border border-purple-500/30">
-              <span className="text-xs text-purple-200">Tipo:</span>
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#ffe0ec] border border-[#e8327b]/30">
+              <span className="text-xs text-[#006c73]">Tipo:</span>
               <span className="text-xs font-medium text-white">
                 {HAIR_TYPE_LABELS[petHairType]}
               </span>
@@ -102,7 +102,7 @@ export function ServiceCard({
                 className={`
                   px-3 py-1 rounded-lg text-xs transition-all
                   ${activeHairType === 'PC'
-                    ? 'bg-purple-500 text-white'
+                    ? 'bg-[#e8327b] text-white'
                     : 'bg-white/10 hover:bg-white/20'
                   }
                 `}
@@ -122,7 +122,7 @@ export function ServiceCard({
                 className={`
                   px-3 py-1 rounded-lg text-xs transition-all
                   ${activeHairType === 'PL'
-                    ? 'bg-purple-500 text-white'
+                    ? 'bg-[#e8327b] text-white'
                     : 'bg-white/10 hover:bg-white/20'
                   }
                 `}
@@ -135,7 +135,7 @@ export function ServiceCard({
       )}
 
       {selected && (
-        <div className={`absolute top-2 right-2 flex items-center justify-center ${multiple ? 'w-6 h-6 rounded-md bg-purple-400' : 'w-5 h-5 rounded-full bg-purple-400'}`}>
+        <div className={`absolute top-2 right-2 flex items-center justify-center ${multiple ? 'w-6 h-6 rounded-md bg-[#e8327b]' : 'w-5 h-5 rounded-full bg-[#e8327b]'}`}>
           {multiple ? (
             <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />

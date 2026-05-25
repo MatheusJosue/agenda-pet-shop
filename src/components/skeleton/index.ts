@@ -5,7 +5,7 @@
  * aesthetic of the Ametista Pet Pro design system.
  *
  * Theme Colors:
- * - Background: #120a21 (ultra-dark purple/black)
+ * - Background: #fff9fb (ultra-dark purple/black)
  * - Skeleton: #2b2041/40 (deep purple with transparency)
  * - Effect: backdrop-blur-sm for glassmorphism consistency
  *

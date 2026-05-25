@@ -70,28 +70,28 @@ export function AddPackageModal({ petId, petName, onClose, isEditing = false }: 
 
         {loadingTypes ? (
           <div className="flex justify-center py-8">
-            <div className="w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full animate-spin" />
+            <div className="w-8 h-8 border-4 border-[#e8327b] border-t-transparent rounded-full animate-spin" />
           </div>
         ) : (
           <>
             <div className="space-y-3 mb-6">
-              <p className="text-sm text-purple-200/60 mb-2">Selecione o tipo de pacote:</p>
+              <p className="text-sm text-[#68797d] mb-2">Selecione o tipo de pacote:</p>
               {packageTypes.map(type => (
                 <button
                   key={type.id}
                   onClick={() => setSelectedType(type)}
                   className={`w-full p-4 rounded-xl border text-left transition-all ${
                     selectedType?.id === type.id
-                      ? 'bg-purple-500/20 border-purple-500'
+                      ? 'bg-[#ffe0ec] border-[#e8327b]'
                       : 'bg-white/5 border-white/10 hover:bg-white/10'
                   }`}
                 >
                   <p className="font-semibold text-white">{type.name}</p>
-                  <div className="flex justify-between mt-2 text-sm text-purple-200/60">
+                  <div className="flex justify-between mt-2 text-sm text-[#68797d]">
                     <span>{type.credits} créditos</span>
                     <span>R$ {type.price.toFixed(2)}</span>
                   </div>
-                  <p className="text-xs text-purple-200/40 mt-1">
+                  <p className="text-xs text-[#006c73]/40 mt-1">
                     Vence em {calculateExpiryDate(type.interval_days)}
                   </p>
                 </button>
@@ -99,11 +99,11 @@ export function AddPackageModal({ petId, petName, onClose, isEditing = false }: 
             </div>
 
             {selectedType && (
-              <div className="mb-6 p-4 rounded-lg bg-purple-500/10 border border-purple-500/20">
-                <p className="text-sm text-purple-200">
+              <div className="mb-6 p-4 rounded-lg bg-[#fff1f6] border border-[#e8327b]/20">
+                <p className="text-sm text-[#006c73]">
                   <strong>Resumo:</strong>
                 </p>
-                <ul className="text-sm text-purple-200/80 mt-2 space-y-1">
+                <ul className="text-sm text-[#006c73] mt-2 space-y-1">
                   <li>• {selectedType.name}</li>
                   <li>• {selectedType.credits} créditos incluídos</li>
                   <li>• Vence em {calculateExpiryDate(selectedType.interval_days)}</li>

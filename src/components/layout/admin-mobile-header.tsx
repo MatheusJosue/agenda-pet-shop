@@ -18,17 +18,17 @@ export function AdminMobileHeader() {
   return (
     <>
       {/* Header */}
-      <header className="xl:hidden sticky top-0 z-40 bg-gradient-to-br from-indigo-950 via-purple-950/50 to-zinc-950 backdrop-blur-md border-b border-white/10 px-4 py-3">
+      <header className="xl:hidden sticky top-0 z-40 bg-gradient-to-br from-[#fff9fb] via-[#fff1f6] to-[#ffe0ec] backdrop-blur-md border-b border-white/10 px-4 py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setDrawerOpen(true)}
-              className="w-10 h-10 flex items-center justify-center rounded-xl text-purple-200 hover:text-white hover:bg-white/10 transition-colors"
+              className="w-10 h-10 flex items-center justify-center rounded-xl text-[#006c73] hover:text-white hover:bg-white/10 transition-colors"
             >
               <Menu size={24} />
             </button>
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#e8327b] to-[#006c73] flex items-center justify-center">
                 <LayoutDashboard size={18} className="text-white" />
               </div>
               <span className="text-lg font-bold text-white">Admin Panel</span>

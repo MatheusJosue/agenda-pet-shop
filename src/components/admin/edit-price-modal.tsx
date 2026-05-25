@@ -84,13 +84,13 @@ export function EditPriceModal({
               <h2 className="text-xl font-bold text-white">
                 Editar: {serviceName}
               </h2>
-              <p className="text-sm text-purple-300/70">
+              <p className="text-sm text-[#68797d]">
                 {billingType === 'avulso' ? 'Avulso' : 'Pacote'}
               </p>
             </div>
             <button
               onClick={onClose}
-              className="text-purple-200/70 hover:text-white transition-colors"
+              className="text-[#006c73]/70 hover:text-white transition-colors"
             >
               ✕
             </button>
@@ -108,7 +108,7 @@ export function EditPriceModal({
 
                     return (
                       <div key={size}>
-                        <label className="block text-xs text-purple-200/70 mb-1">
+                        <label className="block text-xs text-[#006c73]/70 mb-1">
                           {SIZE_LABELS[size]}
                         </label>
                         <Input

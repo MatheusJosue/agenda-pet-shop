@@ -11,7 +11,7 @@ export function PasswordInput({ lightMode, leftIcon, ...props }: InputProps) {
   const finalLeftIcon = leftIcon || (
     <Lock
       size={18}
-      className="text-purple-400"
+      className="text-[#e8327b]"
     />
   )
 

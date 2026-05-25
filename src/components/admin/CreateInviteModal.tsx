@@ -70,7 +70,7 @@ export function CreateInviteModal({ companies, onClose }: CreateInviteModalProps
       <GlassCard className="w-full max-w-md">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold text-white flex items-center gap-2">
-            <Ticket size={20} className="text-purple-400" />
+            <Ticket size={20} className="text-[#e8327b]" />
             Novo Convite
           </h2>
           <button
@@ -91,7 +91,7 @@ export function CreateInviteModal({ companies, onClose }: CreateInviteModalProps
                 onChange={(e) => setCreateNewCompany(e.target.checked)}
                 className="sr-only peer"
               />
-              <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+              <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#e8327b]"></div>
               <span className="ml-3 text-sm font-medium text-gray-300">Criar nova empresa</span>
             </label>
           </div>
@@ -99,24 +99,24 @@ export function CreateInviteModal({ companies, onClose }: CreateInviteModalProps
           {createNewCompany ? (
             <div className="space-y-4">
               <div>
-                <label className="block text-purple-200 text-sm font-medium mb-2">Nome da Empresa *</label>
+                <label className="block text-[#006c73] text-sm font-medium mb-2">Nome da Empresa *</label>
                 <input
                   value={formData.newCompanyName}
                   onChange={(e) => setFormData({ ...formData, newCompanyName: e.target.value })}
                   type="text"
                   required
-                  className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-purple-200/40 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all"
+                  className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-purple-200/40 focus:outline-none focus:ring-2 focus:ring-[#e8327b]/50 focus:border-[#e8327b]/50 transition-all"
                   placeholder="Ex: Pet Shop Central"
                 />
               </div>
               <div>
-                <label className="block text-purple-200 text-sm font-medium mb-2">Email da Empresa *</label>
+                <label className="block text-[#006c73] text-sm font-medium mb-2">Email da Empresa *</label>
                 <input
                   value={formData.newCompanyEmail}
                   onChange={(e) => setFormData({ ...formData, newCompanyEmail: e.target.value })}
                   type="email"
                   required
-                  className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-purple-200/40 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all"
+                  className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-purple-200/40 focus:outline-none focus:ring-2 focus:ring-[#e8327b]/50 focus:border-[#e8327b]/50 transition-all"
                   placeholder="contato@empresa.com"
                 />
               </div>
@@ -139,14 +139,14 @@ export function CreateInviteModal({ companies, onClose }: CreateInviteModalProps
             onChange={(value) => setFormData({ ...formData, role: value })}
             required
           />
-          <p className="text-xs text-purple-200/50 -mt-3">
+          <p className="text-xs text-[#006c73]/50 -mt-3">
             {formData.role === 'company_admin'
               ? 'Pode gerenciar a empresa e ver relatórios'
               : 'Pode apenas visualizar e agendar'}
           </p>
 
           <div>
-            <label className="block text-purple-200 text-sm font-medium mb-2">Expira em (dias) *</label>
+            <label className="block text-[#006c73] text-sm font-medium mb-2">Expira em (dias) *</label>
             <input
               value={formData.expiresInDays}
               onChange={(e) => setFormData({ ...formData, expiresInDays: e.target.value })}
@@ -154,9 +154,9 @@ export function CreateInviteModal({ companies, onClose }: CreateInviteModalProps
               min="1"
               max="365"
               required
-              className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-purple-200/40 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all"
+              className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-purple-200/40 focus:outline-none focus:ring-2 focus:ring-[#e8327b]/50 focus:border-[#e8327b]/50 transition-all"
             />
-            <p className="text-xs text-purple-200/50 mt-1.5">
+            <p className="text-xs text-[#006c73]/50 mt-1.5">
               O convite expira em {formData.expiresInDays} dias a partir de hoje
             </p>
           </div>
@@ -173,7 +173,7 @@ export function CreateInviteModal({ companies, onClose }: CreateInviteModalProps
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium flex items-center justify-center gap-2 disabled:opacity-50 hover:opacity-90 transition-opacity"
+              className="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-[#e8327b] to-[#bf185d] text-white font-medium flex items-center justify-center gap-2 disabled:opacity-50 hover:opacity-90 transition-opacity"
             >
               <Plus size={18} />
               {loading ? 'Criando...' : 'Gerar Convite'}

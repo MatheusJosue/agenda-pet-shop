@@ -24,7 +24,7 @@ export function SkeletonHeader({
         // Match header styling
         'flex items-center justify-between',
         'px-4 py-4',
-        'bg-[#120a21]/80 backdrop-blur-xl',
+        'bg-[#fff9fb]/90 backdrop-blur-xl',
         'border-b border-white/5',
         className
       )}
@@ -81,7 +81,7 @@ export function SkeletonSidebar({
         // Match sidebar styling
         'flex flex-col h-full',
         'w-64',
-        'bg-[#120a21]/90 backdrop-blur-xl',
+        'bg-transparent/90 backdrop-blur-xl',
         'border-r border-white/5',
         'p-4 space-y-6',
         className
@@ -162,7 +162,7 @@ export function SkeletonBottomNav({
         // Match bottom nav styling
         'fixed bottom-0 left-0 right-0 z-50',
         'flex items-center justify-around',
-        'bg-[#120a21]/95 backdrop-blur-xl',
+        'bg-[#fff9fb]/95 backdrop-blur-xl',
         'border-t border-white/5',
         'safe-area-inset-bottom',
         'px-2 py-2',
@@ -207,7 +207,7 @@ export function SkeletonMobileHeader({
       className={cn(
         'sticky top-0 z-50',
         'px-4 py-4',
-        'bg-[#120a21]/80 backdrop-blur-xl',
+        'bg-[#fff9fb]/90 backdrop-blur-xl',
         'border-b border-white/5',
         className
       )}

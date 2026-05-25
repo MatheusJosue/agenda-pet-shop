@@ -29,9 +29,9 @@ import type { AppointmentWithRelations } from "@/lib/types/appointments";
 const statusConfig = {
   scheduled: {
     label: "Agendado",
-    bgColor: "bg-[#f183ff]/20",
-    textColor: "text-[#f183ff]",
-    borderColor: "border-[#f183ff]/30",
+    bgColor: "bg-[#e8327b]/20",
+    textColor: "text-[#e8327b]",
+    borderColor: "border-[#e8327b]/30",
   },
   completed: {
     label: "Concluído",
@@ -169,12 +169,12 @@ export default function AgendamentosPage() {
       companyName={companyName}
       user={{ name: user?.user_metadata?.name, email: user?.email }}
     >
-      <div className="min-h-dvh bg-[#120a21] relative overflow-hidden">
+      <div className="min-h-dvh bg-transparent relative overflow-hidden">
         {/* Premium animated background layers */}
         <div className="fixed inset-0 pointer-events-none overflow-hidden">
-          <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-[#f183ff]/10 rounded-full blur-[120px] animate-[float_8s_ease-in-out_infinite]" />
-          <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] bg-[#d946ef]/10 rounded-full blur-[120px] animate-[float_10s_ease-in-out_infinite_reverse]" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-[#8b5cf6]/5 rounded-full blur-[100px] animate-[pulse-glow_6s_ease-in-out_infinite]" />
+          <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-[#e8327b]/10 rounded-full blur-[120px] animate-[float_8s_ease-in-out_infinite]" />
+          <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] bg-[#bf185d]/10 rounded-full blur-[120px] animate-[float_10s_ease-in-out_infinite_reverse]" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-[#006c73]/5 rounded-full blur-[100px] animate-[pulse-glow_6s_ease-in-out_infinite]" />
           <div className="absolute inset-0 bg-[linear-gradient(rgba(241,131,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(241,131,255,0.02)_1px,transparent_1px)] bg-[size:80px_80px]" />
         </div>
 
@@ -202,7 +202,7 @@ export default function AgendamentosPage() {
                 <Button
                   variant="primary"
                   size="sm"
-                  className="rounded-2xl bg-gradient-to-r from-[#f183ff] to-[#d946ef] hover:from-[#f183ff]/90 hover:to-[#d946ef]/90 border-0 shadow-lg shadow-[#f183ff]/30"
+                  className="rounded-2xl bg-gradient-to-r from-[#e8327b] to-[#bf185d] hover:from-[#e8327b]/90 hover:to-[#bf185d]/90 border-0 shadow-lg shadow-[#e8327b]/30"
                 >
                   <Calendar size={16} className="mr-2" />
                   Novo
@@ -244,8 +244,8 @@ export default function AgendamentosPage() {
               variant="elevated"
               className="p-12 text-center animate-in fade-in slide-in-from-bottom-4 duration-500"
             >
-              <div className="w-20 h-20 mx-auto mb-5 rounded-3xl bg-gradient-to-br from-[#f183ff]/20 to-[#d946ef]/20 flex items-center justify-center shadow-lg shadow-[#f183ff]/10">
-                <CalendarX size={40} className="text-[#f183ff]/70" />
+              <div className="w-20 h-20 mx-auto mb-5 rounded-3xl bg-gradient-to-br from-[#e8327b]/20 to-[#bf185d]/20 flex items-center justify-center shadow-lg shadow-[#e8327b]/10">
+                <CalendarX size={40} className="text-[#e8327b]/70" />
               </div>
               <h3 className="text-white font-semibold text-lg mb-2">
                 Nenhum agendamento
@@ -290,7 +290,7 @@ export default function AgendamentosPage() {
                             <div className="flex items-center gap-4">
                               {/* Pet Avatar */}
                               <div className="relative flex-shrink-0">
-                                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#f183ff]/20 to-[#d946ef]/20 flex items-center justify-center text-2xl border border-[#f183ff]/20 shadow-lg shadow-[#f183ff]/10">
+                                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#e8327b]/20 to-[#bf185d]/20 flex items-center justify-center text-2xl border border-[#e8327b]/20 shadow-lg shadow-[#e8327b]/10">
                                   {SIZE_EMOJIS[appointment.pet.size]}
                                 </div>
 
@@ -322,13 +322,13 @@ export default function AgendamentosPage() {
                                 <div className="flex items-center gap-1 mb-1">
                                   <Clock
                                     size={14}
-                                    className="text-[#f183ff]/70"
+                                    className="text-[#e8327b]/70"
                                   />
                                   <span className="text-white font-semibold text-sm">
                                     {formatTime(appointment.time)}
                                   </span>
                                 </div>
-                                <p className="text-[#f183ff] font-bold text-lg">
+                                <p className="text-[#e8327b] font-bold text-lg">
                                   {formatPrice(
                                     appointment.total_price ||
                                       appointment.price,
@@ -339,7 +339,7 @@ export default function AgendamentosPage() {
                               {/* Chevron */}
                               <ChevronRight
                                 size={20}
-                                className="text-white/20 group-hover:text-[#f183ff] group-hover:translate-x-1 transition-all"
+                                className="text-white/20 group-hover:text-[#e8327b] group-hover:translate-x-1 transition-all"
                               />
                             </div>
                           </GlassCard>
@@ -357,8 +357,8 @@ export default function AgendamentosPage() {
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
               <GlassCard variant="elevated" className="overflow-hidden">
                 {/* Header with gradient */}
-                <div className="relative p-5 bg-gradient-to-br from-[#f183ff]/10 via-[#d946ef]/5 to-[#8b5cf6]/10">
-                  <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#f183ff] via-[#d946ef] to-[#8b5cf6]" />
+                <div className="relative p-5 bg-gradient-to-br from-[#e8327b]/10 via-[#bf185d]/5 to-[#006c73]/10">
+                  <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#e8327b] via-[#bf185d] to-[#006c73]" />
 
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#00ffa3]/20 to-[#00ffa3]/10 flex items-center justify-center shadow-lg shadow-[#00ffa3]/10">
@@ -375,7 +375,7 @@ export default function AgendamentosPage() {
                       </p>
                       <p className="text-white font-semibold">
                         Você tem{" "}
-                        <span className="text-[#f183ff]">
+                        <span className="text-[#e8327b]">
                           {weeklyStats.pending}
                         </span>{" "}
                         agendamentos{weeklyStats.pending !== 1 ? "s" : ""}{" "}
@@ -403,7 +403,7 @@ export default function AgendamentosPage() {
                   {/* Revenue */}
                   <div className="p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/[0.07] transition-all">
                     <div className="flex items-center gap-2 mb-2">
-                      <DollarSign size={16} className="text-[#f183ff]/70" />
+                      <DollarSign size={16} className="text-[#e8327b]/70" />
                       <p className="text-white/50 text-xs font-semibold uppercase tracking-wider">
                         Receita
                       </p>
@@ -423,7 +423,7 @@ export default function AgendamentosPage() {
         {/* Floating Action Button */}
         <Link
           href="/app/agendamentos/novo"
-          className="fixed bottom-24 right-4 z-40 w-14 h-14 rounded-full bg-gradient-to-br from-[#f183ff] to-[#d946ef] flex items-center justify-center shadow-lg shadow-[#f183ff]/40 hover:scale-110 active:scale-95 transition-all"
+          className="fixed bottom-24 right-4 z-40 w-14 h-14 rounded-full bg-gradient-to-br from-[#e8327b] to-[#bf185d] flex items-center justify-center shadow-lg shadow-[#e8327b]/40 hover:scale-110 active:scale-95 transition-all"
         >
           <span className="text-white text-3xl font-light leading-none">+</span>
         </Link>

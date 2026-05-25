@@ -105,7 +105,7 @@ export function AgendaGridExample() {
 // ============================
 export function FullPageLayoutExample() {
   return (
-    <div className="min-h-screen bg-[#120a21]">
+    <div className="min-h-screen bg-transparent">
       <div className="flex">
         {/* Desktop Sidebar */}
         <SkeletonSidebar />

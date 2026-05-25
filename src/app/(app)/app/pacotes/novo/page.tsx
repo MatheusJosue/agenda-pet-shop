@@ -70,15 +70,15 @@ export default function NovoTipoPacotePage() {
     <AppLayout companyName="Agenda Pet Shop" user={{}}>
       <AppHeader companyName="Agenda Pet Shop" user={{}} />
 
-      <div className="h-[calc(100dvh-60px-64px)] xl:min-h-[87vh] bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent relative flex flex-col xl:block overflow-hidden">
+      <div className="h-[calc(100dvh-60px-64px)] xl:min-h-[87vh] bg-gradient-to-br from-[#fff9fb] via-[#fff1f6] to-[#ffe0ec] xl:bg-transparent relative flex flex-col xl:block overflow-hidden">
         {/* Animated background decoration */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute -top-40 -right-40 w-96 h-96 bg-[#fff1f6] rounded-full blur-3xl animate-pulse" />
           <div
             className="absolute -bottom-40 -left-40 w-96 h-96 bg-fuchsia-500/10 rounded-full blur-3xl animate-pulse"
             style={{ animationDelay: "1s" }}
           />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/5 rounded-full blur-3xl" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#006c73]/5 rounded-full blur-3xl" />
         </div>
 
         {/* Mobile Header */}
@@ -126,9 +126,9 @@ export default function NovoTipoPacotePage() {
                 >
                   <label
                     htmlFor="name"
-                    className="block text-purple-100/90 text-sm font-semibold mb-2.5 flex items-center gap-2"
+                    className="block text-[#21363a] text-sm font-semibold mb-2.5 flex items-center gap-2"
                   >
-                    <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">
+                    <span className="w-6 h-6 rounded-full bg-[#ffe0ec] flex items-center justify-center text-xs">
                       📋
                     </span>
                     Nome do Tipo de Pacote *
@@ -151,9 +151,9 @@ export default function NovoTipoPacotePage() {
                 >
                   <label
                     htmlFor="interval_days"
-                    className="block text-purple-100/90 text-sm font-semibold mb-2.5 flex items-center gap-2"
+                    className="block text-[#21363a] text-sm font-semibold mb-2.5 flex items-center gap-2"
                   >
-                    <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">
+                    <span className="w-6 h-6 rounded-full bg-[#ffe0ec] flex items-center justify-center text-xs">
                       📅
                     </span>
                     Intervalo de Dias *
@@ -179,9 +179,9 @@ export default function NovoTipoPacotePage() {
                 >
                   <label
                     htmlFor="credits"
-                    className="block text-purple-100/90 text-sm font-semibold mb-2.5 flex items-center gap-2"
+                    className="block text-[#21363a] text-sm font-semibold mb-2.5 flex items-center gap-2"
                   >
-                    <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">
+                    <span className="w-6 h-6 rounded-full bg-[#ffe0ec] flex items-center justify-center text-xs">
                       💎
                     </span>
                     Créditos *
@@ -206,15 +206,15 @@ export default function NovoTipoPacotePage() {
                 >
                   <label
                     htmlFor="price"
-                    className="block text-purple-100/90 text-sm font-semibold mb-2.5 flex items-center gap-2"
+                    className="block text-[#21363a] text-sm font-semibold mb-2.5 flex items-center gap-2"
                   >
-                    <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">
+                    <span className="w-6 h-6 rounded-full bg-[#ffe0ec] flex items-center justify-center text-xs">
                       💰
                     </span>
                     Preço *
                   </label>
                   <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-purple-200/50 font-medium">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#006c73]/50 font-medium">
                       R$
                     </span>
                     <Input

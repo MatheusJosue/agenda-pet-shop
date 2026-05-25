@@ -10,7 +10,7 @@ interface MetricCardProps {
 }
 
 const colorStyles = {
-  purple: 'bg-purple-500/20 text-purple-300 border-purple-500/30 shadow-purple-500/20',
+  purple: 'bg-[#ffe0ec] text-[#bf185d] border-[#e8327b]/30 shadow-[#e8327b]/20',
   pink: 'bg-pink-500/20 text-pink-300 border-pink-500/30 shadow-pink-500/20',
   green: 'bg-green-500/20 text-green-300 border-green-500/30 shadow-green-500/20',
   blue: 'bg-blue-500/20 text-blue-300 border-blue-500/30 shadow-blue-500/20',

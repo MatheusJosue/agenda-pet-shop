@@ -60,14 +60,14 @@ export function AdminSidebar() {
   return (
     <aside
       className={cn(
-        "hidden xl:flex flex-col fixed left-0 top-0 bottom-0 bg-gradient-to-br from-indigo-950 via-purple-950/50 to-zinc-950 backdrop-blur-md border-r border-white/10 transition-all duration-300 ease-in-out z-50",
+        "hidden xl:flex flex-col fixed left-0 top-0 bottom-0 bg-gradient-to-br from-[#fff9fb] via-[#fff1f6] to-[#ffe0ec] backdrop-blur-md border-r border-white/10 transition-all duration-300 ease-in-out z-50",
         width,
       )}
     >
       {/* Header com Logo + Toggle */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
         <div className="flex items-center gap-3 min-w-0">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center shadow-lg shadow-indigo-500/30 flex-shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#e8327b] to-[#006c73] flex items-center justify-center shadow-lg shadow-[#e8327b]/20 flex-shrink-0">
             <LayoutDashboard size={22} className="text-white" />
           </div>
           {!collapsed && (
@@ -81,7 +81,7 @@ export function AdminSidebar() {
         <button
           onClick={toggleCollapsed}
           aria-label={collapsed ? "Expandir sidebar" : "Colapsar sidebar"}
-          className="w-9 h-9 flex items-center justify-center rounded-xl text-purple-200/60 hover:text-white hover:bg-white/10 transition-colors flex-shrink-0"
+          className="w-9 h-9 flex items-center justify-center rounded-xl text-[#68797d] hover:text-white hover:bg-white/10 transition-colors flex-shrink-0"
         >
           {collapsed ? <ChevronsRight size={20} /> : <ChevronsLeft size={20} />}
         </button>
@@ -111,7 +111,7 @@ export function AdminSidebar() {
       <div className="p-3 border-t border-white/10">
         <div className="flex items-center gap-3 px-2 py-2">
           {/* Avatar */}
-          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white text-sm font-bold shadow-lg shadow-indigo-500/30 flex-shrink-0">
+          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#e8327b] to-[#006c73] flex items-center justify-center text-white text-sm font-bold shadow-lg shadow-[#e8327b]/20 flex-shrink-0">
             AD
           </div>
 
@@ -121,7 +121,7 @@ export function AdminSidebar() {
               <p className="text-sm font-medium text-white truncate">
                 {userData.name}
               </p>
-              <p className="text-xs text-purple-200/60 truncate">{userData.email}</p>
+              <p className="text-xs text-[#68797d] truncate">{userData.email}</p>
             </div>
           )}
 
@@ -163,8 +163,8 @@ function NavItem({
         className={cn(
           "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 relative",
           active
-            ? "bg-gradient-to-r from-indigo-500/20 to-purple-500/20 border-l-4 border-indigo-400 text-white"
-            : "text-purple-200/60 hover:text-white hover:bg-white/10",
+            ? "bg-gradient-to-r from-[#e8327b]/20 to-[#006c73]/20 border-l-4 border-indigo-400 text-white"
+            : "text-[#68797d] hover:text-white hover:bg-white/10",
           collapsed ? "justify-center" : "justify-start",
         )}
       >

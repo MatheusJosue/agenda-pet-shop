@@ -80,12 +80,12 @@ export default function NovoPetPage() {
 
   return (
     <AppLayout companyName="Agenda Pet Shop" user={{}}>
-      <div className="min-h-dvh bg-[#120a21] relative flex flex-col overflow-hidden">
+      <div className="min-h-dvh bg-transparent relative flex flex-col overflow-hidden">
         {/* Premium animated background layers */}
         <div className="fixed inset-0 pointer-events-none overflow-hidden">
-          <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-[#f183ff]/10 rounded-full blur-[120px] animate-[float_8s_ease-in-out_infinite]" />
-          <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] bg-[#d946ef]/10 rounded-full blur-[120px] animate-[float_10s_ease-in-out_infinite_reverse]" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-[#8b5cf6]/5 rounded-full blur-[100px] animate-[pulse-glow_6s_ease-in-out_infinite]" />
+          <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-[#e8327b]/10 rounded-full blur-[120px] animate-[float_8s_ease-in-out_infinite]" />
+          <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] bg-[#bf185d]/10 rounded-full blur-[120px] animate-[float_10s_ease-in-out_infinite_reverse]" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-[#006c73]/5 rounded-full blur-[100px] animate-[pulse-glow_6s_ease-in-out_infinite]" />
           <div className="absolute inset-0 bg-[linear-gradient(rgba(241,131,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(241,131,255,0.02)_1px,transparent_1px)] bg-[size:80px_80px]" />
         </div>
 
@@ -107,8 +107,8 @@ export default function NovoPetPage() {
                   </Button>
                 </Link>
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#f183ff]/20 to-[#d946ef]/20 flex items-center justify-center border border-[#f183ff]/20">
-                    <PawPrint size={24} className="text-[#f183ff]" />
+                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#e8327b]/20 to-[#bf185d]/20 flex items-center justify-center border border-[#e8327b]/20">
+                    <PawPrint size={24} className="text-[#e8327b]" />
                   </div>
                   <div>
                     <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-white">
@@ -126,11 +126,11 @@ export default function NovoPetPage() {
             <div className="mb-6 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
               <GlassCard
                 variant="elevated"
-                className="p-6 bg-gradient-to-r from-[#f183ff]/10 to-[#d946ef]/10 border-[#f183ff]/20"
+                className="p-6 bg-gradient-to-r from-[#e8327b]/10 to-[#bf185d]/10 border-[#e8327b]/20"
               >
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-[#f183ff]/20 flex items-center justify-center flex-shrink-0 border border-[#f183ff]/20">
-                    <Sparkles size={24} className="text-[#f183ff]" />
+                  <div className="w-12 h-12 rounded-xl bg-[#e8327b]/20 flex items-center justify-center flex-shrink-0 border border-[#e8327b]/20">
+                    <Sparkles size={24} className="text-[#e8327b]" />
                   </div>
                   <div className="flex-1">
                     <h3 className="font-semibold text-white mb-1">
@@ -171,8 +171,8 @@ export default function NovoPetPage() {
                     id="clientId"
                     label={
                       <span className="flex items-center gap-2">
-                        <span className="w-7 h-7 rounded-xl bg-[#f183ff]/20 flex items-center justify-center">
-                          <User size={14} className="text-[#f183ff]" />
+                        <span className="w-7 h-7 rounded-xl bg-[#e8327b]/20 flex items-center justify-center">
+                          <User size={14} className="text-[#e8327b]" />
                         </span>
                         Dono *
                       </span>
@@ -193,7 +193,7 @@ export default function NovoPetPage() {
                     <p className="text-white/40 text-xs mt-2 ml-9">
                       <Link
                         href="/app/clientes/novo"
-                        className="text-[#f183ff] hover:underline"
+                        className="text-[#e8327b] hover:underline"
                       >
                         Crie um cliente primeiro
                       </Link>
@@ -210,8 +210,8 @@ export default function NovoPetPage() {
                     htmlFor="name"
                     className="block text-white/80 text-sm font-semibold mb-2.5 flex items-center gap-2"
                   >
-                    <span className="w-7 h-7 rounded-xl bg-[#d946ef]/20 flex items-center justify-center">
-                      <PawPrint size={14} className="text-[#d946ef]" />
+                    <span className="w-7 h-7 rounded-xl bg-[#bf185d]/20 flex items-center justify-center">
+                      <PawPrint size={14} className="text-[#bf185d]" />
                     </span>
                     Nome do Pet *
                   </label>
@@ -235,8 +235,8 @@ export default function NovoPetPage() {
                     htmlFor="breed"
                     className="block text-white/80 text-sm font-semibold mb-2.5 flex items-center gap-2"
                   >
-                    <span className="w-7 h-7 rounded-xl bg-[#8b5cf6]/20 flex items-center justify-center">
-                      <Dog size={14} className="text-[#8b5cf6]" />
+                    <span className="w-7 h-7 rounded-xl bg-[#006c73]/20 flex items-center justify-center">
+                      <Dog size={14} className="text-[#006c73]" />
                     </span>
                     Raça
                   </label>
@@ -256,7 +256,7 @@ export default function NovoPetPage() {
                   style={{ animationDelay: "300ms" }}
                 >
                   <label className="block text-white/80 text-sm font-semibold mb-2.5 flex items-center gap-2">
-                    <span className="w-7 h-7 rounded-xl bg-[#f183ff]/20 flex items-center justify-center">
+                    <span className="w-7 h-7 rounded-xl bg-[#e8327b]/20 flex items-center justify-center">
                       <span className="text-sm">📏</span>
                     </span>
                     Porte *
@@ -275,7 +275,7 @@ export default function NovoPetPage() {
                         onClick={() => handleChange("size", size.value)}
                         className={`p-2.5 rounded-xl border-2 transition-all duration-300 ${
                           formData.size === size.value
-                            ? "bg-gradient-to-br from-[#f183ff]/30 to-[#d946ef]/30 border-[#f183ff] text-white shadow-[0_0_20px_rgba(241,131,255,0.4)]"
+                            ? "bg-gradient-to-br from-[#e8327b]/30 to-[#bf185d]/30 border-[#e8327b] text-white shadow-[0_0_20px_rgba(241,131,255,0.4)]"
                             : "bg-white/5 border-white/10 text-white/60 hover:border-white/30 hover:bg-white/10"
                         }`}
                       >
@@ -294,8 +294,8 @@ export default function NovoPetPage() {
                   style={{ animationDelay: "325ms" }}
                 >
                   <label className="block text-white/80 text-sm font-semibold mb-2.5 flex items-center gap-2">
-                    <span className="w-7 h-7 rounded-xl bg-[#d946ef]/20 flex items-center justify-center">
-                      <Scissors size={14} className="text-[#d946ef]" />
+                    <span className="w-7 h-7 rounded-xl bg-[#bf185d]/20 flex items-center justify-center">
+                      <Scissors size={14} className="text-[#bf185d]" />
                     </span>
                     Tipo de Pelo *
                   </label>
@@ -309,7 +309,7 @@ export default function NovoPetPage() {
                         onClick={() => handleChange("hairType", value)}
                         className={`p-3 rounded-xl text-sm font-medium transition-all duration-300 ${
                           formData.hairType === value
-                            ? "bg-gradient-to-r from-[#f183ff] to-[#d946ef] text-white shadow-lg shadow-[#f183ff]/20"
+                            ? "bg-gradient-to-r from-[#e8327b] to-[#bf185d] text-white shadow-lg shadow-[#e8327b]/20"
                             : "text-white/60 hover:text-white hover:bg-white/5"
                         }`}
                       >
@@ -328,8 +328,8 @@ export default function NovoPetPage() {
                     htmlFor="notes"
                     className="block text-white/80 text-sm font-semibold mb-2.5 flex items-center gap-2"
                   >
-                    <span className="w-7 h-7 rounded-xl bg-[#6366f1]/20 flex items-center justify-center">
-                      <FileText size={14} className="text-[#6366f1]" />
+                    <span className="w-7 h-7 rounded-xl bg-[#078f96]/20 flex items-center justify-center">
+                      <FileText size={14} className="text-[#078f96]" />
                     </span>
                     Observações
                   </label>
@@ -339,7 +339,7 @@ export default function NovoPetPage() {
                     onChange={(e) => handleChange("notes", e.target.value)}
                     placeholder="Alergias, comportamento, preferências..."
                     rows={3}
-                    className="w-full px-4 py-3.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#f183ff]/50 focus:border-[#f183ff]/50 backdrop-blur-sm resize-none transition-all hover:bg-white/[0.07]"
+                    className="w-full px-4 py-3.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#e8327b]/50 focus:border-[#e8327b]/50 backdrop-blur-sm resize-none transition-all hover:bg-white/[0.07]"
                   />
                 </div>
 
@@ -363,7 +363,7 @@ export default function NovoPetPage() {
                     variant="primary"
                     size="lg"
                     disabled={loading || clients.length === 0}
-                    className="flex-1 rounded-xl bg-gradient-to-r from-[#f183ff] to-[#d946ef] hover:from-[#f183ff]/90 hover:to-[#d946ef]/90 border-0 shadow-[0_0_20px_rgba(241,131,255,0.3)] hover:shadow-[0_0_30px_rgba(241,131,255,0.5)] transition-all duration-300"
+                    className="flex-1 rounded-xl bg-gradient-to-r from-[#e8327b] to-[#bf185d] hover:from-[#e8327b]/90 hover:to-[#bf185d]/90 border-0 shadow-[0_0_20px_rgba(241,131,255,0.3)] hover:shadow-[0_0_30px_rgba(241,131,255,0.5)] transition-all duration-300"
                   >
                     {loading ? "Salvando..." : "Salvar Pet"}
                   </Button>

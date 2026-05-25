@@ -118,10 +118,10 @@ export default function EditarTipoPacotePage() {
   if (loading) {
     return (
       <AppLayout companyName={companyName} user={{ name: user?.user_metadata?.name, email: user?.email }}>
-        <div className="flex flex-col h-dvh bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent relative overflow-hidden">
+        <div className="flex flex-col h-dvh bg-gradient-to-br from-[#fff9fb] via-[#fff1f6] to-[#ffe0ec] xl:bg-transparent relative overflow-hidden">
           {/* Animated background decoration */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
+            <div className="absolute -top-40 -right-40 w-96 h-96 bg-[#fff1f6] rounded-full blur-3xl animate-pulse" />
             <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-fuchsia-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
           </div>
 
@@ -180,7 +180,7 @@ export default function EditarTipoPacotePage() {
   if (error && !packageType) {
     return (
       <AppLayout companyName={companyName} user={{ name: user?.user_metadata?.name, email: user?.email }}>
-        <div className="flex flex-col h-dvh bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent relative overflow-hidden">
+        <div className="flex flex-col h-dvh bg-gradient-to-br from-[#fff9fb] via-[#fff1f6] to-[#ffe0ec] xl:bg-transparent relative overflow-hidden">
           <main className="w-full max-w-12xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
             <GlassCard variant="default" className="p-8 bg-red-500/20 border-red-500/50">
               <p className="text-red-200">⚠️ {error}</p>
@@ -199,10 +199,10 @@ export default function EditarTipoPacotePage() {
 
   return (
     <AppLayout companyName={companyName} user={{ name: user?.user_metadata?.name, email: user?.email }}>
-      <div className="flex flex-col h-dvh bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent relative overflow-hidden">
+      <div className="flex flex-col h-dvh bg-gradient-to-br from-[#fff9fb] via-[#fff1f6] to-[#ffe0ec] xl:bg-transparent relative overflow-hidden">
         {/* Animated background decoration */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute -top-40 -right-40 w-96 h-96 bg-[#fff1f6] rounded-full blur-3xl animate-pulse" />
           <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-fuchsia-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
         </div>
 
@@ -226,7 +226,7 @@ export default function EditarTipoPacotePage() {
                   <span className="text-3xl">✏️</span>
                   {packageType?.name || 'Editar Tipo de Pacote'}
                 </h1>
-                <p className="text-purple-200/60 text-sm">Altere as informações do tipo de pacote</p>
+                <p className="text-[#68797d] text-sm">Altere as informações do tipo de pacote</p>
               </div>
             </div>
           </div>
@@ -240,8 +240,8 @@ export default function EditarTipoPacotePage() {
             <form onSubmit={handleSubmit} className="space-y-7">
               {/* Name */}
               <div className="animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '150ms' }}>
-                <label htmlFor="name" className="block text-purple-100/90 text-sm font-semibold mb-2.5 flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">📋</span>
+                <label htmlFor="name" className="block text-[#21363a] text-sm font-semibold mb-2.5 flex items-center gap-2">
+                  <span className="w-6 h-6 rounded-full bg-[#ffe0ec] flex items-center justify-center text-xs">📋</span>
                   Nome do Tipo de Pacote *
                 </label>
                 <Input
@@ -257,8 +257,8 @@ export default function EditarTipoPacotePage() {
 
               {/* Interval Days */}
               <div className="animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '200ms' }}>
-                <label htmlFor="interval_days" className="block text-purple-100/90 text-sm font-semibold mb-2.5 flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">📅</span>
+                <label htmlFor="interval_days" className="block text-[#21363a] text-sm font-semibold mb-2.5 flex items-center gap-2">
+                  <span className="w-6 h-6 rounded-full bg-[#ffe0ec] flex items-center justify-center text-xs">📅</span>
                   Intervalo de Dias *
                 </label>
                 <Select
@@ -277,8 +277,8 @@ export default function EditarTipoPacotePage() {
 
               {/* Credits */}
               <div className="animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '250ms' }}>
-                <label htmlFor="credits" className="block text-purple-100/90 text-sm font-semibold mb-2.5 flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">💎</span>
+                <label htmlFor="credits" className="block text-[#21363a] text-sm font-semibold mb-2.5 flex items-center gap-2">
+                  <span className="w-6 h-6 rounded-full bg-[#ffe0ec] flex items-center justify-center text-xs">💎</span>
                   Créditos *
                 </label>
                 <Input
@@ -296,12 +296,12 @@ export default function EditarTipoPacotePage() {
 
               {/* Price */}
               <div className="animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '300ms' }}>
-                <label htmlFor="price" className="block text-purple-100/90 text-sm font-semibold mb-2.5 flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">💰</span>
+                <label htmlFor="price" className="block text-[#21363a] text-sm font-semibold mb-2.5 flex items-center gap-2">
+                  <span className="w-6 h-6 rounded-full bg-[#ffe0ec] flex items-center justify-center text-xs">💰</span>
                   Preço *
                 </label>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-purple-200/50 font-medium">R$</span>
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#006c73]/50 font-medium">R$</span>
                   <Input
                     id="price"
                     type="number"

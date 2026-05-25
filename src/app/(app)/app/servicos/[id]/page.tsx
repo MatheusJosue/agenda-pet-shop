@@ -157,9 +157,9 @@ export default function ServicoDetailPage() {
         companyName={companyName}
         user={{ name: user?.user_metadata?.name, email: user?.email }}
       >
-        <div className="flex flex-col h-dvh bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent relative overflow-hidden">
+        <div className="flex flex-col h-dvh bg-gradient-to-br from-[#fff9fb] via-[#fff1f6] to-[#ffe0ec] xl:bg-transparent relative overflow-hidden">
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
+            <div className="absolute -top-40 -right-40 w-96 h-96 bg-[#fff1f6] rounded-full blur-3xl animate-pulse" />
             <div
               className="absolute -bottom-40 -left-40 w-96 h-96 bg-fuchsia-500/10 rounded-full blur-3xl animate-pulse"
               style={{ animationDelay: "1s" }}
@@ -224,9 +224,9 @@ export default function ServicoDetailPage() {
         companyName={companyName}
         user={{ name: user?.user_metadata?.name, email: user?.email }}
       >
-        <div className="flex flex-col h-dvh bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent relative overflow-hidden">
+        <div className="flex flex-col h-dvh bg-gradient-to-br from-[#fff9fb] via-[#fff1f6] to-[#ffe0ec] xl:bg-transparent relative overflow-hidden">
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
+            <div className="absolute -top-40 -right-40 w-96 h-96 bg-[#fff1f6] rounded-full blur-3xl animate-pulse" />
             <div
               className="absolute -bottom-40 -left-40 w-96 h-96 bg-fuchsia-500/10 rounded-full blur-3xl animate-pulse"
               style={{ animationDelay: "1s" }}
@@ -250,7 +250,7 @@ export default function ServicoDetailPage() {
                     <span className="text-3xl">✂️</span>
                     Serviço
                   </h1>
-                  <p className="text-purple-200/60 text-sm">Erro</p>
+                  <p className="text-[#68797d] text-sm">Erro</p>
                 </div>
               </div>
             </div>
@@ -274,10 +274,10 @@ export default function ServicoDetailPage() {
       companyName={companyName}
       user={{ name: user?.user_metadata?.name, email: user?.email }}
     >
-      <div className="flex flex-col h-dvh bg-gradient-to-br from-purple-950 via-fuchsia-950/50 to-indigo-950 xl:bg-transparent relative overflow-hidden">
+      <div className="flex flex-col h-dvh bg-gradient-to-br from-[#fff9fb] via-[#fff1f6] to-[#ffe0ec] xl:bg-transparent relative overflow-hidden">
         {/* Animated background decoration */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute -top-40 -right-40 w-96 h-96 bg-[#fff1f6] rounded-full blur-3xl animate-pulse" />
           <div
             className="absolute -bottom-40 -left-40 w-96 h-96 bg-fuchsia-500/10 rounded-full blur-3xl animate-pulse"
             style={{ animationDelay: "1s" }}
@@ -305,7 +305,7 @@ export default function ServicoDetailPage() {
                     <span className="text-3xl">✂️</span>
                     {service.name}
                   </h1>
-                  <p className="text-purple-200/60 text-sm">
+                  <p className="text-[#68797d] text-sm">
                     {editing ? "Editando" : "Detalhes do serviço"}
                   </p>
                 </div>
@@ -395,9 +395,9 @@ export default function ServicoDetailPage() {
                 >
                   <label
                     htmlFor="name"
-                    className="block text-purple-100/90 text-sm font-semibold mb-2.5 flex items-center gap-2"
+                    className="block text-[#21363a] text-sm font-semibold mb-2.5 flex items-center gap-2"
                   >
-                    <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">
+                    <span className="w-6 h-6 rounded-full bg-[#ffe0ec] flex items-center justify-center text-xs">
                       ✂️
                     </span>
                     Nome do Serviço *
@@ -419,15 +419,15 @@ export default function ServicoDetailPage() {
                 >
                   <label
                     htmlFor="price"
-                    className="block text-purple-100/90 text-sm font-semibold mb-2.5 flex items-center gap-2"
+                    className="block text-[#21363a] text-sm font-semibold mb-2.5 flex items-center gap-2"
                   >
-                    <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">
+                    <span className="w-6 h-6 rounded-full bg-[#ffe0ec] flex items-center justify-center text-xs">
                       💰
                     </span>
                     Preço *
                   </label>
                   <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-purple-200/50 font-medium">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#006c73]/50 font-medium">
                       R$
                     </span>
                     <Input
@@ -450,9 +450,9 @@ export default function ServicoDetailPage() {
                 >
                   <label
                     htmlFor="duration_minutes"
-                    className="block text-purple-100/90 text-sm font-semibold mb-2.5 flex items-center gap-2"
+                    className="block text-[#21363a] text-sm font-semibold mb-2.5 flex items-center gap-2"
                   >
-                    <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">
+                    <span className="w-6 h-6 rounded-full bg-[#ffe0ec] flex items-center justify-center text-xs">
                       ⏱️
                     </span>
                     Duração (minutos)
@@ -475,8 +475,8 @@ export default function ServicoDetailPage() {
                   className="animate-in fade-in slide-in-from-left-2 duration-300"
                   style={{ animationDelay: "150ms" }}
                 >
-                  <h2 className="text-purple-200/60 text-sm font-semibold mb-1 flex items-center gap-2">
-                    <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">
+                  <h2 className="text-[#68797d] text-sm font-semibold mb-1 flex items-center gap-2">
+                    <span className="w-6 h-6 rounded-full bg-[#ffe0ec] flex items-center justify-center text-xs">
                       ✂️
                     </span>
                     Nome
@@ -490,8 +490,8 @@ export default function ServicoDetailPage() {
                   className="animate-in fade-in slide-in-from-left-2 duration-300"
                   style={{ animationDelay: "200ms" }}
                 >
-                  <h2 className="text-purple-200/60 text-sm font-semibold mb-1 flex items-center gap-2">
-                    <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">
+                  <h2 className="text-[#68797d] text-sm font-semibold mb-1 flex items-center gap-2">
+                    <span className="w-6 h-6 rounded-full bg-[#ffe0ec] flex items-center justify-center text-xs">
                       💰
                     </span>
                     Preço
@@ -505,8 +505,8 @@ export default function ServicoDetailPage() {
                   className="animate-in fade-in slide-in-from-left-2 duration-300"
                   style={{ animationDelay: "250ms" }}
                 >
-                  <h2 className="text-purple-200/60 text-sm font-semibold mb-1 flex items-center gap-2">
-                    <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs">
+                  <h2 className="text-[#68797d] text-sm font-semibold mb-1 flex items-center gap-2">
+                    <span className="w-6 h-6 rounded-full bg-[#ffe0ec] flex items-center justify-center text-xs">
                       ⏱️
                     </span>
                     Duração
@@ -520,7 +520,7 @@ export default function ServicoDetailPage() {
                   className="pt-4 border-t border-white/10 animate-in fade-in slide-in-from-left-2 duration-300"
                   style={{ animationDelay: "300ms" }}
                 >
-                  <p className="text-purple-200/40 text-xs">
+                  <p className="text-[#006c73]/40 text-xs">
                     Cadastrado em{" "}
                     {new Date(service.created_at).toLocaleDateString("pt-BR")}
                   </p>

@@ -70,18 +70,18 @@ export function CompaniesTable({ companies }: CompaniesTableProps) {
         <table className="w-full">
           <thead>
             <tr className="border-b border-white/10">
-              <th className="text-left p-4 text-purple-200/80 font-medium text-sm uppercase tracking-wide">Nome</th>
-              <th className="text-left p-4 text-purple-200/80 font-medium text-sm uppercase tracking-wide">Email</th>
-              <th className="text-left p-4 text-purple-200/80 font-medium text-sm uppercase tracking-wide">Status</th>
-              <th className="text-left p-4 text-purple-200/80 font-medium text-sm uppercase tracking-wide">Criado em</th>
-              <th className="text-right p-4 text-purple-200/80 font-medium text-sm uppercase tracking-wide">Ações</th>
+              <th className="text-left p-4 text-[#006c73] font-medium text-sm uppercase tracking-wide">Nome</th>
+              <th className="text-left p-4 text-[#006c73] font-medium text-sm uppercase tracking-wide">Email</th>
+              <th className="text-left p-4 text-[#006c73] font-medium text-sm uppercase tracking-wide">Status</th>
+              <th className="text-left p-4 text-[#006c73] font-medium text-sm uppercase tracking-wide">Criado em</th>
+              <th className="text-right p-4 text-[#006c73] font-medium text-sm uppercase tracking-wide">Ações</th>
             </tr>
           </thead>
           <tbody>
             {companies.map((company) => (
                 <tr key={company.id} className="border-b border-white/5 hover:bg-white/5">
                   <td className="p-4">
-                    <a href={`/admin/empresas/${company.id}`} className="text-white font-medium hover:text-purple-300">
+                    <a href={`/admin/empresas/${company.id}`} className="text-white font-medium hover:text-[#bf185d]">
                       {company.name}
                     </a>
                   </td>
@@ -103,7 +103,7 @@ export function CompaniesTable({ companies }: CompaniesTableProps) {
                     <div className="flex items-center justify-end gap-2">
                       <a
                         href={`/admin/empresas/${company.id}`}
-                        className="p-2 rounded-lg hover:bg-purple-500/20 text-purple-300"
+                        className="p-2 rounded-lg hover:bg-[#ffe0ec] text-[#bf185d]"
                         title="Ver detalhes"
                       >
                         <Eye size={18} />
@@ -128,7 +128,7 @@ export function CompaniesTable({ companies }: CompaniesTableProps) {
             </tbody>
           </table>
         {companies.length === 0 && (
-          <div className="text-center py-12 text-purple-200/60">
+          <div className="text-center py-12 text-[#68797d]">
             Nenhuma empresa encontrada
           </div>
         )}

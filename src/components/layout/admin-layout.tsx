@@ -51,14 +51,14 @@ export function AdminLayoutClient({ children }: AdminLayoutProps) {
         <div
           className={`flex-1 flex flex-col transition-all duration-300 ${marginClass}`}
         >
-          <main className="flex-1 overflow-auto bg-gradient-to-br from-zinc-950 via-indigo-950/20 to-zinc-950">
+          <main className="flex-1 overflow-auto bg-gradient-to-br from-[#fff9fb] via-[#fff1f6] to-[#ffe0ec]">
             <div className="h-full">{children}</div>
           </main>
         </div>
       </div>
 
       {/* Mobile Layout */}
-      <div className="xl:hidden min-h-screen bg-gradient-to-br from-zinc-950 via-indigo-950/20 to-zinc-950 pb-16">
+      <div className="xl:hidden min-h-screen bg-gradient-to-br from-[#fff9fb] via-[#fff1f6] to-[#ffe0ec] pb-16">
         <AdminMobileHeader />
         <div className="px-4 py-6">{children}</div>
         <AdminBottomNavigation />

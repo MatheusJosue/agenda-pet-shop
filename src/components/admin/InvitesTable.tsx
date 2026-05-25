@@ -51,12 +51,12 @@ export function InvitesTable({ invites }: InvitesTableProps) {
       <table className="w-full">
         <thead>
           <tr className="border-b border-white/10">
-            <th className="text-left p-4 text-purple-200/80 font-medium text-sm uppercase tracking-wide">Código</th>
-            <th className="text-left p-4 text-purple-200/80 font-medium text-sm uppercase tracking-wide">Tipo</th>
-            <th className="text-left p-4 text-purple-200/80 font-medium text-sm uppercase tracking-wide">Empresa</th>
-            <th className="text-left p-4 text-purple-200/80 font-medium text-sm uppercase tracking-wide">Status</th>
-            <th className="text-left p-4 text-purple-200/80 font-medium text-sm uppercase tracking-wide">Expira em</th>
-            <th className="text-right p-4 text-purple-200/80 font-medium text-sm uppercase tracking-wide">Ações</th>
+            <th className="text-left p-4 text-[#006c73] font-medium text-sm uppercase tracking-wide">Código</th>
+            <th className="text-left p-4 text-[#006c73] font-medium text-sm uppercase tracking-wide">Tipo</th>
+            <th className="text-left p-4 text-[#006c73] font-medium text-sm uppercase tracking-wide">Empresa</th>
+            <th className="text-left p-4 text-[#006c73] font-medium text-sm uppercase tracking-wide">Status</th>
+            <th className="text-left p-4 text-[#006c73] font-medium text-sm uppercase tracking-wide">Expira em</th>
+            <th className="text-right p-4 text-[#006c73] font-medium text-sm uppercase tracking-wide">Ações</th>
           </tr>
         </thead>
         <tbody>
@@ -69,7 +69,7 @@ export function InvitesTable({ invites }: InvitesTableProps) {
               )}
             >
               <td className="p-4">
-                <code className="text-purple-300 font-mono text-sm bg-purple-500/10 px-2 py-1 rounded">
+                <code className="text-[#bf185d] font-mono text-sm bg-[#fff1f6] px-2 py-1 rounded">
                   {invite.code}
                 </code>
               </td>
@@ -92,7 +92,7 @@ export function InvitesTable({ invites }: InvitesTableProps) {
                 <div className="flex items-center justify-end gap-2">
                   <button
                     onClick={() => handleCopy(invite.code)}
-                    className="p-2 rounded-lg hover:bg-white/10 text-purple-300 hover:text-white transition-colors"
+                    className="p-2 rounded-lg hover:bg-white/10 text-[#bf185d] hover:text-white transition-colors"
                     title="Copiar código"
                   >
                     {copied === invite.code ? <Check size={18} /> : <Copy size={18} />}
@@ -104,7 +104,7 @@ export function InvitesTable({ invites }: InvitesTableProps) {
         </tbody>
       </table>
       {invites.length === 0 && (
-        <div className="text-center py-12 text-purple-200/60">
+        <div className="text-center py-12 text-[#68797d]">
           Nenhum convite encontrado
         </div>
       )}

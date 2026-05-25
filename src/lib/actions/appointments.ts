@@ -3,7 +3,6 @@
 import { revalidatePath } from 'next/cache'
 import { createClient as createSupabaseClient } from '@/lib/supabase/server'
 import { appointmentSchema } from '@/lib/validation/appointments'
-import { usePackageCredit as consumePackageCredit } from './packages'
 import type { Appointment, AppointmentInput, AppointmentWithRelations, AppointmentsListResponse } from '@/lib/types/appointments'
 
 export interface AppointmentResponse {
@@ -242,14 +241,19 @@ export async function createAppointment(input: AppointmentInput): Promise<Appoin
   )
   const totalPrice = validatedFields.data.totalPrice ?? servicesTotalPrice
 
+  const packageCreditsToUse = validatedFields.data.petPackageId
+    ? validatedFields.data.servicePriceIds.length
+    : 0
+
   // Check if using pet package credit
   let finalPrice = totalPrice
-  if (input.petPackageId) {
+  if (validatedFields.data.petPackageId) {
     const { data: petPackage } = await supabase
       .from('pet_packages')
       .select('id, credits_remaining, expires_at')
-      .eq('id', input.petPackageId)
+      .eq('id', validatedFields.data.petPackageId)
       .eq('company_id', companyId)
+      .eq('pet_id', validatedFields.data.petId)
       .eq('active', true)
       .single()
 
@@ -257,7 +261,7 @@ export async function createAppointment(input: AppointmentInput): Promise<Appoin
       return { error: 'Pacote não encontrado' }
     }
 
-    if (petPackage.credits_remaining < validatedFields.data.servicePriceIds.length) {
+    if (petPackage.credits_remaining < packageCreditsToUse) {
       return { error: 'Créditos insuficientes no pacote' }
     }
 
@@ -304,7 +308,7 @@ export async function createAppointment(input: AppointmentInput): Promise<Appoin
       price: servicePricesWithAppointmentPrice[0].appointment_price, // Keep individual price for backward compatibility
       total_price: finalPrice,
       status: 'scheduled',
-      used_credit: validatedFields.data.useCredit,
+      used_credit: validatedFields.data.useCredit || Boolean(validatedFields.data.petPackageId),
       client_plan_id: validatedFields.data.clientPlanId,
       pet_package_id: validatedFields.data.petPackageId,
       notes: validatedFields.data.notes || null
@@ -336,13 +340,44 @@ export async function createAppointment(input: AppointmentInput): Promise<Appoin
     return { error: 'Erro ao vincular serviços ao agendamento' }
   }
 
-  // Deduct pet package credit if used
-  if (input.petPackageId) {
-    for (let i = 0; i < validatedFields.data.servicePriceIds.length; i++) {
-      const creditResult = await consumePackageCredit(input.petPackageId)
-      if (creditResult.error) {
-        return { error: creditResult.error }
-      }
+  // Deduct pet package credits if used.
+  if (validatedFields.data.petPackageId && packageCreditsToUse > 0) {
+    const { data: currentPackage, error: packageReadError } = await supabase
+      .from('pet_packages')
+      .select('credits_remaining')
+      .eq('id', validatedFields.data.petPackageId)
+      .eq('company_id', companyId)
+      .eq('pet_id', validatedFields.data.petId)
+      .eq('active', true)
+      .single()
+
+    if (packageReadError || !currentPackage) {
+      await supabase.from('appointment_services').delete().eq('appointment_id', appointment.id)
+      await supabase.from('appointments').delete().eq('id', appointment.id)
+      return { error: 'Pacote não encontrado' }
+    }
+
+    const nextCredits = currentPackage.credits_remaining - packageCreditsToUse
+    if (nextCredits < 0) {
+      await supabase.from('appointment_services').delete().eq('appointment_id', appointment.id)
+      await supabase.from('appointments').delete().eq('id', appointment.id)
+      return { error: 'Créditos insuficientes no pacote' }
+    }
+
+    const { error: packageUpdateError } = await supabase
+      .from('pet_packages')
+      .update({
+        credits_remaining: nextCredits,
+        active: nextCredits > 0,
+      })
+      .eq('id', validatedFields.data.petPackageId)
+      .eq('company_id', companyId)
+      .eq('pet_id', validatedFields.data.petId)
+
+    if (packageUpdateError) {
+      await supabase.from('appointment_services').delete().eq('appointment_id', appointment.id)
+      await supabase.from('appointments').delete().eq('id', appointment.id)
+      return { error: 'Erro ao usar crédito do pacote' }
     }
   }
 
@@ -356,7 +391,9 @@ export async function createAppointment(input: AppointmentInput): Promise<Appoin
 
   revalidatePath('/app/agendamentos')
   revalidatePath(`/app/clientes/${input.clientId}`)
+  revalidatePath(`/app/clientes/${input.clientId}/pets/${input.petId}`)
   revalidatePath(`/app/pets/${input.petId}`)
+  revalidatePath('/app/pacotes')
   return { data: appointment }
 }
 

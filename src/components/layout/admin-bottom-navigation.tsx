@@ -19,7 +19,7 @@ export function AdminBottomNavigation() {
   if (shouldHide) return null;
 
   return (
-    <nav className="flex xl:hidden fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-br from-indigo-950 via-purple-950/50 to-zinc-950 backdrop-blur-md border-t border-white/10 safe-area-inset-bottom">
+    <nav className="flex xl:hidden fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-br from-[#fff9fb] via-[#fff1f6] to-[#ffe0ec] backdrop-blur-md border-t border-white/10 safe-area-inset-bottom">
       <div className="flex items-center w-full h-16">
         {tabs.map((tab) => {
           const isActive = pathname === tab.href;
@@ -36,7 +36,7 @@ export function AdminBottomNavigation() {
                   "flex flex-col items-center justify-center gap-1 px-3 py-2 rounded-xl transition-all duration-200",
                   isActive
                     ? "text-white bg-white/10"
-                    : "text-purple-200/60 hover:text-purple-200/80 hover:bg-white/5"
+                    : "text-[#68797d] hover:text-[#006c73] hover:bg-white/5"
                 )}
               >
                 <Icon
@@ -44,7 +44,7 @@ export function AdminBottomNavigation() {
                   strokeWidth={isActive ? 2.5 : 2}
                   className={cn(
                     "transition-colors",
-                    isActive && "drop-shadow-lg shadow-indigo-500/30"
+                    isActive && "drop-shadow-lg shadow-[#e8327b]/20"
                   )}
                 />
                 <span className="text-[10px] font-medium">

@@ -59,7 +59,7 @@ export default function ServicosPage() {
           user={{ name: user?.user_metadata?.name, email: user?.email }}
         />
 
-        <main className="flex-1 overflow-y-auto w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 space-y-6 relative z-10 custom-scrollbar">
+        <main className="flex-1 overflow-y-auto w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-28 lg:py-8 space-y-6 relative z-10 custom-scrollbar">
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
             <div className="flex items-center justify-between gap-4 mb-6">
               <div>

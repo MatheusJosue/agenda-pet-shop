@@ -170,11 +170,11 @@ export default function ClientPetDetailPage() {
   if (loading) {
     return (
       <AppLayout companyName={companyName} user={{ name: user?.user_metadata?.name, email: user?.email }}>
-        <div className="min-h-dvh bg-[#120a21] relative overflow-hidden">
+        <div className="min-h-dvh bg-transparent relative overflow-hidden">
           <div className="fixed inset-0 pointer-events-none overflow-hidden">
-            <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-[#f183ff]/10 rounded-full blur-[120px] animate-[float_8s_ease-in-out_infinite]" />
-            <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] bg-[#d946ef]/10 rounded-full blur-[120px] animate-[float_10s_ease-in-out_infinite_reverse]" />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-[#8b5cf6]/5 rounded-full blur-[100px] animate-[pulse-glow_6s_ease-in-out_infinite]" />
+            <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-[#e8327b]/10 rounded-full blur-[120px] animate-[float_8s_ease-in-out_infinite]" />
+            <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] bg-[#bf185d]/10 rounded-full blur-[120px] animate-[float_10s_ease-in-out_infinite_reverse]" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-[#006c73]/5 rounded-full blur-[100px] animate-[pulse-glow_6s_ease-in-out_infinite]" />
           </div>
 
           <AppHeader
@@ -195,16 +195,16 @@ export default function ClientPetDetailPage() {
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-100">
               <div className="rounded-2xl border backdrop-blur-sm bg-[#2d1b4e]/30 border-white/10 overflow-hidden">
                 {/* Profile Header with Gradient Background Skeleton */}
-                <div className="relative h-32 bg-gradient-to-br from-[#f183ff]/30 via-[#d946ef]/20 to-[#8b5cf6]/30">
-                  <div className="absolute top-4 right-4 w-16 h-16 bg-[#f183ff]/20 rounded-full blur-xl animate-pulse" />
-                  <div className="absolute bottom-4 left-4 w-12 h-12 bg-[#d946ef]/20 rounded-full blur-lg animate-pulse" />
+                <div className="relative h-32 bg-gradient-to-br from-[#e8327b]/30 via-[#bf185d]/20 to-[#006c73]/30">
+                  <div className="absolute top-4 right-4 w-16 h-16 bg-[#e8327b]/20 rounded-full blur-xl animate-pulse" />
+                  <div className="absolute bottom-4 left-4 w-12 h-12 bg-[#bf185d]/20 rounded-full blur-lg animate-pulse" />
                 </div>
 
                 {/* Pet Avatar Skeleton */}
                 <div className="relative px-6 -mt-16 mb-4">
                   <div className="relative w-28 h-28 mx-auto">
                     <div className="absolute inset-0 rounded-full bg-[#2b2041]/40 animate-pulse" />
-                    <div className="relative w-full h-full rounded-full bg-[#120a21] border-4 border-white/10 animate-pulse" />
+                    <div className="relative w-full h-full rounded-full bg-transparent border-4 border-white/10 animate-pulse" />
                   </div>
                 </div>
 
@@ -261,11 +261,11 @@ export default function ClientPetDetailPage() {
   if (!pet || error) {
     return (
       <AppLayout companyName={companyName} user={{ name: user?.user_metadata?.name, email: user?.email }}>
-        <div className="min-h-dvh bg-[#120a21] relative overflow-hidden">
+        <div className="min-h-dvh bg-transparent relative overflow-hidden">
           <div className="fixed inset-0 pointer-events-none overflow-hidden">
-            <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-[#f183ff]/10 rounded-full blur-[120px] animate-[float_8s_ease-in-out_infinite]" />
-            <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] bg-[#d946ef]/10 rounded-full blur-[120px] animate-[float_10s_ease-in-out_infinite_reverse]" />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-[#8b5cf6]/5 rounded-full blur-[100px] animate-[pulse-glow_6s_ease-in-out_infinite]" />
+            <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-[#e8327b]/10 rounded-full blur-[120px] animate-[float_8s_ease-in-out_infinite]" />
+            <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] bg-[#bf185d]/10 rounded-full blur-[120px] animate-[float_10s_ease-in-out_infinite_reverse]" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-[#006c73]/5 rounded-full blur-[100px] animate-[pulse-glow_6s_ease-in-out_infinite]" />
           </div>
 
           <AppHeader
@@ -307,17 +307,17 @@ export default function ClientPetDetailPage() {
 
   return (
     <AppLayout companyName={companyName} user={{ name: user?.user_metadata?.name, email: user?.email }}>
-      <div className="min-h-dvh bg-[#120a21] relative overflow-hidden">
+      <div className="min-h-dvh bg-transparent relative overflow-hidden">
         {/* Premium animated background layers */}
         <div className="fixed inset-0 pointer-events-none overflow-hidden">
-          <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-[#f183ff]/10 rounded-full blur-[120px] animate-[float_8s_ease-in-out_infinite]" />
-          <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] bg-[#d946ef]/10 rounded-full blur-[120px] animate-[float_10s_ease-in-out_infinite_reverse]" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-[#8b5cf6]/5 rounded-full blur-[100px] animate-[pulse-glow_6s_ease-in-out_infinite]" />
+          <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-[#e8327b]/10 rounded-full blur-[120px] animate-[float_8s_ease-in-out_infinite]" />
+          <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] bg-[#bf185d]/10 rounded-full blur-[120px] animate-[float_10s_ease-in-out_infinite_reverse]" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-[#006c73]/5 rounded-full blur-[100px] animate-[pulse-glow_6s_ease-in-out_infinite]" />
           <div className="absolute inset-0 bg-[linear-gradient(rgba(241,131,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(241,131,255,0.02)_1px,transparent_1px)] bg-[size:80px_80px]" />
         </div>
 
         {/* Header App Bar */}
-        <div className="sticky top-0 z-50 px-4 py-4 bg-[#120a21]/80 backdrop-blur-xl border-b border-white/5">
+        <div className="sticky top-0 z-50 px-4 py-4 bg-[#fff9fb]/90 backdrop-blur-xl border-b border-white/5">
           <div className="flex items-center justify-between max-w-7xl mx-auto">
             <Link href={`/app/clientes/${clientId}`}>
               <Button variant="ghost" size="sm" className="p-2 rounded-xl hover:bg-white/10">
@@ -332,7 +332,7 @@ export default function ClientPetDetailPage() {
                 type="button"
                 onClick={() => setEditing(true)}
                 disabled={saving || editing}
-                className="p-2 rounded-xl text-white/60 hover:text-[#f183ff] hover:bg-white/10 transition-all disabled:opacity-50"
+                className="p-2 rounded-xl text-white/60 hover:text-[#e8327b] hover:bg-white/10 transition-all disabled:opacity-50"
               >
                 <Pencil size={20} />
               </button>
@@ -366,10 +366,10 @@ export default function ClientPetDetailPage() {
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
             <GlassCard variant="elevated" className="overflow-hidden">
               {/* Profile Header with Gradient Background */}
-              <div className="relative h-32 bg-gradient-to-br from-[#f183ff]/30 via-[#d946ef]/20 to-[#8b5cf6]/30">
+              <div className="relative h-32 bg-gradient-to-br from-[#e8327b]/30 via-[#bf185d]/20 to-[#006c73]/30">
                 {/* Decorative elements */}
-                <div className="absolute top-4 right-4 w-16 h-16 bg-[#f183ff]/20 rounded-full blur-xl animate-pulse" />
-                <div className="absolute bottom-4 left-4 w-12 h-12 bg-[#d946ef]/20 rounded-full blur-lg animate-pulse" style={{ animationDelay: '0.5s' }} />
+                <div className="absolute top-4 right-4 w-16 h-16 bg-[#e8327b]/20 rounded-full blur-xl animate-pulse" />
+                <div className="absolute bottom-4 left-4 w-12 h-12 bg-[#bf185d]/20 rounded-full blur-lg animate-pulse" style={{ animationDelay: '0.5s' }} />
 
                 {/* Action buttons overlay */}
                 <div className="absolute top-3 right-3 flex gap-2">
@@ -399,7 +399,7 @@ export default function ClientPetDetailPage() {
                         size="sm"
                         onClick={handleSave}
                         disabled={saving}
-                        className="rounded-xl bg-[#f183ff] hover:bg-[#f183ff]/90 text-white border-0 shadow-lg shadow-[#f183ff]/30"
+                        className="rounded-xl bg-[#e8327b] hover:bg-[#e8327b]/90 text-white border-0 shadow-lg shadow-[#e8327b]/30"
                       >
                         {saving ? 'Salvando...' : 'Salvar'}
                       </Button>
@@ -412,10 +412,10 @@ export default function ClientPetDetailPage() {
               <div className="relative px-6 -mt-16 mb-4">
                 <div className="relative w-28 h-28 mx-auto">
                   {/* Avatar glow ring */}
-                  <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#f183ff] via-[#d946ef] to-[#8b5cf6] blur-lg opacity-60 animate-pulse" />
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#e8327b] via-[#bf185d] to-[#006c73] blur-lg opacity-60 animate-pulse" />
 
                   {/* Avatar container */}
-                  <div className="relative w-full h-full rounded-full bg-[#120a21] border-4 border-[#f183ff]/30 flex items-center justify-center text-5xl shadow-2xl">
+                  <div className="relative w-full h-full rounded-full bg-transparent border-4 border-[#e8327b]/30 flex items-center justify-center text-5xl shadow-2xl">
                     {SIZE_EMOJIS[pet.size]}
                   </div>
 
@@ -454,11 +454,11 @@ export default function ClientPetDetailPage() {
                       <p className="text-white/60 text-sm mb-3">{pet.breed}</p>
                     )}
                     <div className="flex items-center justify-center gap-2 flex-wrap">
-                      <span className="px-3 py-1.5 rounded-full bg-[#f183ff]/20 border border-[#f183ff]/30 text-[#f183ff] text-xs font-semibold uppercase tracking-wide flex items-center gap-1.5">
+                      <span className="px-3 py-1.5 rounded-full bg-[#e8327b]/20 border border-[#e8327b]/30 text-[#e8327b] text-xs font-semibold uppercase tracking-wide flex items-center gap-1.5">
                         <span className="text-sm">{SIZE_EMOJIS[pet.size]}</span>
                         {SIZE_LABELS[pet.size]}
                       </span>
-                      <span className="px-3 py-1.5 rounded-full bg-[#d946ef]/20 border border-[#d946ef]/30 text-[#d946ef] text-xs font-semibold uppercase tracking-wide">
+                      <span className="px-3 py-1.5 rounded-full bg-[#bf185d]/20 border border-[#bf185d]/30 text-[#bf185d] text-xs font-semibold uppercase tracking-wide">
                         {HAIR_TYPE_LABELS[pet.hair_type]}
                       </span>
                     </div>
@@ -473,7 +473,7 @@ export default function ClientPetDetailPage() {
             {/* Size Card */}
             <GlassCard variant="default" className="p-4">
               <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#8b5cf6]/20 to-[#6366f1]/20 flex items-center justify-center text-xl shadow-lg shadow-[#8b5cf6]/10">
+                <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#006c73]/20 to-[#078f96]/20 flex items-center justify-center text-xl shadow-lg shadow-[#006c73]/10">
                   📏
                 </div>
                 <div className="flex-1 min-w-0">
@@ -486,7 +486,7 @@ export default function ClientPetDetailPage() {
             {/* Hair Type Card */}
             <GlassCard variant="default" className="p-4">
               <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#d946ef]/20 to-[#a855f7]/20 flex items-center justify-center text-xl shadow-lg shadow-[#d946ef]/10">
+                <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#bf185d]/20 to-[#e8327b]/20 flex items-center justify-center text-xl shadow-lg shadow-[#bf185d]/10">
                   ✂️
                 </div>
                 <div className="flex-1 min-w-0">
@@ -504,16 +504,16 @@ export default function ClientPetDetailPage() {
                 href={`/app/clientes/${pet.client.id}`}
                 className="flex items-center gap-4 group"
               >
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#a855f7]/20 to-[#9333ea]/20 flex items-center justify-center text-xl shadow-lg shadow-[#a855f7]/10 group-hover:scale-110 transition-transform">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#e8327b]/20 to-[#bf185d]/20 flex items-center justify-center text-xl shadow-lg shadow-[#e8327b]/10 group-hover:scale-110 transition-transform">
                   👤
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-white/50 text-[10px] font-semibold uppercase tracking-wider mb-0.5">Dono (Tutor)</p>
-                  <p className="text-white text-sm font-medium truncate group-hover:text-[#f183ff] transition-colors">
+                  <p className="text-white text-sm font-medium truncate group-hover:text-[#e8327b] transition-colors">
                     {pet.client.name}
                   </p>
                 </div>
-                <ChevronRight size={18} className="text-white/30 group-hover:text-[#f183ff] group-hover:translate-x-1 transition-all" />
+                <ChevronRight size={18} className="text-white/30 group-hover:text-[#e8327b] group-hover:translate-x-1 transition-all" />
               </Link>
             </GlassCard>
           </div>
@@ -523,7 +523,7 @@ export default function ClientPetDetailPage() {
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
               <GlassCard variant="default" className="p-4">
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#f183ff]/20 to-[#d946ef]/20 flex items-center justify-center text-lg shadow-lg shadow-[#f183ff]/10 flex-shrink-0 mt-0.5">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#e8327b]/20 to-[#bf185d]/20 flex items-center justify-center text-lg shadow-lg shadow-[#e8327b]/10 flex-shrink-0 mt-0.5">
                     📝
                   </div>
                   <div className="flex-1 min-w-0">
@@ -534,7 +534,7 @@ export default function ClientPetDetailPage() {
                         onChange={(e) => handleChange('notes', e.target.value)}
                         placeholder="Adicione observações sobre o pet..."
                         rows={3}
-                        className="w-full px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-sm placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#f183ff]/50 focus:border-[#f183ff]/50 backdrop-blur-sm resize-none transition-all hover:bg-white/[0.07]"
+                        className="w-full px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-sm placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#e8327b]/50 focus:border-[#e8327b]/50 backdrop-blur-sm resize-none transition-all hover:bg-white/[0.07]"
                       />
                     ) : (
                       <p className="text-white/80 text-sm whitespace-pre-wrap leading-relaxed">
@@ -553,7 +553,7 @@ export default function ClientPetDetailPage() {
               {/* Size Selection */}
               <GlassCard variant="default" className="p-4">
                 <p className="text-white/50 text-[10px] font-semibold uppercase tracking-wider mb-3 flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-lg bg-[#8b5cf6]/20 flex items-center justify-center text-xs">📏</span>
+                  <span className="w-6 h-6 rounded-lg bg-[#006c73]/20 flex items-center justify-center text-xs">📏</span>
                   Porte *
                 </p>
                 <div className="grid grid-cols-5 gap-2">
@@ -564,7 +564,7 @@ export default function ClientPetDetailPage() {
                       onClick={() => handleChange('size', option.value)}
                       className={`px-2 py-2.5 rounded-xl border transition-all text-xs font-medium ${
                         formData.size === option.value
-                          ? "bg-gradient-to-br from-[#f183ff] to-[#d946ef] border-[#f183ff] text-white shadow-lg shadow-[#f183ff]/20"
+                          ? "bg-gradient-to-br from-[#e8327b] to-[#bf185d] border-[#e8327b] text-white shadow-lg shadow-[#e8327b]/20"
                           : "bg-white/5 border-white/10 text-white/70 hover:border-white/30 hover:bg-white/10"
                       }`}
                     >
@@ -578,7 +578,7 @@ export default function ClientPetDetailPage() {
               {/* Hair Type Selection */}
               <GlassCard variant="default" className="p-4">
                 <p className="text-white/50 text-[10px] font-semibold uppercase tracking-wider mb-3 flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-lg bg-[#6366f1]/20 flex items-center justify-center text-xs">✂️</span>
+                  <span className="w-6 h-6 rounded-lg bg-[#078f96]/20 flex items-center justify-center text-xs">✂️</span>
                   Tipo de Pelo *
                 </p>
                 <div className="grid grid-cols-2 gap-2">
@@ -589,7 +589,7 @@ export default function ClientPetDetailPage() {
                       onClick={() => handleChange('hairType', value)}
                       className={`px-4 py-3 rounded-xl border transition-all text-sm font-medium ${
                         formData.hairType === value
-                          ? "bg-gradient-to-br from-[#f183ff] to-[#d946ef] border-[#f183ff] text-white shadow-lg shadow-[#f183ff]/20"
+                          ? "bg-gradient-to-br from-[#e8327b] to-[#bf185d] border-[#e8327b] text-white shadow-lg shadow-[#e8327b]/20"
                           : "bg-white/5 border-white/10 text-white/70 hover:border-white/30 hover:bg-white/10"
                       }`}
                     >
@@ -606,22 +606,22 @@ export default function ClientPetDetailPage() {
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
               <GlassCard variant="elevated" className="overflow-hidden">
                 {/* Header with gradient border */}
-                <div className="relative p-5 bg-gradient-to-br from-[#f183ff]/10 via-[#d946ef]/5 to-[#8b5cf6]/10">
-                  <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#f183ff] via-[#d946ef] to-[#8b5cf6]" />
+                <div className="relative p-5 bg-[#fff9fb]">
+                  <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#e8327b] via-[#bf185d] to-[#006c73]" />
 
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#f183ff] to-[#d946ef] flex items-center justify-center shadow-lg shadow-[#f183ff]/30">
+                      <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#e8327b] to-[#bf185d] flex items-center justify-center shadow-lg shadow-[#e8327b]/30">
                         <Sparkles size={22} className="text-white" />
                       </div>
                       <div>
-                        <p className="text-white/50 text-[10px] font-semibold uppercase tracking-wider">Pacote Ativo</p>
-                        <h3 className="text-white font-bold text-lg">{activePackage.package_type.name}</h3>
+                        <p className="text-[#006c73] text-[10px] font-extrabold uppercase tracking-wider">Pacote Ativo</p>
+                        <h3 className="text-[#21363a] font-extrabold text-lg">{activePackage.package_type.name}</h3>
                       </div>
                     </div>
                     <button
                       onClick={() => setShowPackageModal(true)}
-                      className="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white/70 hover:text-white text-xs font-medium transition-all border border-white/10"
+                      className="px-3 py-1.5 rounded-xl bg-white/80 hover:bg-[#ffe0ec] text-[#006c73] hover:text-[#bf185d] text-xs font-extrabold transition-all border border-[rgba(232,50,123,0.24)]"
                     >
                       Gerenciar
                     </button>
@@ -633,29 +633,29 @@ export default function ClientPetDetailPage() {
                   {/* Credits Display */}
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-white/50 text-xs mb-1">Créditos</p>
-                      <p className="text-white text-2xl font-bold">
-                        <span className="text-[#f183ff]">{activePackage.credits_remaining}</span>
-                        <span className="text-white/30 mx-1">/</span>
-                        <span className="text-white/60">{activePackage.package_type.credits}</span>
+                      <p className="text-[#68797d] text-xs mb-1 font-bold">Créditos</p>
+                      <p className="text-[#21363a] text-2xl font-extrabold">
+                        <span className="text-[#e8327b]">{activePackage.credits_remaining}</span>
+                        <span className="text-[#68797d] mx-1">/</span>
+                        <span className="text-[#68797d]">{activePackage.package_type.credits}</span>
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-white/50 text-xs mb-1">Restantes</p>
-                      <p className="text-[#f183ff] font-semibold">
+                      <p className="text-[#68797d] text-xs mb-1 font-bold">Restantes</p>
+                      <p className="text-[#e8327b] font-semibold">
                         {Math.round(((activePackage.package_type.credits - activePackage.credits_remaining) / activePackage.package_type.credits) * 100)}%
                       </p>
                     </div>
                   </div>
 
                   {/* Progress Bar */}
-                  <div className="relative h-3 bg-white/5 rounded-full overflow-hidden">
+                  <div className="relative h-3 bg-[#ffe0ec] rounded-full overflow-hidden">
                     {/* Background glow */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#f183ff]/20 to-[#d946ef]/20 rounded-full blur-sm" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#e8327b]/20 to-[#bf185d]/20 rounded-full blur-sm" />
 
                     {/* Progress fill */}
                     <div
-                      className="relative h-full bg-gradient-to-r from-[#f183ff] via-[#d946ef] to-[#8b5cf6] rounded-full transition-all duration-700 ease-out shadow-lg shadow-[#f183ff]/30"
+                      className="relative h-full bg-gradient-to-r from-[#e8327b] via-[#bf185d] to-[#006c73] rounded-full transition-all duration-700 ease-out shadow-lg shadow-[#e8327b]/30"
                       style={{ width: `${progressPercentage}%` }}
                     >
                       {/* Shimmer effect */}
@@ -664,10 +664,10 @@ export default function ClientPetDetailPage() {
                   </div>
 
                   {/* Expiry Date */}
-                  <div className="flex items-center gap-2 pt-2 border-t border-white/5">
-                    <Calendar size={14} className="text-white/40" />
-                    <p className="text-white/40 text-xs">
-                      Expira em <span className="text-white/60">{new Date(activePackage.expires_at).toLocaleDateString('pt-BR')}</span>
+                  <div className="flex items-center gap-2 pt-2 border-t border-[rgba(232,50,123,0.18)]">
+                    <Calendar size={14} className="text-[#68797d]" />
+                    <p className="text-[#68797d] text-xs font-medium">
+                      Expira em <span className="text-[#21363a]">{new Date(activePackage.expires_at).toLocaleDateString('pt-BR')}</span>
                     </p>
                   </div>
                 </div>
@@ -679,16 +679,16 @@ export default function ClientPetDetailPage() {
                 onClick={() => setShowPackageModal(true)}
                 className="w-full"
               >
-                <GlassCard variant="default" className="p-5 hover:border-[#f183ff]/30 transition-all group">
+                <GlassCard variant="default" className="p-5 hover:border-[#e8327b]/30 transition-all group">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#f183ff]/20 to-[#d946ef]/20 flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg shadow-[#f183ff]/10">
-                      <Package size={22} className="text-[#f183ff]" />
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#e8327b]/20 to-[#bf185d]/20 flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg shadow-[#e8327b]/10">
+                      <Package size={22} className="text-[#e8327b]" />
                     </div>
                     <div className="flex-1 text-left">
                       <p className="text-white/50 text-[10px] font-semibold uppercase tracking-wider">Pacotes</p>
                       <p className="text-white font-semibold">Adicionar pacote</p>
                     </div>
-                    <ChevronRight size={20} className="text-white/30 group-hover:text-[#f183ff] group-hover:translate-x-1 transition-all" />
+                    <ChevronRight size={20} className="text-white/30 group-hover:text-[#e8327b] group-hover:translate-x-1 transition-all" />
                   </div>
                 </GlassCard>
               </button>

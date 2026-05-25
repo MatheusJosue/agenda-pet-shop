@@ -52,7 +52,7 @@ export function CreateInviteForm({ companies: initialCompanies }: CreateInviteFo
             onChange={(e) => setCreateNewCompany(e.target.checked)}
             className="sr-only peer"
           />
-          <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+          <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#e8327b]"></div>
           <span className="ml-3 text-sm font-medium text-gray-300">Criar nova empresa</span>
         </label>
       </div>
@@ -60,33 +60,33 @@ export function CreateInviteForm({ companies: initialCompanies }: CreateInviteFo
       {createNewCompany ? (
         <>
           <div>
-            <label className="block text-purple-200 text-sm mb-2">Nome da Empresa *</label>
+            <label className="block text-[#006c73] text-sm mb-2">Nome da Empresa *</label>
             <input
               name="newCompanyName"
               type="text"
               required
-              className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#e8327b]"
               placeholder="Nome da empresa"
             />
           </div>
           <div>
-            <label className="block text-purple-200 text-sm mb-2">Email da Empresa *</label>
+            <label className="block text-[#006c73] text-sm mb-2">Email da Empresa *</label>
             <input
               name="newCompanyEmail"
               type="email"
               required
-              className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#e8327b]"
               placeholder="email@empresa.com"
             />
           </div>
         </>
       ) : (
         <div>
-          <label className="block text-purple-200 text-sm mb-2">Empresa *</label>
+          <label className="block text-[#006c73] text-sm mb-2">Empresa *</label>
           <select
             name="companyId"
             required
-            className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-[#e8327b]"
           >
             <option value="">Selecione uma empresa</option>
             {initialCompanies.map((company) => (
@@ -99,11 +99,11 @@ export function CreateInviteForm({ companies: initialCompanies }: CreateInviteFo
       )}
 
       <div>
-        <label className="block text-purple-200 text-sm mb-2">Role *</label>
+        <label className="block text-[#006c73] text-sm mb-2">Role *</label>
         <select
           name="role"
           required
-          className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+          className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-[#e8327b]"
         >
           <option value="company_admin">Company Admin</option>
           <option value="company_user">Company User</option>
@@ -111,7 +111,7 @@ export function CreateInviteForm({ companies: initialCompanies }: CreateInviteFo
       </div>
 
       <div>
-        <label className="block text-purple-200 text-sm mb-2">Expira em (dias) *</label>
+        <label className="block text-[#006c73] text-sm mb-2">Expira em (dias) *</label>
         <input
           name="expiresInDays"
           type="number"
@@ -119,14 +119,14 @@ export function CreateInviteForm({ companies: initialCompanies }: CreateInviteFo
           max="365"
           defaultValue={365}
           required
-          className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+          className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#e8327b]"
         />
       </div>
 
       <button
         type="submit"
         disabled={loading}
-        className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium flex items-center justify-center gap-2 disabled:opacity-50"
+        className="w-full py-3 rounded-xl bg-gradient-to-r from-[#e8327b] to-[#bf185d] text-white font-medium flex items-center justify-center gap-2 disabled:opacity-50"
       >
         <Plus size={20} />
         {loading ? 'Criando...' : 'Gerar Convite'}

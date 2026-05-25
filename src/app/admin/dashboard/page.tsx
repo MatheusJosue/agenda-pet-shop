@@ -23,7 +23,7 @@ export default async function AdminDashboardPage() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-white">Dashboard</h1>
-        <p className="text-purple-200/60 text-sm">Visão geral do sistema</p>
+        <p className="text-[#68797d] text-sm">Visão geral do sistema</p>
       </div>
 
       {/* Metric Cards */}
@@ -58,7 +58,7 @@ export default async function AdminDashboardPage() {
       <section>
         <GlassCard variant="default" className="p-6">
           <div className="flex items-center gap-2 mb-4">
-            <BarChart3 size={20} className="text-indigo-400" />
+            <BarChart3 size={20} className="text-[#006c73]" />
             <h2 className="text-lg font-semibold text-white">Agendamentos por Mês</h2>
           </div>
           <MonthlyAppointmentsChart data={monthlyAppointments} />

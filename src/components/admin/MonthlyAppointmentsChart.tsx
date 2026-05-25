@@ -14,7 +14,7 @@ export function MonthlyAppointmentsChart({ data }: MonthlyAppointmentsChartProps
         return (
           <div key={item.month} className="flex-1 flex flex-col items-center group">
             <div
-              className="w-full bg-gradient-to-t from-pink-500 to-purple-500 rounded-t-lg transition-all group-hover:opacity-80 min-h-[4px]"
+              className="w-full bg-gradient-to-t from-pink-500 to-[#006c73] rounded-t-lg transition-all group-hover:opacity-80 min-h-[4px]"
               style={{ height: `${height}%` }}
             />
             <span className="text-xs mt-2 text-gray-600 dark:text-gray-400 capitalize">{item.month}</span>

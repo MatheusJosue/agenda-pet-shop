@@ -25,9 +25,9 @@ export function AdminSidebar() {
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className="hidden md:fixed md:left-0 md:top-0 md:h-screen md:w-64 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-r border-purple-200/50 dark:border-purple-900/50 z-40">
+      <aside className="hidden md:fixed md:left-0 md:top-0 md:h-screen md:w-64 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-r border-[rgba(232,50,123,0.22)] dark:border-[rgba(232,50,123,0.22)] z-40">
         <div className="p-6">
-          <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+          <h1 className="text-xl font-bold bg-gradient-to-r from-[#e8327b] to-[#006c73] bg-clip-text text-transparent">
             Admin Panel
           </h1>
         </div>
@@ -42,8 +42,8 @@ export function AdminSidebar() {
                 className={cn(
                   'flex items-center gap-3 px-4 py-3 rounded-xl transition-all',
                   isActive
-                    ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg shadow-purple-500/30'
-                    : 'hover:bg-purple-100 dark:hover:bg-purple-900/30 text-gray-700 dark:text-gray-300'
+                    ? 'bg-gradient-to-r from-[#e8327b] to-[#bf185d] text-white shadow-lg shadow-[#e8327b]/30'
+                    : 'hover:bg-[#ffe0ec] hover:bg-[#ffe0ec] text-gray-700 dark:text-gray-300'
                 )}
               >
                 <Icon size={20} />
@@ -64,14 +64,14 @@ export function AdminSidebar() {
       </aside>
 
       {/* Mobile Header */}
-      <header className="md:hidden sticky top-0 z-30 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-b border-purple-200/50 dark:border-purple-900/50 px-4 py-3">
+      <header className="md:hidden sticky top-0 z-30 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-b border-[rgba(232,50,123,0.22)] dark:border-[rgba(232,50,123,0.22)] px-4 py-3">
         <div className="flex items-center justify-between">
-          <h1 className="text-lg font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+          <h1 className="text-lg font-bold bg-gradient-to-r from-[#e8327b] to-[#006c73] bg-clip-text text-transparent">
             Admin Panel
           </h1>
           <button
             onClick={() => setIsOpen(true)}
-            className="p-2 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/30"
+            className="p-2 rounded-lg hover:bg-[#ffe0ec] hover:bg-[#ffe0ec]"
           >
             <Menu size={24} />
           </button>
@@ -96,11 +96,11 @@ export function AdminSidebar() {
               className="fixed left-0 top-0 h-full w-72 bg-white dark:bg-gray-900 shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="p-6 flex items-center justify-between border-b border-purple-200/50 dark:border-purple-900/50">
+              <div className="p-6 flex items-center justify-between border-b border-[rgba(232,50,123,0.22)] dark:border-[rgba(232,50,123,0.22)]">
                 <h2 className="text-lg font-bold">Menu</h2>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="p-2 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/30"
+                  className="p-2 rounded-lg hover:bg-[#ffe0ec] hover:bg-[#ffe0ec]"
                 >
                   <X size={20} />
                 </button>
@@ -117,8 +117,8 @@ export function AdminSidebar() {
                       className={cn(
                         'flex items-center gap-3 px-4 py-3 rounded-xl transition-all',
                         isActive
-                          ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg shadow-purple-500/30'
-                          : 'hover:bg-purple-100 dark:hover:bg-purple-900/30 text-gray-700 dark:text-gray-300'
+                          ? 'bg-gradient-to-r from-[#e8327b] to-[#bf185d] text-white shadow-lg shadow-[#e8327b]/30'
+                          : 'hover:bg-[#ffe0ec] hover:bg-[#ffe0ec] text-gray-700 dark:text-gray-300'
                       )}
                     >
                       <Icon size={20} />

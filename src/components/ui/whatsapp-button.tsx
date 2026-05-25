@@ -1,5 +1,7 @@
+"use client"
+
 import { MessageCircle } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 interface WhatsAppButtonProps {
   phone: string
@@ -17,6 +19,22 @@ export function WhatsAppButton({
   showLabel = true
 }: WhatsAppButtonProps) {
   const [isHovered, setIsHovered] = useState(false)
+
+  useEffect(() => {
+    if (document.head.querySelector('style[data-whatsapp-animations]')) {
+      return
+    }
+
+    const styleElement = document.createElement('style')
+    styleElement.setAttribute('data-whatsapp-animations', 'true')
+    styleElement.textContent = `
+      @keyframes shimmer {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(200%); }
+      }
+    `
+    document.head.appendChild(styleElement)
+  }, [])
 
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation()
@@ -151,17 +169,4 @@ export function WhatsAppButton({
       <span className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-white/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-xl" />
     </button>
   )
-}
-
-// Add custom animations to global styles
-const styleElement = document.createElement('style')
-styleElement.textContent = `
-  @keyframes shimmer {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(200%); }
-  }
-`
-if (!document.head.querySelector('style[data-whatsapp-animations]')) {
-  styleElement.setAttribute('data-whatsapp-animations', 'true')
-  document.head.appendChild(styleElement)
 }

@@ -52,12 +52,12 @@ export default function NovoServicoPage() {
 
   return (
     <AppLayout companyName="Agenda Pet Shop" user={{}}>
-      <div className="min-h-dvh bg-[#120a21] relative flex flex-col overflow-hidden">
+      <div className="min-h-dvh bg-transparent relative flex flex-col overflow-hidden">
         {/* Premium animated background layers */}
         <div className="fixed inset-0 pointer-events-none overflow-hidden">
-          <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-[#f183ff]/10 rounded-full blur-[120px] animate-[float_8s_ease-in-out_infinite]" />
-          <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] bg-[#d946ef]/10 rounded-full blur-[120px] animate-[float_10s_ease-in-out_infinite_reverse]" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-[#8b5cf6]/5 rounded-full blur-[100px] animate-[pulse-glow_6s_ease-in-out_infinite]" />
+          <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-[#e8327b]/10 rounded-full blur-[120px] animate-[float_8s_ease-in-out_infinite]" />
+          <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] bg-[#bf185d]/10 rounded-full blur-[120px] animate-[float_10s_ease-in-out_infinite_reverse]" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-[#006c73]/5 rounded-full blur-[100px] animate-[pulse-glow_6s_ease-in-out_infinite]" />
           <div className="absolute inset-0 bg-[linear-gradient(rgba(241,131,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(241,131,255,0.02)_1px,transparent_1px)] bg-[size:80px_80px]" />
         </div>
 
@@ -75,8 +75,8 @@ export default function NovoServicoPage() {
                   </Button>
                 </Link>
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#f183ff]/20 to-[#d946ef]/20 flex items-center justify-center border border-[#f183ff]/20">
-                    <Scissors size={24} className="text-[#f183ff]" />
+                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#e8327b]/20 to-[#bf185d]/20 flex items-center justify-center border border-[#e8327b]/20">
+                    <Scissors size={24} className="text-[#e8327b]" />
                   </div>
                   <div>
                     <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-white">
@@ -90,10 +90,10 @@ export default function NovoServicoPage() {
 
             {/* Hero Welcome Card */}
             <div className="mb-6 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
-              <GlassCard variant="elevated" className="p-6 bg-gradient-to-r from-[#f183ff]/10 to-[#d946ef]/10 border-[#f183ff]/20">
+              <GlassCard variant="elevated" className="p-6 bg-gradient-to-r from-[#e8327b]/10 to-[#bf185d]/10 border-[#e8327b]/20">
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-[#f183ff]/20 flex items-center justify-center flex-shrink-0 border border-[#f183ff]/20">
-                    <Sparkles size={24} className="text-[#f183ff]" />
+                  <div className="w-12 h-12 rounded-xl bg-[#e8327b]/20 flex items-center justify-center flex-shrink-0 border border-[#e8327b]/20">
+                    <Sparkles size={24} className="text-[#e8327b]" />
                   </div>
                   <div className="flex-1">
                     <h3 className="font-semibold text-white mb-1">
@@ -122,8 +122,8 @@ export default function NovoServicoPage() {
                 {/* Name */}
                 <div className="animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '150ms' }}>
                   <label htmlFor="name" className="block text-white/80 text-sm font-semibold mb-2.5 flex items-center gap-2">
-                    <span className="w-7 h-7 rounded-xl bg-[#f183ff]/20 flex items-center justify-center">
-                      <Scissors size={14} className="text-[#f183ff]" />
+                    <span className="w-7 h-7 rounded-xl bg-[#e8327b]/20 flex items-center justify-center">
+                      <Scissors size={14} className="text-[#e8327b]" />
                     </span>
                     Nome do Serviço *
                   </label>
@@ -141,8 +141,8 @@ export default function NovoServicoPage() {
                 {/* Price */}
                 <div className="animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '200ms' }}>
                   <label htmlFor="price" className="block text-white/80 text-sm font-semibold mb-2.5 flex items-center gap-2">
-                    <span className="w-7 h-7 rounded-xl bg-[#d946ef]/20 flex items-center justify-center">
-                      <DollarSign size={14} className="text-[#d946ef]" />
+                    <span className="w-7 h-7 rounded-xl bg-[#bf185d]/20 flex items-center justify-center">
+                      <DollarSign size={14} className="text-[#bf185d]" />
                     </span>
                     Preço *
                   </label>
@@ -165,8 +165,8 @@ export default function NovoServicoPage() {
                 {/* Duration */}
                 <div className="animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: '250ms' }}>
                   <label htmlFor="duration_minutes" className="block text-white/80 text-sm font-semibold mb-2.5 flex items-center gap-2">
-                    <span className="w-7 h-7 rounded-xl bg-[#8b5cf6]/20 flex items-center justify-center">
-                      <Clock size={14} className="text-[#8b5cf6]" />
+                    <span className="w-7 h-7 rounded-xl bg-[#006c73]/20 flex items-center justify-center">
+                      <Clock size={14} className="text-[#006c73]" />
                     </span>
                     Duração (minutos)
                   </label>
@@ -198,7 +198,7 @@ export default function NovoServicoPage() {
                     variant="primary"
                     size="lg"
                     disabled={loading}
-                    className="flex-1 rounded-xl bg-gradient-to-r from-[#f183ff] to-[#d946ef] hover:from-[#f183ff]/90 hover:to-[#d946ef]/90 border-0 shadow-[0_0_20px_rgba(241,131,255,0.3)] hover:shadow-[0_0_30px_rgba(241,131,255,0.5)] transition-all duration-300"
+                    className="flex-1 rounded-xl bg-gradient-to-r from-[#e8327b] to-[#bf185d] hover:from-[#e8327b]/90 hover:to-[#bf185d]/90 border-0 shadow-[0_0_20px_rgba(241,131,255,0.3)] hover:shadow-[0_0_30px_rgba(241,131,255,0.5)] transition-all duration-300"
                   >
                     {loading ? 'Salvando...' : 'Salvar Serviço'}
                   </Button>

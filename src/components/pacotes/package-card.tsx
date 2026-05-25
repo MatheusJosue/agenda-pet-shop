@@ -24,10 +24,10 @@ export function PackageCard({ packageData, onChange }: PackageCardProps) {
           <p className="text-lg font-semibold text-white">
             {packageData.package_type.name}
           </p>
-          <p className="text-sm text-purple-200/60 mt-1">
+          <p className="text-sm text-[#68797d] mt-1">
             {remainingCredits} de {totalCredits} créditos
           </p>
-          <p className="text-xs text-purple-200/40 mt-1">
+          <p className="text-xs text-[#006c73]/40 mt-1">
             Vence em {formatDate(packageData.expires_at)}
           </p>
         </div>
