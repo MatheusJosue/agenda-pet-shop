@@ -93,11 +93,11 @@ export const HAIR_TYPE_LABELS: Record<HairType, string> = {
 
 // Size colors for UI badges
 export const SIZE_COLORS: Record<SizeCategory, string> = {
-  tiny: 'bg-green-500/20 text-green-200',
-  small: 'bg-lime-500/20 text-lime-200',
-  medium: 'bg-yellow-500/20 text-yellow-200',
-  large: 'bg-orange-500/20 text-orange-200',
-  giant: 'bg-red-500/20 text-red-200'
+  tiny: 'bg-green-500/20 text-black-200',
+  small: 'bg-lime-500/20 text-black-200',
+  medium: 'bg-yellow-500/20 text-black-200',
+  large: 'bg-orange-500/20 text-black-200',
+  giant: 'bg-red-500/20 text-black-200'
 } as const
 
 // Size categories array for selects

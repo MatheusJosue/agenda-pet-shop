@@ -20,20 +20,20 @@ interface ClientPetsSectionProps {
 }
 
 const SIZE_OPTIONS: Array<{ value: SizeCategory; label: string }> = [
-  { value: 'tiny', label: 'Tiny' },
-  { value: 'small', label: 'Pequeno' },
-  { value: 'medium', label: 'Médio' },
-  { value: 'large', label: 'Grande' },
-  { value: 'giant', label: 'Gigante' }
-]
+  { value: "tiny", label: "Tiny" },
+  { value: "small", label: "Pequeno" },
+  { value: "medium", label: "Médio" },
+  { value: "large", label: "Grande" },
+  { value: "giant", label: "Gigante" },
+];
 
 const PET_EMOJIS: Record<SizeCategory, string> = {
-  tiny: '🐭',
-  small: '🐱',
-  medium: '🐕',
-  large: '🦮',
-  giant: '🐕‍🦺'
-}
+  tiny: "🐭",
+  small: "🐱",
+  medium: "🐕",
+  large: "🦮",
+  giant: "🐕‍🦺",
+};
 
 export function ClientPetsSection({ clientId }: ClientPetsSectionProps) {
   const [pets, setPets] = useState<PetWithClient[]>([]);
@@ -88,7 +88,13 @@ export function ClientPetsSection({ clientId }: ClientPetsSectionProps) {
       } else {
         await loadPets();
         setShowAddForm(false);
-        setFormData({ name: "", breed: "", size: "medium", hairType: "PC", notes: "" });
+        setFormData({
+          name: "",
+          breed: "",
+          size: "medium",
+          hairType: "PC",
+          notes: "",
+        });
       }
     } catch (err) {
       setError("Erro ao criar pet");
@@ -129,7 +135,9 @@ export function ClientPetsSection({ clientId }: ClientPetsSectionProps) {
           </div>
           <div>
             <h2 className="text-lg font-semibold text-white">Pets</h2>
-            <p className="text-white/50 text-sm">{pets.length} cadastrado{pets.length !== 1 ? 's' : ''}</p>
+            <p className="text-white/50 text-sm">
+              {pets.length} cadastrado{pets.length !== 1 ? "s" : ""}
+            </p>
           </div>
         </div>
         <Button
@@ -163,7 +171,10 @@ export function ClientPetsSection({ clientId }: ClientPetsSectionProps) {
 
       {/* Add Form */}
       {showAddForm && (
-        <GlassCard variant="elevated" className="p-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+        <GlassCard
+          variant="elevated"
+          className="p-6 animate-in fade-in slide-in-from-bottom-2 duration-300"
+        >
           <h3 className="text-lg font-semibold text-white mb-6 flex items-center gap-2">
             <span className="text-2xl">🐾</span>
             Novo Pet
@@ -208,14 +219,18 @@ export function ClientPetsSection({ clientId }: ClientPetsSectionProps) {
                   <button
                     key={option.value}
                     type="button"
-                    onClick={() => setFormData({ ...formData, size: option.value })}
+                    onClick={() =>
+                      setFormData({ ...formData, size: option.value })
+                    }
                     className={`px-2 py-2.5 rounded-xl border transition-all text-xs font-medium ${
                       formData.size === option.value
                         ? "bg-gradient-to-br from-[#e8327b] to-[#bf185d] border-[#e8327b] text-white shadow-lg shadow-[#e8327b]/20"
                         : "bg-white/5 border-white/10 text-white/70 hover:border-white/30 hover:bg-white/10"
                     }`}
                   >
-                    <span className="block text-lg mb-1">{PET_EMOJIS[option.value]}</span>
+                    <span className="block text-lg mb-1">
+                      {PET_EMOJIS[option.value]}
+                    </span>
                     {option.label}
                   </button>
                 ))}
@@ -227,20 +242,24 @@ export function ClientPetsSection({ clientId }: ClientPetsSectionProps) {
                 Tipo de Pelo *
               </label>
               <div className="grid grid-cols-2 gap-2">
-                {(Object.entries(HAIR_TYPE_LABELS) as [HairType, string][]).map(([value, label]) => (
-                  <button
-                    key={value}
-                    type="button"
-                    onClick={() => setFormData({ ...formData, hairType: value })}
-                    className={`px-4 py-3 rounded-xl border transition-all text-sm font-medium ${
-                      formData.hairType === value
-                        ? "bg-gradient-to-br from-[#e8327b] to-[#bf185d] border-[#e8327b] text-white shadow-lg shadow-[#e8327b]/20"
-                        : "bg-white/5 border-white/10 text-white/70 hover:border-white/30 hover:bg-white/10"
-                    }`}
-                  >
-                    {label}
-                  </button>
-                ))}
+                {(Object.entries(HAIR_TYPE_LABELS) as [HairType, string][]).map(
+                  ([value, label]) => (
+                    <button
+                      key={value}
+                      type="button"
+                      onClick={() =>
+                        setFormData({ ...formData, hairType: value })
+                      }
+                      className={`px-4 py-3 rounded-xl border transition-all text-sm font-medium ${
+                        formData.hairType === value
+                          ? "bg-gradient-to-br from-[#e8327b] to-[#bf185d] border-[#e8327b] text-white shadow-lg shadow-[#e8327b]/20"
+                          : "bg-white/5 border-white/10 text-white/70 hover:border-white/30 hover:bg-white/10"
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ),
+                )}
               </div>
             </div>
 
@@ -343,7 +362,7 @@ export function ClientPetsSection({ clientId }: ClientPetsSectionProps) {
                 >
                   <div className="flex items-center gap-3 mb-2">
                     <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#e8327b]/20 to-[#bf185d]/20 flex items-center justify-center text-2xl border-2 border-[#e8327b]/20 shadow-lg shadow-[#e8327b]/10">
-                      {PET_EMOJIS[pet.size] || '🐾'}
+                      {PET_EMOJIS[pet.size] || "🐾"}
                     </div>
                     <div className="flex-1">
                       <h3 className="text-lg font-semibold text-white group-hover:text-[#e8327b] transition-colors">
@@ -359,7 +378,9 @@ export function ClientPetsSection({ clientId }: ClientPetsSectionProps) {
                   {pet.breed && (
                     <p className="text-white/60 text-sm flex items-center gap-1.5 ml-[4.5rem]">
                       <span className="text-base">🐕</span>
-                      <span>Raça: <span className="text-white/80">{pet.breed}</span></span>
+                      <span>
+                        Raça: <span className="text-white/80">{pet.breed}</span>
+                      </span>
                     </p>
                   )}
                   {pet.notes && (
@@ -401,7 +422,11 @@ export function ClientPetsSection({ clientId }: ClientPetsSectionProps) {
         onOpenChange={setShowDeleteConfirm}
         onConfirm={confirmDeletePet}
         title="Excluir pet?"
-        description={petNameToDelete ? `Você tem certeza que deseja excluir ${petNameToDelete}? Esta ação não pode ser desfeita.` : 'Esta ação não pode ser desfeita!'}
+        description={
+          petNameToDelete
+            ? `Você tem certeza que deseja excluir ${petNameToDelete}? Esta ação não pode ser desfeita.`
+            : "Esta ação não pode ser desfeita!"
+        }
         confirmText="Excluir"
         cancelText="Cancelar"
         variant="danger"

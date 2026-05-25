@@ -405,11 +405,6 @@ export default function ClienteDetailPage() {
                     <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">
                       {client.name}
                     </h2>
-                    <div className="flex items-center justify-center gap-2 flex-wrap">
-                      <span className="px-3 py-1.5 rounded-full bg-[#e8327b]/20 border border-[#e8327b]/30 text-[#e8327b] text-xs font-semibold uppercase tracking-wide">
-                        Cliente Premium
-                      </span>
-                    </div>
                   </>
                 )}
               </div>
