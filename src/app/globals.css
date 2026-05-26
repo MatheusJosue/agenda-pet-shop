@@ -85,6 +85,20 @@ body::after {
   z-index: -1;
 }
 
+@media (max-width: 640px) {
+  body {
+    background:
+      linear-gradient(135deg, rgba(255, 255, 255, 0.94) 0%, rgba(255, 241, 246, 0.95) 42%, rgba(255, 224, 236, 0.92) 100%),
+      radial-gradient(circle at 12px 12px, rgba(232, 50, 123, 0.035) 1.2px, transparent 1.6px);
+    background-size: auto, 40px 40px;
+  }
+
+  body::before,
+  body::after {
+    content: none;
+  }
+}
+
 * {
   scrollbar-width: thin;
   scrollbar-color: rgba(232, 50, 123, 0.48) transparent;
