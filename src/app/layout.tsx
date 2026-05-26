@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Outfit, DM_Sans, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 
@@ -21,11 +21,25 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
+  applicationName: "Agenda Pet Shop",
   title: "Agenda Pet Shop",
+  appleWebApp: {
+    capable: true,
+    title: "Agenda Pet Shop",
+    statusBarStyle: "default",
+  },
+  formatDetection: {
+    telephone: false,
+  },
   description: "Sistema de gestão para pet shops",
   icons: {
     icon: "/favicon.svg",
+    apple: "/favicon.svg",
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#e8327b",
 };
 
 export default function RootLayout({
