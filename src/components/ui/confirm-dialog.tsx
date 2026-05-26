@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, type ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
+import { createPortal } from 'react-dom'
 import { AlertTriangle, Trash2, Loader2, Edit2, RefreshCw } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -36,6 +37,12 @@ export function ConfirmDialog({
   icon = 'alert',
   loading = false,
 }: ConfirmDialogProps) {
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
   // Handle escape key
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -47,7 +54,7 @@ export function ConfirmDialog({
     return () => window.removeEventListener('keydown', handleEscape)
   }, [open, onOpenChange])
 
-  if (!open) return null
+  if (!open || !mounted) return null
 
   const handleConfirm = async () => {
     await onConfirm()
@@ -55,9 +62,9 @@ export function ConfirmDialog({
 
   const Icon = ICONS[icon]
 
-  return (
+  return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 z-[1000] flex items-center justify-center p-4"
       onClick={() => !loading && onOpenChange(false)}
     >
       {/* Overlay */}
@@ -158,6 +165,7 @@ export function ConfirmDialog({
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }

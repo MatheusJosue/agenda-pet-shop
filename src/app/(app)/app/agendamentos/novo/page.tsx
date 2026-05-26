@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createAppointment } from "@/lib/actions/appointments";
@@ -107,6 +107,16 @@ export default function NovoAgendamentoPage() {
     }
   }, [formData.clientId]);
 
+  const loadActivePackage = useCallback(async () => {
+    if (!formData.petId) {
+      setActivePackage(null);
+      return;
+    }
+
+    const result = await getValidPetPackage(formData.petId);
+    setActivePackage(result.data || null);
+  }, [formData.petId]);
+
   useEffect(() => {
     if (!formData.petId) {
       setSelectedServices([]);
@@ -115,10 +125,8 @@ export default function NovoAgendamentoPage() {
       return;
     }
 
-    getValidPetPackage(formData.petId).then((result) => {
-      setActivePackage(result.data || null);
-    });
-  }, [formData.petId]);
+    void loadActivePackage();
+  }, [formData.petId, loadActivePackage]);
 
   const servicesTotalPrice = selectedServices.reduce(
     (sum, s) => sum + s.price,
@@ -200,6 +208,12 @@ export default function NovoAgendamentoPage() {
 
     if (billingType === "pacote" && !activePackage) {
       setError("Este pet não possui pacote ativo para usar nesta cobrança");
+      setLoading(false);
+      return;
+    }
+
+    if (billingType === "pacote" && activePackage?.credits_remaining === 0) {
+      setError("Este pacote estÃ¡ sem crÃ©ditos. Renove o pacote antes de agendar.");
       setLoading(false);
       return;
     }
@@ -389,6 +403,7 @@ export default function NovoAgendamentoPage() {
                             <PetPackageCard
                               petId={selectedPet.id}
                               petName={selectedPet.name}
+                              onPackageChange={loadActivePackage}
                             />
                           </div>
                         );
@@ -620,14 +635,17 @@ export default function NovoAgendamentoPage() {
                           min="0"
                           step="0.01"
                           value={
-                            manualTotalPrice ??
-                            (totalPrice > 0 ? totalPrice.toFixed(2) : "")
+                            billingType === "pacote"
+                              ? "0.00"
+                              : manualTotalPrice ??
+                                (totalPrice > 0 ? totalPrice.toFixed(2) : "")
                           }
                           onChange={(event) =>
                             setManualTotalPrice(event.target.value)
                           }
                           placeholder="0.00"
                           required
+                          disabled={billingType === "pacote"}
                           className="w-full pl-12 text-lg font-semibold"
                         />
                       </div>

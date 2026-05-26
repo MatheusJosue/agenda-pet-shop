@@ -1,8 +1,20 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { AlertCircle, Calendar, CheckCircle, Edit, Package, XCircle } from "lucide-react";
-import { getPetPackageStatus, updatePetPackage } from "@/lib/actions/packages";
+import {
+  AlertCircle,
+  Calendar,
+  CheckCircle,
+  Edit,
+  Package,
+  RefreshCw,
+  XCircle,
+} from "lucide-react";
+import {
+  getPetPackageStatus,
+  renewPackage,
+  updatePetPackage,
+} from "@/lib/actions/packages";
 import { GlassCard } from "@/components/ui/glass-card";
 import { Input } from "@/components/ui/input";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
@@ -10,6 +22,7 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 interface PetPackageCardProps {
   petId: string;
   petName: string;
+  onPackageChange?: () => void | Promise<void>;
 }
 
 interface PackageStatus {
@@ -28,11 +41,16 @@ interface PackageStatus {
   daysUntilExpiry?: number;
 }
 
-export function PetPackageCard({ petId, petName }: PetPackageCardProps) {
+export function PetPackageCard({
+  petId,
+  petName,
+  onPackageChange,
+}: PetPackageCardProps) {
   const [status, setStatus] = useState<PackageStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showExpireConfirm, setShowExpireConfirm] = useState(false);
+  const [showRenewConfirm, setShowRenewConfirm] = useState(false);
   const [saving, setSaving] = useState(false);
   const [credits, setCredits] = useState<number>(0);
 
@@ -60,6 +78,7 @@ export function PetPackageCard({ petId, petName }: PetPackageCardProps) {
 
     if (!result.error) {
       await loadPackageStatus();
+      await onPackageChange?.();
       setShowEditModal(false);
     }
     setSaving(false);
@@ -75,7 +94,22 @@ export function PetPackageCard({ petId, petName }: PetPackageCardProps) {
 
     if (!result.error) {
       await loadPackageStatus();
+      await onPackageChange?.();
       setShowExpireConfirm(false);
+    }
+    setSaving(false);
+  };
+
+  const handleRenewPackage = async () => {
+    if (!status?.package) return;
+
+    setSaving(true);
+    const result = await renewPackage(status.package.id);
+
+    if (!result.error) {
+      await loadPackageStatus();
+      await onPackageChange?.();
+      setShowRenewConfirm(false);
     }
     setSaving(false);
   };
@@ -121,13 +155,20 @@ export function PetPackageCard({ petId, petName }: PetPackageCardProps) {
   } = status;
   const statusConfig = getStatusConfig(pkgStatus);
   const creditsPercentage = totalCredits > 0 ? (creditsRemaining / totalCredits) * 100 : 0;
+  const canRenewPackage = pkgStatus === "exhausted" || pkgStatus === "expired";
+  const expiryText =
+    daysUntilExpiry > 0
+      ? `Vence em ${daysUntilExpiry} dias`
+      : daysUntilExpiry === 0
+        ? "Vence hoje"
+        : `Venceu hÃ¡ ${Math.abs(daysUntilExpiry)} dias`;
 
   return (
     <>
       <GlassCard className="border-[rgba(232,50,123,0.34)] bg-white/90 p-4">
         <div className="flex items-start gap-3">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#dffbea]">
-            <Package size={22} className="text-[#18b96f]" />
+          <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full ${statusConfig.iconWrap}`}>
+            <Package size={22} className={statusConfig.iconColor} />
           </div>
 
           <div className="min-w-0 flex-1">
@@ -144,7 +185,7 @@ export function PetPackageCard({ petId, petName }: PetPackageCardProps) {
             <div className="grid grid-cols-2 gap-2 text-xs font-semibold text-[#68797d]">
               <span className="flex items-center gap-1.5">
                 <Calendar size={13} className="text-[#68797d]" />
-                Vence em {daysUntilExpiry > 0 ? `${daysUntilExpiry} dias` : "hoje"}
+                {expiryText}
               </span>
               <span>
                 {creditsRemaining} de {totalCredits} créditos
@@ -158,6 +199,18 @@ export function PetPackageCard({ petId, petName }: PetPackageCardProps) {
                   style={{ width: `${Math.max(creditsPercentage, 0)}%` }}
                 />
               </div>
+            )}
+
+            {canRenewPackage && (
+              <button
+                type="button"
+                onClick={() => setShowRenewConfirm(true)}
+                disabled={saving}
+                className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#006c73] px-3 py-2.5 text-sm font-extrabold text-white transition-colors hover:bg-[#078f96] disabled:opacity-60 sm:w-auto"
+              >
+                <RefreshCw size={15} />
+                Renovar pacote
+              </button>
             )}
           </div>
 
@@ -223,6 +276,19 @@ export function PetPackageCard({ petId, petName }: PetPackageCardProps) {
       />
 
       <ConfirmDialog
+        open={showRenewConfirm}
+        onOpenChange={setShowRenewConfirm}
+        onConfirm={handleRenewPackage}
+        title="Renovar pacote?"
+        description={`Os créditos serão reiniciados para ${totalCredits} e uma nova data de expiração será calculada a partir de hoje.`}
+        confirmText="Renovar"
+        cancelText="Cancelar"
+        variant="default"
+        icon="refresh"
+        loading={saving}
+      />
+
+      <ConfirmDialog
         open={showExpireConfirm}
         onOpenChange={setShowExpireConfirm}
         onConfirm={handleMarkExpired}
@@ -245,6 +311,8 @@ function getStatusConfig(status: "active" | "exhausted" | "expired") {
       icon: <XCircle size={15} />,
       badge: "border-red-200 bg-red-50 text-red-600",
       bar: "bg-red-500",
+      iconWrap: "bg-red-50",
+      iconColor: "text-red-600",
     };
   }
 
@@ -254,6 +322,8 @@ function getStatusConfig(status: "active" | "exhausted" | "expired") {
       icon: <AlertCircle size={15} />,
       badge: "border-amber-200 bg-amber-50 text-amber-600",
       bar: "bg-amber-500",
+      iconWrap: "bg-amber-50",
+      iconColor: "text-amber-600",
     };
   }
 
@@ -262,5 +332,7 @@ function getStatusConfig(status: "active" | "exhausted" | "expired") {
     icon: <CheckCircle size={15} />,
     badge: "border-[#91e8bf] bg-[#dffbea] text-[#0b8b58]",
     bar: "bg-[#e8327b]",
+    iconWrap: "bg-[#dffbea]",
+    iconColor: "text-[#18b96f]",
   };
 }

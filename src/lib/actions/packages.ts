@@ -624,20 +624,43 @@ type PackageStatusResult = {
 export async function getPetPackageStatus(petId: string): Promise<PackageStatusResult> {
   const result = await getValidPetPackage(petId)
 
-  if (result.error || !result.data) {
+  if (result.data) {
+    const pkg = result.data
+    const today = new Date()
+    const expiresAt = new Date(pkg.expires_at)
+    const daysUntilExpiry = Math.ceil((expiresAt.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
+
+    const status: 'active' | 'exhausted' | 'expired' =
+      pkg.credits_remaining === 0 ? 'exhausted' : daysUntilExpiry < 0 ? 'expired' : 'active'
+
+    return {
+      hasActivePackage: true,
+      package: pkg,
+      status,
+      creditsRemaining: pkg.credits_remaining,
+      totalCredits: pkg.package_type.credits,
+      expiresAt: pkg.expires_at,
+      daysUntilExpiry
+    }
+  }
+
+  const packagesResult = await getPetPackages(petId)
+  const latestPackage = packagesResult.data[0]
+
+  if (!latestPackage) {
     return {
       hasActivePackage: false,
       package: null
     }
   }
 
-  const pkg = result.data
+  const pkg = latestPackage
   const today = new Date()
   const expiresAt = new Date(pkg.expires_at)
   const daysUntilExpiry = Math.ceil((expiresAt.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
 
   const status: 'active' | 'exhausted' | 'expired' =
-    pkg.credits_remaining === 0 ? 'exhausted' : daysUntilExpiry < 0 ? 'expired' : 'active'
+    pkg.credits_remaining === 0 ? 'exhausted' : 'expired'
 
   return {
     hasActivePackage: true,
