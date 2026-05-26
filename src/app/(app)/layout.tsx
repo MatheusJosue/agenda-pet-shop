@@ -19,9 +19,7 @@ export default async function AppLayout({
   return (
     <>
       {companyName && <ImpersonationBanner companyName={companyName} />}
-      <div className={companyName ? 'pt-12' : ''}>
-        {children}
-      </div>
+      {children}
     </>
   )
 }

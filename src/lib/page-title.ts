@@ -31,3 +31,12 @@ export function getAppPageTitle(pathname: string): string {
 
   return "Agenda";
 }
+
+export function getAdminPageTitle(pathname: string): string {
+  if (pathname.startsWith("/admin/empresas/")) return "Detalhes da Empresa";
+  if (pathname.startsWith("/admin/empresas")) return "Empresas";
+  if (pathname.startsWith("/admin/convites")) return "Convites";
+  if (pathname.startsWith("/admin/dashboard")) return "Dashboard";
+
+  return "Admin";
+}

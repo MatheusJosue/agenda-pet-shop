@@ -30,14 +30,15 @@ export function ImpersonateButton({ companyId, companyName }: ImpersonateButtonP
 
   return (
     <button
+      type="button"
       onClick={startImpersonation}
       disabled={loading}
-      className="px-4 py-2 rounded-xl bg-[#ffe0ec] text-[#bf185d] hover:bg-[#ffb7d2] font-medium flex items-center gap-2 transition-all disabled:opacity-50"
+      className="flex h-10 w-full items-center justify-center gap-2 rounded-2xl bg-[#ffe0ec] px-4 text-sm font-extrabold text-[#bf185d] transition-all hover:bg-[#ffd0e2] disabled:opacity-50 sm:w-auto"
     >
       <Eye size={18} />
       <>
         {loading && (
-          <div className="w-4 h-4 border-2 border-[#e8327b] border-t-transparent rounded-full animate-spin" />
+          <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#e8327b] border-t-transparent" />
         )}
         {!loading && 'Ver como esta empresa'}
       </>

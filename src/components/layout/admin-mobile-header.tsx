@@ -1,67 +1,71 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { Menu, LogOut, LayoutDashboard } from "lucide-react";
 import { useState } from "react";
+import { Menu, ShieldCheck } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { getAdminPageTitle } from "@/lib/page-title";
 import { AdminSidebar } from "./admin-sidebar";
-import { logout } from "@/lib/actions/auth";
+import { cn } from "@/lib/utils";
 
 export function AdminMobileHeader() {
-  const router = useRouter();
   const [drawerOpen, setDrawerOpen] = useState(false);
-
-  async function handleLogout() {
-    await logout();
-    router.push("/login");
-  }
+  const pathname = usePathname();
+  const pageTitle = getAdminPageTitle(pathname);
 
   return (
     <>
-      {/* Header */}
-      <header className="xl:hidden sticky top-0 z-40 bg-gradient-to-br from-[#fff9fb] via-[#fff1f6] to-[#ffe0ec] backdrop-blur-md border-b border-white/10 px-4 py-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setDrawerOpen(true)}
-              className="w-10 h-10 flex items-center justify-center rounded-xl text-[#006c73] hover:text-white hover:bg-white/10 transition-colors"
-            >
-              <Menu size={24} />
-            </button>
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#e8327b] to-[#006c73] flex items-center justify-center">
-                <LayoutDashboard size={18} className="text-white" />
+      <header className="flex xl:hidden sticky top-0 z-30 w-full">
+        <div className="w-full px-3 pt-2">
+          <div className="rounded-2xl border border-[rgba(232,50,123,0.22)] bg-[#fff9fb]/94 shadow-[0_8px_24px_rgba(33,54,58,0.08)] backdrop-blur-2xl">
+            <div className="flex items-center justify-between gap-3 px-3 py-2.5">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setDrawerOpen(true)}
+                className="flex-shrink-0 p-2 text-[#006c73] hover:bg-[#ffe0ec]"
+                aria-label="Abrir menu"
+              >
+                <Menu size={24} />
+              </Button>
+
+              <div className="flex min-w-0 flex-1 items-center justify-center gap-2">
+                <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#ffe0ec]">
+                  <ShieldCheck size={17} className="text-[#e8327b]" />
+                </span>
+                <h3 className="min-w-0 truncate text-xs font-extrabold text-[#21363a] sm:text-sm">
+                  {pageTitle}
+                </h3>
               </div>
-              <span className="text-lg font-bold text-white">Admin Panel</span>
+
+              <div className="w-9 flex-shrink-0" />
             </div>
           </div>
-          <button
-            onClick={handleLogout}
-            className="w-10 h-10 flex items-center justify-center rounded-xl text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors"
-          >
-            <LogOut size={20} />
-          </button>
         </div>
       </header>
 
-      {/* Mobile Drawer Overlay */}
       {drawerOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-50 xl:hidden"
+        <button
+          type="button"
+          className="fixed inset-0 z-40 bg-[#21363a]/35 backdrop-blur-sm animate-in fade-in duration-300 xl:hidden"
+          aria-label="Fechar menu"
           onClick={() => setDrawerOpen(false)}
         />
       )}
 
-      {/* Mobile Drawer */}
       <div
         className={cn(
-          "fixed left-0 top-0 bottom-0 z-50 xl:hidden transition-transform duration-300",
-          drawerOpen ? "translate-x-0" : "-translate-x-full"
+          "fixed left-0 top-0 z-50 h-full w-[86%] max-w-sm transition-transform duration-300 ease-out xl:hidden",
+          drawerOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
-        <AdminSidebar />
+        <AdminSidebar
+          mobile
+          embedded
+          onClose={() => setDrawerOpen(false)}
+          onNavigate={() => setDrawerOpen(false)}
+        />
       </div>
     </>
   );
 }
-
-import { cn } from "@/lib/utils";

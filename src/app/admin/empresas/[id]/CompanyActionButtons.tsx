@@ -62,11 +62,12 @@ export function CompanyActionButtons({ company }: CompanyActionButtonsProps) {
     <>
       <div className="flex items-center gap-2">
         <button
+          type="button"
           className={cn(
-            'px-4 py-2 rounded-xl font-medium flex items-center gap-2 transition-all',
+            'flex h-10 w-full items-center justify-center gap-2 rounded-2xl px-4 text-sm font-extrabold transition-all sm:w-auto',
             company.active
-              ? 'bg-red-500/20 text-red-300 hover:bg-red-500/30'
-              : 'bg-green-500/20 text-green-300 hover:bg-green-500/30'
+              ? 'bg-red-50 text-red-700 hover:bg-red-100'
+              : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
           )}
           onClick={handleToggleStatus}
           disabled={toggling}

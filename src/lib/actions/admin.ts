@@ -11,27 +11,78 @@ import { updateCompanySchema } from '@/lib/validation/admin'
  */
 export async function getAdminDashboardStats(): Promise<AdminActionResponse<AdminDashboardStats>> {
   try {
-    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
+    const now = new Date()
+    const today = now.toISOString().split('T')[0]
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0]
 
-    const [companiesResult, activeCompaniesResult, clientsResult] = await Promise.all([
+    const [
+      companiesResult,
+      activeCompaniesResult,
+      clientsResult,
+      petsResult,
+      usersResult,
+      appointmentsMonthResult,
+      appointmentsTodayResult,
+      invitesResult,
+      recentCompaniesResult,
+    ] = await Promise.all([
       supabaseAdmin.from('companies').select('id', { count: 'exact', head: true }),
       supabaseAdmin.from('companies').select('id', { count: 'exact', head: true }).eq('active', true),
-      supabaseAdmin.from('clients').select('id', { count: 'exact', head: true })
+      supabaseAdmin.from('clients').select('id', { count: 'exact', head: true }),
+      supabaseAdmin.from('pets').select('id', { count: 'exact', head: true }),
+      supabaseAdmin.from('users').select('id', { count: 'exact', head: true }),
+      supabaseAdmin
+        .from('appointments')
+        .select('date, status, price, total_price')
+        .gte('date', monthStart),
+      supabaseAdmin
+        .from('appointments')
+        .select('id', { count: 'exact', head: true })
+        .eq('date', today),
+      supabaseAdmin
+        .from('invites')
+        .select('expires_at, accepted_at'),
+      supabaseAdmin
+        .from('companies')
+        .select('id, name, email, active, created_at')
+        .order('created_at', { ascending: false })
+        .limit(5),
     ])
 
     const companiesCount = companiesResult.count || 0
     const activeCompanies = activeCompaniesResult.count || 0
-    // Revenue = active companies × R$ 50 per month
-    const revenue = activeCompanies * 50
+    const appointmentsThisMonth = appointmentsMonthResult.data || []
+    const revenue = appointmentsThisMonth
+      .filter((appointment) => appointment.status === 'completed')
+      .reduce((sum, appointment) => {
+        const price = Number(appointment.total_price ?? appointment.price ?? 0)
+        return sum + price
+      }, 0)
     const clientsCount = clientsResult.count || 0
+    const pendingInvites = invitesResult.data?.filter((invite) =>
+      !invite.accepted_at && new Date(invite.expires_at) >= now
+    ).length || 0
+    const expiredInvites = invitesResult.data?.filter((invite) =>
+      !invite.accepted_at && new Date(invite.expires_at) < now
+    ).length || 0
 
     return {
       data: {
         companiesCount,
         revenue,
         activeCompanies,
+        inactiveCompanies: Math.max(companiesCount - activeCompanies, 0),
         clientsCount,
-        monthlyAppointments: await getMonthlyAppointments()
+        petsCount: petsResult.count || 0,
+        usersCount: usersResult.count || 0,
+        appointmentsToday: appointmentsTodayResult.count || 0,
+        appointmentsThisMonth: appointmentsThisMonth.length,
+        completedAppointmentsThisMonth: appointmentsThisMonth.filter((appointment) => appointment.status === 'completed').length,
+        cancelledAppointmentsThisMonth: appointmentsThisMonth.filter((appointment) => appointment.status === 'cancelled').length,
+        pendingInvites,
+        expiredInvites,
+        monthlyAppointments: await getMonthlyAppointments(),
+        recentCompanies: recentCompaniesResult.data || [],
       }
     }
   } catch (error) {
@@ -50,8 +101,8 @@ async function getMonthlyAppointments(): Promise<MonthlyAppointment[]> {
 
   for (let i = 5; i >= 0; i--) {
     const date = new Date(now.getFullYear(), now.getMonth() - i, 1)
-    const monthStart = new Date(date.getFullYear(), date.getMonth(), 1).toISOString()
-    const monthEnd = new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59).toISOString()
+    const monthStart = new Date(date.getFullYear(), date.getMonth(), 1).toISOString().split('T')[0]
+    const monthEnd = new Date(date.getFullYear(), date.getMonth() + 1, 0).toISOString().split('T')[0]
 
     const { count } = await supabaseAdmin
       .from('appointments')

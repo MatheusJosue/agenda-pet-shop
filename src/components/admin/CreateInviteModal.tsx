@@ -2,8 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Ticket, Plus, X } from 'lucide-react'
-import { GlassCard } from '@/components/ui/glass-card'
+import { Building, Plus, Ticket, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Select } from '@/components/ui/select'
 import { createInvite } from '@/lib/actions/invites'
@@ -27,8 +26,8 @@ export function CreateInviteModal({ companies, onClose }: CreateInviteModalProps
     expiresInDays: '365'
   })
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault()
     setLoading(true)
 
     const data = new FormData()
@@ -43,7 +42,6 @@ export function CreateInviteModal({ companies, onClose }: CreateInviteModalProps
     data.append('createNewCompany', createNewCompany.toString())
 
     const result = await createInvite(data)
-
     setLoading(false)
 
     if (result.error) {
@@ -56,70 +54,82 @@ export function CreateInviteModal({ companies, onClose }: CreateInviteModalProps
   }
 
   const roleOptions = [
-    { value: 'company_admin', label: 'Company Admin' },
-    { value: 'company_user', label: 'Company User' }
+    { value: 'company_admin', label: 'Admin empresa' },
+    { value: 'company_user', label: 'Usuario empresa' }
   ]
 
-  const companyOptions = companies.map(c => ({
-    value: c.id,
-    label: `${c.name} (${c.email})`
+  const companyOptions = companies.map((company) => ({
+    value: company.id,
+    label: `${company.name} (${company.email})`
   }))
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <GlassCard className="w-full max-w-md">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-white flex items-center gap-2">
-            <Ticket size={20} className="text-[#e8327b]" />
-            Novo Convite
-          </h2>
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-[#21363a]/40 p-3 backdrop-blur-sm sm:items-center sm:p-4">
+      <div className="max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-3xl border border-[rgba(232,50,123,0.22)] bg-[#fff9fb] p-5 shadow-2xl">
+        <div className="mb-6 flex items-start justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#ffe0ec] text-[#bf185d]">
+              <Ticket size={21} />
+            </span>
+            <div>
+              <h2 className="text-xl font-extrabold text-[#21363a]">
+                Novo convite
+              </h2>
+              <p className="text-sm font-semibold text-[#68797d]">
+                Libere acesso para uma empresa.
+              </p>
+            </div>
+          </div>
           <button
+            type="button"
             onClick={onClose}
-            className="p-2 rounded-lg hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
+            className="rounded-xl p-2 text-[#006c73] transition-colors hover:bg-[#ffe0ec] hover:text-[#bf185d]"
+            aria-label="Fechar"
           >
             <X size={20} />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Create new company toggle */}
-          <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                checked={createNewCompany}
-                onChange={(e) => setCreateNewCompany(e.target.checked)}
-                className="sr-only peer"
-              />
-              <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#e8327b]"></div>
-              <span className="ml-3 text-sm font-medium text-gray-300">Criar nova empresa</span>
-            </label>
-          </div>
+          <label className="flex cursor-pointer items-center justify-between gap-4 rounded-2xl border border-[rgba(232,50,123,0.18)] bg-white/80 p-4">
+            <span className="flex items-center gap-3">
+              <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#dff7f4] text-[#006c73]">
+                <Building size={19} />
+              </span>
+              <span>
+                <span className="block text-sm font-extrabold text-[#21363a]">
+                  Criar nova empresa
+                </span>
+                <span className="block text-xs font-semibold text-[#68797d]">
+                  Use quando a conta ainda nao existe.
+                </span>
+              </span>
+            </span>
+            <input
+              type="checkbox"
+              checked={createNewCompany}
+              onChange={(event) => setCreateNewCompany(event.target.checked)}
+              className="h-5 w-5 accent-[#e8327b]"
+            />
+          </label>
 
           {createNewCompany ? (
             <div className="space-y-4">
-              <div>
-                <label className="block text-[#006c73] text-sm font-medium mb-2">Nome da Empresa *</label>
-                <input
-                  value={formData.newCompanyName}
-                  onChange={(e) => setFormData({ ...formData, newCompanyName: e.target.value })}
-                  type="text"
-                  required
-                  className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-purple-200/40 focus:outline-none focus:ring-2 focus:ring-[#e8327b]/50 focus:border-[#e8327b]/50 transition-all"
-                  placeholder="Ex: Pet Shop Central"
-                />
-              </div>
-              <div>
-                <label className="block text-[#006c73] text-sm font-medium mb-2">Email da Empresa *</label>
-                <input
-                  value={formData.newCompanyEmail}
-                  onChange={(e) => setFormData({ ...formData, newCompanyEmail: e.target.value })}
-                  type="email"
-                  required
-                  className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-purple-200/40 focus:outline-none focus:ring-2 focus:ring-[#e8327b]/50 focus:border-[#e8327b]/50 transition-all"
-                  placeholder="contato@empresa.com"
-                />
-              </div>
+              <Field
+                label="Nome da empresa"
+                value={formData.newCompanyName}
+                onChange={(value) => setFormData({ ...formData, newCompanyName: value })}
+                placeholder="Ex: Pet Shop Central"
+                required
+              />
+              <Field
+                label="Email da empresa"
+                value={formData.newCompanyEmail}
+                onChange={(value) => setFormData({ ...formData, newCompanyEmail: value })}
+                placeholder="contato@empresa.com"
+                type="email"
+                required
+              />
             </div>
           ) : (
             <Select
@@ -133,54 +143,87 @@ export function CreateInviteModal({ companies, onClose }: CreateInviteModalProps
           )}
 
           <Select
-            label="Role"
+            label="Perfil"
             options={roleOptions}
             value={formData.role}
             onChange={(value) => setFormData({ ...formData, role: value })}
             required
           />
-          <p className="text-xs text-[#006c73]/50 -mt-3">
+          <p className="-mt-3 text-xs font-semibold text-[#68797d]">
             {formData.role === 'company_admin'
-              ? 'Pode gerenciar a empresa e ver relatórios'
-              : 'Pode apenas visualizar e agendar'}
+              ? 'Pode gerenciar a empresa e sua operacao.'
+              : 'Acesso limitado as rotinas da empresa.'}
           </p>
 
-          <div>
-            <label className="block text-[#006c73] text-sm font-medium mb-2">Expira em (dias) *</label>
-            <input
-              value={formData.expiresInDays}
-              onChange={(e) => setFormData({ ...formData, expiresInDays: e.target.value })}
-              type="number"
-              min="1"
-              max="365"
-              required
-              className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-purple-200/40 focus:outline-none focus:ring-2 focus:ring-[#e8327b]/50 focus:border-[#e8327b]/50 transition-all"
-            />
-            <p className="text-xs text-[#006c73]/50 mt-1.5">
-              O convite expira em {formData.expiresInDays} dias a partir de hoje
-            </p>
-          </div>
+          <Field
+            label="Expira em dias"
+            value={formData.expiresInDays}
+            onChange={(value) => setFormData({ ...formData, expiresInDays: value })}
+            type="number"
+            min="1"
+            max="365"
+            required
+          />
 
-          <div className="flex gap-3 pt-2">
-            <button
+          <div className="flex flex-col-reverse gap-3 pt-2 sm:flex-row">
+            <Button
               type="button"
+              variant="outline"
               onClick={onClose}
               disabled={loading}
-              className="flex-1 px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white font-medium hover:bg-white/15 disabled:opacity-50 transition-colors"
+              className="h-11 flex-1 rounded-2xl"
             >
               Cancelar
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
-              disabled={loading}
-              className="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-[#e8327b] to-[#bf185d] text-white font-medium flex items-center justify-center gap-2 disabled:opacity-50 hover:opacity-90 transition-opacity"
+              loading={loading}
+              className="h-11 flex-1 rounded-2xl"
             >
-              <Plus size={18} />
-              {loading ? 'Criando...' : 'Gerar Convite'}
-            </button>
+              <Plus size={18} className="mr-2" />
+              Gerar convite
+            </Button>
           </div>
         </form>
-      </GlassCard>
+      </div>
     </div>
+  )
+}
+
+function Field({
+  label,
+  value,
+  onChange,
+  type = 'text',
+  placeholder,
+  required,
+  min,
+  max,
+}: {
+  label: string
+  value: string
+  onChange: (value: string) => void
+  type?: string
+  placeholder?: string
+  required?: boolean
+  min?: string
+  max?: string
+}) {
+  return (
+    <label className="block">
+      <span className="mb-2 block text-sm font-extrabold text-[#006c73]">
+        {label}
+      </span>
+      <input
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        type={type}
+        required={required}
+        min={min}
+        max={max}
+        placeholder={placeholder}
+        className="w-full rounded-2xl border border-[rgba(232,50,123,0.18)] bg-white/82 px-4 py-3 text-sm font-semibold text-[#21363a] outline-none transition-all placeholder:text-[#9aa9ac] focus:border-[#e8327b]/45 focus:ring-4 focus:ring-[#ffe0ec]"
+      />
+    </label>
   )
 }

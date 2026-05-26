@@ -1,7 +1,8 @@
 'use client'
 
+import Link from 'next/link'
 import { useState } from 'react'
-import { Eye, Ban, Check } from 'lucide-react'
+import { Ban, Check, Eye, MoreHorizontal } from 'lucide-react'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { CompanyWithMetrics } from '@/lib/types/admin'
@@ -22,12 +23,10 @@ export function CompaniesTable({ companies }: CompaniesTableProps) {
 
   const handleToggleStatus = async (id: string, active: boolean, name: string) => {
     if (active) {
-      // Show confirmation modal when deactivating
       setConfirmBlock({ id, name })
       return
     }
 
-    // Directly activate
     setToggling(id)
     try {
       const result = await toggleCompanyStatus(id, true)
@@ -64,74 +63,94 @@ export function CompaniesTable({ companies }: CompaniesTableProps) {
     }
   }
 
+  if (companies.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-14 text-center">
+        <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#ffe0ec] text-[#bf185d]">
+          <MoreHorizontal size={22} />
+        </div>
+        <p className="text-sm font-extrabold text-[#21363a]">Nenhuma empresa encontrada</p>
+        <p className="mt-1 text-xs font-semibold text-[#68797d]">
+          Ajuste a busca para visualizar outras contas.
+        </p>
+      </div>
+    )
+  }
+
   return (
     <>
-      <div className="overflow-x-auto">
-        <table className="w-full">
+      <div className="space-y-3 md:hidden">
+        {companies.map((company) => (
+          <CompanyCard
+            key={company.id}
+            company={company}
+            toggling={toggling === company.id}
+            onToggle={() => handleToggleStatus(company.id, company.active, company.name)}
+          />
+        ))}
+      </div>
+
+      <div className="hidden overflow-x-auto md:block">
+        <table className="w-full min-w-[760px]">
           <thead>
-            <tr className="border-b border-white/10">
-              <th className="text-left p-4 text-[#006c73] font-medium text-sm uppercase tracking-wide">Nome</th>
-              <th className="text-left p-4 text-[#006c73] font-medium text-sm uppercase tracking-wide">Email</th>
-              <th className="text-left p-4 text-[#006c73] font-medium text-sm uppercase tracking-wide">Status</th>
-              <th className="text-left p-4 text-[#006c73] font-medium text-sm uppercase tracking-wide">Criado em</th>
-              <th className="text-right p-4 text-[#006c73] font-medium text-sm uppercase tracking-wide">Ações</th>
+            <tr className="border-b border-[rgba(232,50,123,0.16)]">
+              <th className="p-4 text-left text-xs font-extrabold uppercase text-[#006c73]">Empresa</th>
+              <th className="p-4 text-left text-xs font-extrabold uppercase text-[#006c73]">Email</th>
+              <th className="p-4 text-left text-xs font-extrabold uppercase text-[#006c73]">Status</th>
+              <th className="p-4 text-left text-xs font-extrabold uppercase text-[#006c73]">Criado em</th>
+              <th className="p-4 text-right text-xs font-extrabold uppercase text-[#006c73]">Acoes</th>
             </tr>
           </thead>
           <tbody>
             {companies.map((company) => (
-                <tr key={company.id} className="border-b border-white/5 hover:bg-white/5">
-                  <td className="p-4">
-                    <a href={`/admin/empresas/${company.id}`} className="text-white font-medium hover:text-[#bf185d]">
-                      {company.name}
-                    </a>
-                  </td>
-                  <td className="p-4 text-gray-300">{company.email}</td>
-                  <td className="p-4">
-                    <span className={cn(
-                      'px-3 py-1 rounded-full text-xs font-medium',
-                      company.active
-                        ? 'bg-green-500/20 text-green-300'
-                        : 'bg-gray-500/20 text-gray-300'
-                    )}>
-                      {company.active ? 'Ativa' : 'Inativa'}
-                    </span>
-                  </td>
-                  <td className="p-4 text-gray-300">
-                    {format(new Date(company.created_at), 'dd/MM/yyyy', { locale: ptBR })}
-                  </td>
-                  <td className="p-4">
-                    <div className="flex items-center justify-end gap-2">
-                      <a
-                        href={`/admin/empresas/${company.id}`}
-                        className="p-2 rounded-lg hover:bg-[#ffe0ec] text-[#bf185d]"
-                        title="Ver detalhes"
-                      >
-                        <Eye size={18} />
-                      </a>
-                      <button
-                        onClick={() => handleToggleStatus(company.id, company.active, company.name)}
-                        disabled={toggling === company.id}
-                        className={cn(
-                          'p-2 rounded-lg hover:bg-opacity-20 disabled:opacity-50',
-                          company.active
-                            ? 'bg-red-500/20 text-red-300 hover:bg-red-500/30'
-                            : 'bg-green-500/20 text-green-300 hover:bg-green-500/30'
-                        )}
-                        title={company.active ? 'Desativar' : 'Reativar'}
-                      >
-                        {toggling === company.id ? null : company.active ? <Ban size={18} /> : <Check size={18} />}
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        {companies.length === 0 && (
-          <div className="text-center py-12 text-[#68797d]">
-            Nenhuma empresa encontrada
-          </div>
-        )}
+              <tr
+                key={company.id}
+                className="border-b border-[rgba(232,50,123,0.10)] transition-colors hover:bg-white/58"
+              >
+                <td className="p-4">
+                  <Link
+                    href={`/admin/empresas/${company.id}`}
+                    className="font-extrabold text-[#21363a] transition-colors hover:text-[#bf185d]"
+                  >
+                    {company.name}
+                  </Link>
+                </td>
+                <td className="p-4 text-sm font-semibold text-[#68797d]">{company.email}</td>
+                <td className="p-4">
+                  <CompanyStatus active={company.active} />
+                </td>
+                <td className="p-4 text-sm font-semibold text-[#68797d]">
+                  {format(new Date(company.created_at), 'dd/MM/yyyy', { locale: ptBR })}
+                </td>
+                <td className="p-4">
+                  <div className="flex items-center justify-end gap-2">
+                    <Link
+                      href={`/admin/empresas/${company.id}`}
+                      className="flex h-9 w-9 items-center justify-center rounded-xl text-[#006c73] transition-colors hover:bg-[#dff7f4]"
+                      title="Ver detalhes"
+                    >
+                      <Eye size={18} />
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={() => handleToggleStatus(company.id, company.active, company.name)}
+                      disabled={toggling === company.id}
+                      className={cn(
+                        'flex h-9 w-9 items-center justify-center rounded-xl transition-colors disabled:opacity-50',
+                        company.active
+                          ? 'bg-red-50 text-red-700 hover:bg-red-100'
+                          : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100',
+                      )}
+                      title={company.active ? 'Desativar' : 'Reativar'}
+                    >
+                      {toggling === company.id ? null : company.active ? <Ban size={18} /> : <Check size={18} />}
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
 
       <ConfirmDialog
@@ -139,7 +158,7 @@ export function CompaniesTable({ companies }: CompaniesTableProps) {
         onOpenChange={(open) => !open && setConfirmBlock(null)}
         onConfirm={confirmDeactivation}
         title="Desativar empresa?"
-        description={confirmBlock ? `Você tem certeza que deseja desativar ${confirmBlock.name}? A empresa não poderá mais acessar o sistema.` : ''}
+        description={confirmBlock ? `Tem certeza que deseja desativar ${confirmBlock.name}? A empresa nao podera mais acessar o sistema.` : ''}
         confirmText="Desativar"
         cancelText="Cancelar"
         variant="danger"
@@ -147,5 +166,76 @@ export function CompaniesTable({ companies }: CompaniesTableProps) {
         loading={toggling === confirmBlock?.id}
       />
     </>
+  )
+}
+
+function CompanyCard({
+  company,
+  toggling,
+  onToggle,
+}: {
+  company: CompanyWithMetrics
+  toggling: boolean
+  onToggle: () => void
+}) {
+  return (
+    <article className="rounded-2xl border border-[rgba(232,50,123,0.16)] bg-white/68 p-4">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <Link
+            href={`/admin/empresas/${company.id}`}
+            className="block truncate text-base font-extrabold text-[#21363a]"
+          >
+            {company.name}
+          </Link>
+          <p className="mt-1 truncate text-sm font-semibold text-[#68797d]">
+            {company.email}
+          </p>
+        </div>
+        <CompanyStatus active={company.active} />
+      </div>
+
+      <div className="mt-4 flex items-center justify-between gap-3">
+        <p className="text-xs font-bold text-[#68797d]">
+          Criada em {format(new Date(company.created_at), 'dd/MM/yyyy', { locale: ptBR })}
+        </p>
+        <div className="flex items-center gap-2">
+          <Link
+            href={`/admin/empresas/${company.id}`}
+            className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#dff7f4] text-[#006c73]"
+            aria-label="Ver detalhes"
+          >
+            <Eye size={18} />
+          </Link>
+          <button
+            type="button"
+            onClick={onToggle}
+            disabled={toggling}
+            className={cn(
+              'flex h-10 w-10 items-center justify-center rounded-xl disabled:opacity-50',
+              company.active
+                ? 'bg-red-50 text-red-700'
+                : 'bg-emerald-50 text-emerald-700',
+            )}
+            aria-label={company.active ? 'Desativar empresa' : 'Reativar empresa'}
+          >
+            {toggling ? null : company.active ? <Ban size={18} /> : <Check size={18} />}
+          </button>
+        </div>
+      </div>
+    </article>
+  )
+}
+
+function CompanyStatus({ active }: { active: boolean }) {
+  return (
+    <span
+      className={cn(
+        'inline-flex shrink-0 rounded-full px-3 py-1 text-xs font-extrabold',
+        active ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700',
+      )}
+    >
+      {active ? 'Ativa' : 'Inativa'}
+    </span>
   )
 }
