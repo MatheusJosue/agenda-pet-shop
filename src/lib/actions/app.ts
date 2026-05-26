@@ -18,6 +18,51 @@ export interface AppStats {
   companyName: string
 }
 
+export interface AppShell {
+  user: AppStats['user']
+  companyName: string
+}
+
+export async function getAppShell(): Promise<{ data?: AppShell; error?: string }> {
+  try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+      return { error: 'Not authenticated' }
+    }
+
+    const { data: userData } = await supabase
+      .from('users')
+      .select('company_id')
+      .eq('id', user.id)
+      .single()
+
+    let companyName = 'Agenda Pet Shop'
+    if (userData?.company_id) {
+      const { data: companyData } = await supabase
+        .from('companies')
+        .select('name')
+        .eq('id', userData.company_id)
+        .single()
+      companyName = companyData?.name || 'Agenda Pet Shop'
+    }
+
+    return {
+      data: {
+        user: {
+          id: user.id,
+          email: user.email,
+          user_metadata: user.user_metadata
+        },
+        companyName,
+      }
+    }
+  } catch {
+    return { error: 'Failed to load app shell' }
+  }
+}
+
 export async function getAppStats(): Promise<{ data?: AppStats; error?: string }> {
   try {
     const supabase = await createClient()

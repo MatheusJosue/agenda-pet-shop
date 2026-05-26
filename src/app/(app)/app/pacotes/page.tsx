@@ -51,12 +51,12 @@ export default function PacotesPage() {
 
   useEffect(() => {
     async function loadData() {
-      const [{ getAppStats }, { getPackageTypes }] = await Promise.all([
+      const [{ getAppShell }, { getPackageTypes }] = await Promise.all([
         import("@/lib/actions/app"),
         import("@/lib/actions/packages"),
       ]);
       const [stats, packages] = await Promise.all([
-        getAppStats(),
+        getAppShell(),
         getPackageTypes(""),
       ]);
       if (stats.data) {

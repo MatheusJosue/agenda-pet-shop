@@ -327,4 +327,16 @@ h3 {
   h1 { font-size: 1.75rem; }
   h2 { font-size: 1.5rem; }
   h3 { font-size: 1.25rem; }
+
+  .fixed.inset-0.pointer-events-none.overflow-hidden {
+    display: none;
+  }
+
+  .animate-in,
+  .fade-in,
+  [class*="animate-[float"],
+  [class*="animate-[pulse-glow"] {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }

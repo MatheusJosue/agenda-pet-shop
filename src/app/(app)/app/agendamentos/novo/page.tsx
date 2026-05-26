@@ -79,8 +79,8 @@ export default function NovoAgendamentoPage() {
 
   useEffect(() => {
     async function loadData() {
-      const { getAppStats } = await import("@/lib/actions/app");
-      const result = await getAppStats();
+      const { getAppShell } = await import("@/lib/actions/app");
+      const result = await getAppShell();
       if (result.data) {
         setCompanyName(result.data.companyName || "Agenda Pet Shop");
         setUser(result.data.user);

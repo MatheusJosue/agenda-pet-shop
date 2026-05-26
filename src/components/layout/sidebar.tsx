@@ -20,6 +20,7 @@ import { cn } from "@/lib/utils";
 import { logout } from "@/lib/actions/auth";
 
 const STORAGE_KEY = "agenda-pet-shop:sidebar-collapsed";
+const STORAGE_EVENT = "agenda-pet-shop:sidebar-collapsed-change";
 
 const mainNavItems = [
   { href: "/app", icon: Home, label: "Iní­cio" },
@@ -56,6 +57,7 @@ export function Sidebar({
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, String(collapsed));
+    window.dispatchEvent(new Event(STORAGE_EVENT));
   }, [collapsed]);
 
   const width = collapsed ? "w-20" : "w-64";

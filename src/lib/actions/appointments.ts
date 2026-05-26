@@ -319,6 +319,9 @@ export async function createAppointment(input: AppointmentInput): Promise<Appoin
   if (insertError) {
     console.error('Supabase insert error:', insertError)
     console.error('Error details:', JSON.stringify(insertError))
+    if (process.env.NODE_ENV === 'development') {
+      return { error: `Erro ao criar agendamento: ${insertError.message}` }
+    }
     return { error: 'Erro ao criar agendamento' }
   }
 

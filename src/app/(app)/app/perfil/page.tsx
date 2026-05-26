@@ -25,8 +25,8 @@ export default function PerfilPage() {
   useEffect(() => {
     async function loadData() {
       try {
-        const { getAppStats } = await import("@/lib/actions/app");
-        const result = await getAppStats();
+        const { getAppShell } = await import("@/lib/actions/app");
+        const result = await getAppShell();
 
         if (result.error || !result.data) {
           router.push("/login");

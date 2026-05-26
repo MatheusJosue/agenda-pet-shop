@@ -14,6 +14,7 @@ interface AppLayoutProps {
 }
 
 export function AppLayout({ children, companyName, user }: AppLayoutProps) {
+  const sidebarStorageEvent = "agenda-pet-shop:sidebar-collapsed-change";
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     if (typeof window === "undefined") return false;
     return localStorage.getItem("agenda-pet-shop:sidebar-collapsed") === "true";
@@ -29,14 +30,13 @@ export function AppLayout({ children, companyName, user }: AppLayoutProps) {
     };
 
     window.addEventListener("storage", handleStorageChange);
-    // Também checar em intervalos curtos para mudanças na mesma aba
-    const interval = setInterval(handleStorageChange, 100);
+    window.addEventListener(sidebarStorageEvent, handleStorageChange);
 
     return () => {
       window.removeEventListener("storage", handleStorageChange);
-      clearInterval(interval);
+      window.removeEventListener(sidebarStorageEvent, handleStorageChange);
     };
-  }, []);
+  }, [sidebarStorageEvent]);
 
   const marginClass = sidebarCollapsed ? "ml-20" : "ml-64";
 
