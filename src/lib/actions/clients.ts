@@ -53,7 +53,7 @@ export async function getClients(search?: string): Promise<ClientsListResponse> 
 
   let query = supabase
     .from('clients')
-    .select('*')
+    .select('*, pets(id)')
     .eq('company_id', companyId)
 
   if (search && search.trim()) {
@@ -67,7 +67,13 @@ export async function getClients(search?: string): Promise<ClientsListResponse> 
     return { data: [], error: 'Erro ao buscar clientes' }
   }
 
-  return { data: data || [] }
+  const clients =
+    data?.map(({ pets, ...client }) => ({
+      ...client,
+      pets_count: Array.isArray(pets) ? pets.length : 0
+    })) || []
+
+  return { data: clients }
 }
 
 /**

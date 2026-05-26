@@ -682,27 +682,36 @@ export default function NovoAgendamentoPage() {
 
                     {/* Actions */}
                     <div
-                      className="flex gap-4 pt-4 animate-in fade-in slide-in-from-bottom-2 duration-300"
+                      className="flex gap-2 pt-4 animate-in fade-in slide-in-from-bottom-2 duration-300 sm:gap-4"
                       style={{ animationDelay: "550ms" }}
                     >
                       <Button
                         type="button"
                         variant="secondary"
-                        size="lg"
+                        size="sm"
                         onClick={() => router.back()}
                         disabled={loading}
-                        className="flex-1 rounded-xl"
+                        className="min-w-0 flex-1 rounded-xl"
                       >
                         Cancelar
                       </Button>
                       <Button
                         type="submit"
                         variant="primary"
-                        size="lg"
+                        size="sm"
                         disabled={loading || selectedServices.length === 0}
-                        className="flex-1 rounded-xl bg-gradient-to-r from-[#e8327b] to-[#bf185d] hover:from-[#e8327b]/90 hover:to-[#bf185d]/90 border-0 shadow-[0_0_20px_rgba(241,131,255,0.3)] hover:shadow-[0_0_30px_rgba(241,131,255,0.5)] transition-all duration-300"
+                        className="min-w-0 flex-1 rounded-xl bg-gradient-to-r from-[#e8327b] to-[#bf185d] hover:from-[#e8327b]/90 hover:to-[#bf185d]/90 border-0 shadow-[0_0_20px_rgba(241,131,255,0.3)] hover:shadow-[0_0_30px_rgba(241,131,255,0.5)] transition-all duration-300"
                       >
-                        {loading ? "Salvando..." : "Salvar Agendamento"}
+                        {loading ? (
+                          "Salvando..."
+                        ) : (
+                          <>
+                            <span className="sm:hidden">Salvar</span>
+                            <span className="hidden sm:inline">
+                              Salvar Agendamento
+                            </span>
+                          </>
+                        )}
                       </Button>
                     </div>
                   </form>

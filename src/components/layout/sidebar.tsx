@@ -22,16 +22,28 @@ import { logout } from "@/lib/actions/auth";
 const STORAGE_KEY = "agenda-pet-shop:sidebar-collapsed";
 const STORAGE_EVENT = "agenda-pet-shop:sidebar-collapsed-change";
 
-const mainNavItems = [
-  { href: "/app", icon: Home, label: "Iní­cio" },
-  { href: "/app/agendamentos", icon: Calendar, label: "Agenda" },
-  { href: "/app/clientes", icon: Users, label: "Clientes" },
-  { href: "/app/servicos", icon: Scissors, label: "Serviços" },
-];
-
-const accountNavItems = [
-  { href: "/app/perfil", icon: UserCircle, label: "Perfil" },
-  { href: "/app/ajuda", icon: HelpCircle, label: "Ajuda" },
+const navSections = [
+  {
+    title: "Principal",
+    items: [
+      { href: "/app", icon: Home, label: "Início" },
+      { href: "/app/agendamentos", icon: Calendar, label: "Agenda" },
+    ],
+  },
+  {
+    title: "Gestão",
+    items: [
+      { href: "/app/clientes", icon: Users, label: "Clientes" },
+      { href: "/app/servicos", icon: Scissors, label: "Serviços" },
+    ],
+  },
+  {
+    title: "Conta",
+    items: [
+      { href: "/app/perfil", icon: UserCircle, label: "Perfil" },
+      { href: "/app/ajuda", icon: HelpCircle, label: "Ajuda" },
+    ],
+  },
 ];
 
 function capitalize(str: string): string {
@@ -106,17 +118,17 @@ export function Sidebar({
         className="flex-1 overflow-y-auto px-3 py-4"
         aria-label="NavegaÃ§Ã£o principal"
       >
-        <NavSection
-          items={mainNavItems}
-          pathname={pathname}
-          collapsed={collapsed}
-        />
-        <div className="my-4 border-t border-[rgba(232,50,123,0.18)]" />
-        <NavSection
-          items={accountNavItems}
-          pathname={pathname}
-          collapsed={collapsed}
-        />
+        <div className="space-y-4">
+          {navSections.map((section) => (
+            <NavSection
+              key={section.title}
+              title={section.title}
+              items={section.items}
+              pathname={pathname}
+              collapsed={collapsed}
+            />
+          ))}
+        </div>
       </nav>
 
       <div className="border-t border-[rgba(232,50,123,0.18)] p-3">
@@ -159,28 +171,37 @@ export function Sidebar({
 }
 
 function NavSection({
+  title,
   items,
   pathname,
   collapsed,
 }: {
+  title: string;
   items: Array<{ href: string; icon: LucideIcon; label: string }>;
   pathname: string;
   collapsed: boolean;
 }) {
   return (
-    <ul className="space-y-1">
-      {items.map((item) => (
-        <li key={item.href}>
-          <NavItem
-            href={item.href}
-            icon={item.icon}
-            label={item.label}
-            active={pathname === item.href}
-            collapsed={collapsed}
-          />
-        </li>
-      ))}
-    </ul>
+    <section aria-label={title}>
+      {!collapsed && (
+        <h4 className="mb-1 px-3 text-[0.62rem] font-bold uppercase text-[#9aa9ac]">
+          {title}
+        </h4>
+      )}
+      <ul className="space-y-1">
+        {items.map((item) => (
+          <li key={item.href}>
+            <NavItem
+              href={item.href}
+              icon={item.icon}
+              label={item.label}
+              active={pathname === item.href}
+              collapsed={collapsed}
+            />
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
 

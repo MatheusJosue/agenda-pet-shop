@@ -186,7 +186,7 @@ export default function AgendamentosPage() {
         />
 
         {/* Main Content */}
-        <main className="flex-1 overflow-y-auto pb-24 px-4 sm:px-6 lg:px-8 py-6 space-y-6 relative z-10 max-w-7xl mx-auto">
+        <main className="flex-1 overflow-y-auto pb-36 px-4 sm:px-6 lg:px-8 py-6 space-y-6 relative z-10 max-w-7xl mx-auto">
           {/* Page actions */}
           <div className="flex items-center justify-between gap-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
             <p className="text-sm font-bold text-[#68797d]">
@@ -353,15 +353,15 @@ export default function AgendamentosPage() {
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
               <GlassCard variant="elevated" className="overflow-hidden">
                 {/* Header with gradient */}
-                <div className="relative p-5 bg-gradient-to-br from-[#e8327b]/10 via-[#bf185d]/5 to-[#006c73]/10">
+                <div className="relative p-4 sm:p-5 bg-gradient-to-br from-[#fff1f6] via-white/70 to-[#e6f7f8]">
                   <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#e8327b] via-[#bf185d] to-[#006c73]" />
 
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#00ffa3]/20 to-[#00ffa3]/10 flex items-center justify-center shadow-lg shadow-[#00ffa3]/10">
-                      <TrendingUp size={24} className="text-[#00ffa3]" />
+                    <div className="w-10 h-10 shrink-0 rounded-2xl bg-[#d9fff0] flex items-center justify-center text-[#0b8b58] shadow-[0_10px_24px_rgba(11,139,88,0.10)] sm:h-11 sm:w-11">
+                      <TrendingUp size={22} />
                     </div>
-                    <div className="flex-1">
-                      <p className="text-gray-700 text-xs font-semibold uppercase tracking-wider mb-2">
+                    <div className="min-w-0 flex-1">
+                      <p className="mb-1 text-[11px] font-extrabold uppercase tracking-wider text-[#68797d] sm:text-xs">
                         Resumo da{" "}
                         {viewMode === "week"
                           ? "Semana"
@@ -369,7 +369,7 @@ export default function AgendamentosPage() {
                             ? "Mês"
                             : "Data"}
                       </p>
-                      <p className="text-gray-900 font-semibold text-lg leading-relaxed">
+                      <p className="text-base font-extrabold leading-snug text-[#21363a] sm:text-lg">
                         Você tem{" "}
                         <span className="text-[#e8327b]">
                           {weeklyStats.pending}
@@ -382,29 +382,33 @@ export default function AgendamentosPage() {
                 </div>
 
                 {/* Stats Grid */}
-                <div className="p-4 grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-2 p-3 sm:gap-3 sm:p-4">
                   {/* Completed */}
-                  <div className="p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/[0.07] transition-all">
-                    <div className="flex items-center gap-2 mb-2">
-                      <CheckCircle size={16} className="text-[#00ffa3]/70" />
-                      <p className="text-gray-700 text-xs font-semibold uppercase tracking-wider">
+                  <div className="min-w-0 rounded-2xl border border-[#d7f7ea] bg-[#f4fffa] p-3 transition-all hover:bg-[#ecfff6] sm:p-4">
+                    <div className="mb-3 flex items-center gap-1.5 sm:gap-2">
+                      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#d9fff0]">
+                        <CheckCircle size={14} className="text-[#0b8b58]" />
+                      </span>
+                      <p className="min-w-0 truncate text-[11px] font-extrabold uppercase tracking-wider text-[#52686c] sm:text-xs">
                         Concluídos
                       </p>
                     </div>
-                    <p className="text-gray-900 font-bold text-2xl">
+                    <p className="text-2xl font-extrabold leading-none text-[#21363a]">
                       {weeklyStats.completed}
                     </p>
                   </div>
 
                   {/* Revenue */}
-                  <div className="p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/[0.07] transition-all">
-                    <div className="flex items-center gap-2 mb-2">
-                      <DollarSign size={16} className="text-[#e8327b]/70" />
-                      <p className="text-gray-700 text-xs font-semibold uppercase tracking-wider">
+                  <div className="min-w-0 rounded-2xl border border-[#ffd4e5] bg-[#fff6fa] p-3 transition-all hover:bg-[#fff1f6] sm:p-4">
+                    <div className="mb-3 flex items-center gap-1.5 sm:gap-2">
+                      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#ffe0ec]">
+                        <DollarSign size={14} className="text-[#e8327b]" />
+                      </span>
+                      <p className="min-w-0 truncate text-[11px] font-extrabold uppercase tracking-wider text-[#52686c] sm:text-xs">
                         Receita
                       </p>
                     </div>
-                    <p className="text-gray-900 font-bold text-xl">
+                    <p className="truncate text-xl font-extrabold leading-none text-[#21363a]">
                       {weeklyStats.revenue >= 1000
                         ? `R$ ${(weeklyStats.revenue / 1000).toFixed(1)}k`
                         : `R$ ${weeklyStats.revenue.toFixed(0)}`}

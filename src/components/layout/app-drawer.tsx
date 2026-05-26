@@ -2,7 +2,17 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { logout } from "@/lib/actions/auth";
-import { Calendar, HelpCircle, Home, LogOut, PawPrint, Scissors, User, Users, X } from "lucide-react";
+import {
+  Calendar,
+  HelpCircle,
+  Home,
+  LogOut,
+  PawPrint,
+  Scissors,
+  User,
+  Users,
+  X,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface AppDrawerProps {
@@ -15,16 +25,36 @@ interface AppDrawerProps {
   };
 }
 
-const navItems = [
-  { label: "Início", href: "/app", icon: Home },
-  { label: "Agenda", href: "/app/agendamentos", icon: Calendar },
-  { label: "Clientes", href: "/app/clientes", icon: Users },
-  { label: "Serviços", href: "/app/servicos", icon: Scissors },
-  { label: "Perfil", href: "/app/perfil", icon: User },
-  { label: "Ajuda", href: "/app/ajuda", icon: HelpCircle },
+const navSections = [
+  {
+    title: "Principal",
+    items: [
+      { label: "Início", href: "/app", icon: Home },
+      { label: "Agenda", href: "/app/agendamentos", icon: Calendar },
+    ],
+  },
+  {
+    title: "Gestão",
+    items: [
+      { label: "Clientes", href: "/app/clientes", icon: Users },
+      { label: "Serviços", href: "/app/servicos", icon: Scissors },
+    ],
+  },
+  {
+    title: "Conta",
+    items: [
+      { label: "Perfil", href: "/app/perfil", icon: User },
+      { label: "Ajuda", href: "/app/ajuda", icon: HelpCircle },
+    ],
+  },
 ];
 
-export function AppDrawer({ isOpen, onClose, companyName, user }: AppDrawerProps) {
+export function AppDrawer({
+  isOpen,
+  onClose,
+  companyName,
+  user,
+}: AppDrawerProps) {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -97,30 +127,39 @@ export function AppDrawer({ isOpen, onClose, companyName, user }: AppDrawerProps
           </div>
 
           <nav className="flex-1 overflow-y-auto px-4 py-2">
-            <ul className="space-y-1">
-              {navItems.map((item) => {
-                const active = pathname === item.href;
-                const Icon = item.icon;
+            <div className="space-y-4">
+              {navSections.map((section) => (
+                <section key={section.title} aria-label={section.title}>
+                  <h4 className="mb-1 px-4 text-[0.62rem] font-bold uppercase text-[#9aa9ac]">
+                    {section.title}
+                  </h4>
+                  <ul className="space-y-1">
+                    {section.items.map((item) => {
+                      const active = pathname === item.href;
+                      const Icon = item.icon;
 
-                return (
-                  <li key={item.href}>
-                    <button
-                      type="button"
-                      onClick={() => navigate(item.href)}
-                      className={cn(
-                        "flex w-full items-center gap-3 rounded-xl border px-4 py-3 text-sm font-extrabold transition-all",
-                        active
-                          ? "border-[rgba(232,50,123,0.28)] bg-[#ffe0ec] text-[#bf185d]"
-                          : "border-transparent text-[#006c73] hover:border-[rgba(232,50,123,0.18)] hover:bg-white hover:text-[#bf185d]",
-                      )}
-                    >
-                      <Icon size={19} />
-                      <span>{item.label}</span>
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
+                      return (
+                        <li key={item.href}>
+                          <button
+                            type="button"
+                            onClick={() => navigate(item.href)}
+                            className={cn(
+                              "flex w-full items-center gap-3 rounded-xl border px-4 py-2.5 text-sm font-extrabold transition-all",
+                              active
+                                ? "border-[rgba(232,50,123,0.28)] bg-[#ffe0ec] text-[#bf185d]"
+                                : "border-transparent text-[#006c73] hover:border-[rgba(232,50,123,0.18)] hover:bg-white hover:text-[#bf185d]",
+                            )}
+                          >
+                            <Icon size={19} />
+                            <span>{item.label}</span>
+                          </button>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </section>
+              ))}
+            </div>
           </nav>
 
           <div className="border-t border-[rgba(232,50,123,0.18)] p-4 pb-24">

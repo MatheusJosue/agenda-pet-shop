@@ -1,7 +1,17 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Bath, Check, Droplets, Edit3, Package, PawPrint, Scissors, Sparkles, X } from "lucide-react";
+import {
+  Bath,
+  Check,
+  Droplets,
+  Edit3,
+  Package,
+  PawPrint,
+  Scissors,
+  Sparkles,
+  X,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GlassCard } from "@/components/ui/glass-card";
 import {
@@ -59,14 +69,19 @@ export function ServicePricesList({ billingType }: ServicePricesListProps) {
   }, [loadPrices]);
 
   const activePrices = useMemo(
-    () => prices.filter((price) => billingType === "all" || price.billing_type === billingType),
+    () =>
+      prices.filter(
+        (price) => billingType === "all" || price.billing_type === billingType,
+      ),
     [billingType, prices],
   );
 
   function startEditing(service: EditableService) {
     const values: Record<string, string> = {};
     activePrices
-      .filter((price) => serviceNameMatches(price.service_name, service.aliases))
+      .filter((price) =>
+        serviceNameMatches(price.service_name, service.aliases),
+      )
       .forEach((price) => {
         values[price.id] = String(price.price);
       });
@@ -83,9 +98,12 @@ export function ServicePricesList({ billingType }: ServicePricesListProps) {
   async function saveEditing() {
     if (!editing) return;
     setSaving(true);
-    const { updateServicePrices } = await import("@/lib/actions/service-prices");
+    const { updateServicePrices } =
+      await import("@/lib/actions/service-prices");
     const updates = activePrices
-      .filter((price) => serviceNameMatches(price.service_name, editing.aliases))
+      .filter((price) =>
+        serviceNameMatches(price.service_name, editing.aliases),
+      )
       .map((price) => ({
         serviceName: price.service_name,
         billingType: price.billing_type,
@@ -108,7 +126,9 @@ export function ServicePricesList({ billingType }: ServicePricesListProps) {
   if (loading) {
     return (
       <GlassCard className="p-8 text-center">
-        <p className="text-[#006c73] font-bold">Carregando tabela de preços...</p>
+        <p className="text-[#006c73] font-bold">
+          Carregando tabela de preços...
+        </p>
       </GlassCard>
     );
   }
@@ -220,7 +240,7 @@ function PriceColumn({
         <div className="w-16 h-16 rounded-full bg-[#006c73] !text-white flex items-center justify-center shadow-[0_10px_24px_rgba(0,108,115,0.18)]">
           <Icon size={30} />
         </div>
-        <div className="inline-flex items-center gap-2 rounded-lg bg-[#e8327b] px-5 py-2 !text-white font-extrabold uppercase shadow-[0_10px_20px_rgba(232,50,123,0.24)]">
+        <div className="inline-flex items-center gap-2 rounded-lg bg-[#e8327b] px-5 py-2 !text-white  shadow-[0_10px_20px_rgba(232,50,123,0.24)]">
           {title}
         </div>
       </div>
@@ -272,7 +292,7 @@ function ComboPriceColumn(props: {
         <div className="w-16 h-16 rounded-full bg-[#006c73] !text-white flex items-center justify-center shadow-[0_10px_24px_rgba(0,108,115,0.18)]">
           <Droplets size={30} />
         </div>
-        <div className="inline-flex items-center gap-2 rounded-lg bg-[#e8327b] px-5 py-2 !text-white font-extrabold uppercase shadow-[0_10px_20px_rgba(232,50,123,0.24)]">
+        <div className="inline-flex items-center gap-2 rounded-lg bg-[#e8327b] px-5 py-2 !text-white  shadow-[0_10px_20px_rgba(232,50,123,0.24)]">
           Banho + Tosa
         </div>
       </div>
@@ -284,10 +304,21 @@ function ComboPriceColumn(props: {
       </div>
 
       {MAIN_SIZES.map((size) => {
-        const machine = findCatalogPrice(props.prices, SERVICE_ALIASES.machineGroom, size);
-        const scissor = findCatalogPrice(props.prices, SERVICE_ALIASES.scissorGroom, size);
+        const machine = findCatalogPrice(
+          props.prices,
+          SERVICE_ALIASES.machineGroom,
+          size,
+        );
+        const scissor = findCatalogPrice(
+          props.prices,
+          SERVICE_ALIASES.scissorGroom,
+          size,
+        );
         return (
-          <div key={size} className="grid grid-cols-[1fr_96px_96px] gap-2 items-center py-3 border-b border-dashed border-[rgba(232,50,123,0.18)]">
+          <div
+            key={size}
+            className="grid grid-cols-[1fr_96px_96px] gap-2 items-center py-3 border-b border-dashed border-[rgba(232,50,123,0.18)]"
+          >
             <span className="font-extrabold text-[#21363a] flex items-center gap-2">
               <PawPrint size={15} className="text-[#e8327b]" />
               {CATALOG_SIZE_LABELS[size]}
@@ -320,10 +351,18 @@ function ComboPriceColumn(props: {
         />
       ) : (
         <div className="mt-5 grid grid-cols-2 gap-2">
-          <button type="button" onClick={() => props.onStartEdit(EDITABLE_SERVICES[2])} className="rounded-xl border border-[rgba(232,50,123,0.22)] bg-white/70 px-3 py-2 text-sm font-extrabold text-[#006c73] hover:bg-[#ffe0ec] hover:text-[#bf185d]">
+          <button
+            type="button"
+            onClick={() => props.onStartEdit(EDITABLE_SERVICES[2])}
+            className="rounded-xl border border-[rgba(232,50,123,0.22)] bg-white/70 px-3 py-2 text-sm font-extrabold text-[#006c73] hover:bg-[#ffe0ec] hover:text-[#bf185d]"
+          >
             Editar máquina
           </button>
-          <button type="button" onClick={() => props.onStartEdit(EDITABLE_SERVICES[3])} className="rounded-xl border border-[rgba(232,50,123,0.22)] bg-white/70 px-3 py-2 text-sm font-extrabold text-[#006c73] hover:bg-[#ffe0ec] hover:text-[#bf185d]">
+          <button
+            type="button"
+            onClick={() => props.onStartEdit(EDITABLE_SERVICES[3])}
+            className="rounded-xl border border-[rgba(232,50,123,0.22)] bg-white/70 px-3 py-2 text-sm font-extrabold text-[#006c73] hover:bg-[#ffe0ec] hover:text-[#bf185d]"
+          >
             Editar tesoura
           </button>
         </div>
@@ -343,22 +382,41 @@ function ExtrasSection(props: {
   saving: boolean;
 }) {
   const extras = [
-    { service: EDITABLE_SERVICES[4], fallback: FLYER_FALLBACK_PRICES.nailTrim, icon: Scissors },
-    { service: EDITABLE_SERVICES[5], fallback: FLYER_FALLBACK_PRICES.hydration, icon: Sparkles },
-    { service: EDITABLE_SERVICES[6], fallback: FLYER_FALLBACK_PRICES.detangle, icon: PawPrint },
+    {
+      service: EDITABLE_SERVICES[4],
+      fallback: FLYER_FALLBACK_PRICES.nailTrim,
+      icon: Scissors,
+    },
+    {
+      service: EDITABLE_SERVICES[5],
+      fallback: FLYER_FALLBACK_PRICES.hydration,
+      icon: Sparkles,
+    },
+    {
+      service: EDITABLE_SERVICES[6],
+      fallback: FLYER_FALLBACK_PRICES.detangle,
+      icon: PawPrint,
+    },
   ];
 
   return (
     <GlassCard className="p-5">
-      <div className="inline-flex rounded-lg bg-[#e8327b] px-5 py-2 !text-white font-extrabold uppercase mb-4">
+      <div className="inline-flex rounded-lg bg-[#e8327b] px-5 py-2 !text-white  mb-4">
         Serviços Extras
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         {extras.map(({ service, fallback, icon: Icon }) => {
-          const price = findCatalogPrice(props.prices, service.aliases, "small");
+          const price = findCatalogPrice(
+            props.prices,
+            service.aliases,
+            "small",
+          );
           const isEditing = props.editing?.title === service.title;
           return (
-            <div key={service.title} className="flex items-center gap-3 rounded-xl border border-[rgba(232,50,123,0.18)] bg-white/70 p-4">
+            <div
+              key={service.title}
+              className="flex items-center gap-3 rounded-xl border border-[rgba(232,50,123,0.18)] bg-white/70 p-4"
+            >
               <Icon size={30} className="text-[#bf185d]" />
               <div className="flex-1">
                 <p className="font-extrabold text-[#21363a]">{service.title}</p>
@@ -372,15 +430,31 @@ function ExtrasSection(props: {
               </div>
               {isEditing ? (
                 <div className="flex gap-1">
-                  <button type="button" onClick={props.onCancelEdit} className="w-8 h-8 rounded-lg border border-[rgba(232,50,123,0.24)] text-[#bf185d] hover:bg-[#ffe0ec]" aria-label="Cancelar">
+                  <button
+                    type="button"
+                    onClick={props.onCancelEdit}
+                    className="w-8 h-8 rounded-lg border border-[rgba(232,50,123,0.24)] text-[#bf185d] hover:bg-[#ffe0ec]"
+                    aria-label="Cancelar"
+                  >
                     <X size={15} className="mx-auto" />
                   </button>
-                  <button type="button" onClick={props.onSaveEdit} disabled={props.saving} className="w-8 h-8 rounded-lg bg-[#e8327b] !text-white hover:bg-[#bf185d] disabled:opacity-60" aria-label="Salvar">
+                  <button
+                    type="button"
+                    onClick={props.onSaveEdit}
+                    disabled={props.saving}
+                    className="w-8 h-8 rounded-lg bg-[#e8327b] !text-white hover:bg-[#bf185d] disabled:opacity-60"
+                    aria-label="Salvar"
+                  >
                     <Check size={15} className="mx-auto" />
                   </button>
                 </div>
               ) : (
-                <button type="button" onClick={() => props.onStartEdit(service)} className="text-[#006c73] hover:text-[#bf185d]" aria-label={`Editar ${service.title}`}>
+                <button
+                  type="button"
+                  onClick={() => props.onStartEdit(service)}
+                  className="text-[#006c73] hover:text-[#bf185d]"
+                  aria-label={`Editar ${service.title}`}
+                >
                   <Edit3 size={17} />
                 </button>
               )}
@@ -393,15 +467,21 @@ function ExtrasSection(props: {
 }
 
 function PackagesSection({ prices }: { prices: ServicePrice[] }) {
-  const packagePrices = prices.filter((price) => price.billing_type === "pacote");
+  const packagePrices = prices.filter(
+    (price) => price.billing_type === "pacote",
+  );
 
   return (
     <GlassCard className="p-5">
       <div className="flex items-center gap-3 mb-5">
         <Package className="text-[#e8327b]" size={26} />
         <div>
-          <h2 className="text-2xl font-extrabold text-[#bf185d]">Pacotes - mais cuidado, mais economia</h2>
-          <p className="text-sm font-bold text-[#68797d]">Valores por porte e frequência.</p>
+          <h2 className="text-2xl font-extrabold text-[#bf185d]">
+            Pacotes - mais cuidado, mais economia
+          </h2>
+          <p className="text-sm font-bold text-[#68797d]">
+            Valores por porte e frequência.
+          </p>
         </div>
       </div>
       <div className="overflow-x-auto">
@@ -416,18 +496,35 @@ function PackagesSection({ prices }: { prices: ServicePrice[] }) {
           </thead>
           <tbody>
             {MAIN_SIZES.map((size) => (
-              <tr key={size} className="border-t border-[rgba(232,50,123,0.18)]">
+              <tr
+                key={size}
+                className="border-t border-[rgba(232,50,123,0.18)]"
+              >
                 <td className="p-3">
-                  <p className="font-extrabold text-[#21363a]">{CATALOG_SIZE_LABELS[size]}</p>
+                  <p className="font-extrabold text-[#21363a]">
+                    {CATALOG_SIZE_LABELS[size]}
+                  </p>
                 </td>
                 {[
-                  ["Pacote Semanal", FLYER_FALLBACK_PRICES.packages[size].weekly],
-                  ["Pacote Quinzenal", FLYER_FALLBACK_PRICES.packages[size].fortnightly],
-                  ["Pacote Mensal", FLYER_FALLBACK_PRICES.packages[size].monthly],
+                  [
+                    "Pacote Semanal",
+                    FLYER_FALLBACK_PRICES.packages[size].weekly,
+                  ],
+                  [
+                    "Pacote Quinzenal",
+                    FLYER_FALLBACK_PRICES.packages[size].fortnightly,
+                  ],
+                  [
+                    "Pacote Mensal",
+                    FLYER_FALLBACK_PRICES.packages[size].monthly,
+                  ],
                 ].map(([name, fallback]) => {
-                  const price = packagePrices.find((item) =>
-                    item.service_name === name &&
-                    CATALOG_SIZE_TO_SERVICE_SIZE[size].includes(item.size_category)
+                  const price = packagePrices.find(
+                    (item) =>
+                      item.service_name === name &&
+                      CATALOG_SIZE_TO_SERVICE_SIZE[size].includes(
+                        item.size_category,
+                      ),
                   );
                   return (
                     <td key={String(name)} className="p-3 text-center">
@@ -485,7 +582,9 @@ function EditablePrice({
         min="0"
         step="0.01"
         value={editValues[servicePrice.id] ?? String(servicePrice.price)}
-        onChange={(event) => onEditChange({ ...editValues, [servicePrice.id]: event.target.value })}
+        onChange={(event) =>
+          onEditChange({ ...editValues, [servicePrice.id]: event.target.value })
+        }
         className="w-24 rounded-lg border border-[rgba(232,50,123,0.36)] bg-white px-2 py-1.5 text-center text-base font-extrabold text-[#21363a] outline-none focus:border-[#e8327b] focus:ring-2 focus:ring-[#e8327b]/15"
       />
     );
@@ -530,7 +629,12 @@ function CardEditActions({
         Alterando valores deste card
       </p>
       <div className="grid grid-cols-2 gap-2">
-        <Button variant="outline" size="sm" onClick={onCancel} disabled={saving}>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={onCancel}
+          disabled={saving}
+        >
           <X size={16} />
           Cancelar
         </Button>
@@ -545,8 +649,10 @@ function CardEditActions({
 
 export function getUnmappedServices(prices: ServicePrice[]) {
   const knownAliases = Object.values(SERVICE_ALIASES).flat();
-  return prices.filter((price) => !serviceNameMatches(price.service_name, knownAliases)).map((price) => ({
-    ...price,
-    service_name: getServiceDisplayName(price.service_name),
-  }));
+  return prices
+    .filter((price) => !serviceNameMatches(price.service_name, knownAliases))
+    .map((price) => ({
+      ...price,
+      service_name: getServiceDisplayName(price.service_name),
+    }));
 }

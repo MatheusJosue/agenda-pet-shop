@@ -38,11 +38,14 @@ export function AppHeader({ companyName, user }: AppHeaderProps) {
 
               <div className="flex items-center justify-center gap-2 min-w-0 flex-1">
                 <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#ffe0ec]">
-                  <PawPrint size={17} className="text-[#e8327b] flex-shrink-0" />
+                  <PawPrint
+                    size={17}
+                    className="text-[#e8327b] flex-shrink-0"
+                  />
                 </span>
-                <h1 className="text-base font-extrabold text-[#21363a] truncate">
+                <h3 className="min-w-0 truncate text-xs font-extrabold text-[#21363a] sm:text-sm">
                   {pageTitle}
-                </h1>
+                </h3>
               </div>
 
               <div className="w-9 flex-shrink-0" />

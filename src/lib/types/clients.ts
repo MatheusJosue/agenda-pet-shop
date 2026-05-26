@@ -6,6 +6,7 @@ export interface Client {
   phone: string  // stored as digits only: "11987654321"
   email?: string | null
   notes?: string | null
+  pets_count?: number
   created_at: string
   updated_at: string
 }

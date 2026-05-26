@@ -110,9 +110,9 @@ export default function AppPage() {
                   <p className="mb-2 text-xs font-extrabold uppercase tracking-wider text-[#e8327b]">
                     Agenda Pet Shop
                   </p>
-                  <h1 className="text-3xl font-extrabold text-[#21363a] sm:text-4xl">
+                  <h3 className="text-3xl font-extrabold text-[#21363a] sm:text-4xl">
                     Olá, {capitalize(companyName)}
-                  </h1>
+                  </h3>
                   <p className="mt-2 text-sm font-semibold text-[#68797d]">
                     {todayCount > 0
                       ? `${todayCount} agendamento${todayCount > 1 ? "s" : ""} para hoje`
@@ -157,20 +157,21 @@ export default function AppPage() {
 
               <section className="grid gap-4 lg:grid-cols-[1fr_360px]">
                 <GlassCard className="overflow-hidden">
-                  <div className="flex items-center justify-between border-b border-[rgba(232,50,123,0.16)] p-5">
-                    <div>
-                      <h2 className="text-xl font-extrabold text-[#21363a]">
+                  <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 border-b border-[rgba(232,50,123,0.16)] p-5">
+                    <div className="min-w-0">
+                      <h3 className="whitespace-nowrap text-xl font-extrabold leading-none text-[#21363a] sm:leading-tight">
                         Agenda de hoje
-                      </h2>
-                      <p className="text-sm font-semibold text-[#68797d]">
+                      </h3>
+                      <p className="mt-1 max-w-[13rem] text-sm font-semibold leading-snug text-[#68797d] sm:max-w-none">
                         Próximos atendimentos do dia
                       </p>
                     </div>
                     <Link
                       href="/app/agendamentos"
-                      className="flex items-center gap-1 text-sm font-extrabold text-[#006c73] hover:text-[#bf185d]"
+                      className="inline-flex shrink-0 items-center justify-center gap-1 rounded-full border border-[rgba(0,108,115,0.16)] bg-white/70 px-2.5 py-2 text-sm font-extrabold leading-none text-[#006c73] transition-colors hover:border-[rgba(191,24,93,0.24)] hover:text-[#bf185d] sm:border-0 sm:bg-transparent sm:px-0 sm:py-0"
                     >
-                      Ver todos
+                      <span className="sm:hidden">Todos</span>
+                      <span className="hidden sm:inline">Ver todos</span>
                       <ChevronRight size={16} />
                     </Link>
                   </div>
@@ -181,9 +182,9 @@ export default function AppPage() {
                         <Link
                           key={apt.id}
                           href={`/app/agendamentos/${apt.id}`}
-                          className="flex items-center gap-4 p-4 transition-colors hover:bg-[#fff1f6]"
+                          className="flex items-center gap-3 p-4 transition-colors hover:bg-[#fff1f6] sm:gap-4"
                         >
-                          <div className="w-16 rounded-xl bg-[#ffe0ec] px-3 py-2 text-center">
+                          <div className="w-14 shrink-0 rounded-xl bg-[#ffe0ec] px-3 py-2 text-center sm:w-16">
                             <p className="text-lg font-extrabold text-[#bf185d]">
                               {apt.time.slice(0, 2)}
                             </p>
@@ -191,7 +192,7 @@ export default function AppPage() {
                               {apt.time.slice(3, 5)}
                             </p>
                           </div>
-                          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#e6f7f8] text-xl">
+                          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#e6f7f8] text-xl">
                             {petIcons[apt.pet?.size || "medium"]}
                           </div>
                           <div className="min-w-0 flex-1">
@@ -222,9 +223,9 @@ export default function AppPage() {
                 </GlassCard>
 
                 <GlassCard className="p-5">
-                  <h2 className="text-xl font-extrabold text-[#21363a]">
+                  <h3 className="text-xl font-extrabold text-[#21363a]">
                     Ações rápidas
-                  </h2>
+                  </h3>
                   <div className="mt-4 grid gap-3">
                     <QuickAction
                       href="/app/agendamentos/novo"

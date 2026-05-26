@@ -19,6 +19,7 @@ import {
   Mail,
   ChevronRight,
   Users,
+  PawPrint,
 } from "lucide-react";
 import { formatPhone } from "@/lib/utils/phone";
 import type { Client } from "@/lib/types/clients";
@@ -88,7 +89,8 @@ export function ClientesPageContent() {
           <section className="animate-in fade-in slide-in-from-bottom-4 duration-700">
             <div className="flex items-center justify-between gap-4">
               <p className="text-sm font-bold text-[#68797d]">
-                {clients.length} cliente{clients.length !== 1 ? 's' : ''} cadastrado{clients.length !== 1 ? 's' : ''}
+                {clients.length} cliente{clients.length !== 1 ? "s" : ""}{" "}
+                cadastrado{clients.length !== 1 ? "s" : ""}
               </p>
               <Link href="/app/clientes/novo">
                 <Button
@@ -167,9 +169,9 @@ export function ClientesPageContent() {
                     variant="elevated"
                     className="p-4 hover:scale-[1.01] transition-all duration-300 cursor-pointer group"
                   >
-                    <div className="flex items-center gap-4">
+                    <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 sm:gap-4">
                       {/* Avatar */}
-                      <div className="relative">
+                      <div className="relative shrink-0">
                         <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#e8327b]/30 to-[#bf185d]/30 flex items-center justify-center text-white text-xl font-bold border border-[#e8327b]/20 group-hover:scale-110 group-hover:border-[#e8327b]/40 transition-all duration-300 shadow-lg shadow-[#e8327b]/10">
                           {client.name.charAt(0).toUpperCase()}
                         </div>
@@ -178,26 +180,32 @@ export function ClientesPageContent() {
 
                       {/* Info */}
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-white text-base truncate group-hover:text-[#e8327b] transition-colors">
+                        <h3 className="font-semibold text-white text-base leading-tight break-words group-hover:text-[#e8327b] transition-colors">
                           {client.name}
                         </h3>
                         {client.phone && (
-                          <p className="text-sm text-white/50 truncate flex items-center gap-1.5 mt-0.5">
-                            <Phone size={14} className="text-[#e8327b]/60" />
+                          <p className="text-sm text-white/75 font-semibold truncate flex items-center gap-1.5 mt-1">
+                            <Phone
+                              size={14}
+                              className="shrink-0 text-[#e8327b]/70"
+                            />
                             {formatPhone(client.phone)}
                           </p>
                         )}
-                        {client.email && (
-                          <p className="text-sm text-white/50 truncate flex items-center gap-1.5">
-                            <Mail size={14} className="text-[#bf185d]/60" />
-                            {client.email}
-                          </p>
-                        )}
+                        <div className="mt-1 flex min-w-0 flex-wrap items-center gap-2">
+                          {(client.pets_count ?? 0) > 0 && (
+                            <span className="inline-flex items-center gap-1 rounded-full border border-[#e8327b]/20 bg-[#fff1f6] px-2 py-0.5 text-[11px] font-bold text-[#21363a]">
+                              <PawPrint size={11} className="text-[#e8327b]" />
+                              {client.pets_count} pet
+                              {client.pets_count !== 1 ? "s" : ""}
+                            </span>
+                          )}
+                        </div>
                       </div>
 
                       {/* Actions */}
                       <div
-                        className="flex items-center gap-2 flex-shrink-0"
+                        className="flex items-center gap-1.5 flex-shrink-0"
                         onClick={(e) => e.preventDefault()}
                       >
                         {client.phone && (
@@ -206,6 +214,7 @@ export function ClientesPageContent() {
                             message={`Olá ${client.name}!`}
                             size="sm"
                             variant="ghost"
+                            showLabel={false}
                           />
                         )}
                         <ChevronRight

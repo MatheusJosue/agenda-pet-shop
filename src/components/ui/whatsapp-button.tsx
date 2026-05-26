@@ -50,6 +50,12 @@ export function WhatsAppButton({
     lg: 'h-11 px-5 text-base'
   }
 
+  const iconOnlySizeClasses = {
+    sm: 'h-8 w-8 p-0',
+    md: 'h-9 w-9 p-0',
+    lg: 'h-11 w-11 p-0'
+  }
+
   const iconSizes = {
     sm: 13,
     md: 16,
@@ -65,7 +71,7 @@ export function WhatsAppButton({
         onMouseLeave={() => setIsHovered(false)}
         className={`
           relative group inline-flex items-center justify-center gap-1.5
-          ${sizeClasses[size]}
+          ${showLabel ? sizeClasses[size] : iconOnlySizeClasses[size]}
           rounded-lg font-medium transition-all duration-300
           overflow-hidden
         `}
@@ -118,7 +124,7 @@ export function WhatsAppButton({
       onMouseLeave={() => setIsHovered(false)}
       className={`
         relative group inline-flex items-center justify-center gap-2
-        ${sizeClasses[size]}
+        ${showLabel ? sizeClasses[size] : iconOnlySizeClasses[size]}
         rounded-xl font-semibold text-white
         transition-all duration-300
         overflow-hidden
