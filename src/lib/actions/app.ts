@@ -78,6 +78,8 @@ export async function getAppStats(): Promise<{ data?: AppStats; error?: string }
     const now = new Date()
     const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0]
     const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0]
+    const firstDayTimestamp = new Date(now.getFullYear(), now.getMonth(), 1).toISOString()
+    const nextMonthTimestamp = new Date(now.getFullYear(), now.getMonth() + 1, 1).toISOString()
 
     // Fetch stats and data in parallel
     const [
@@ -86,6 +88,7 @@ export async function getAppStats(): Promise<{ data?: AppStats; error?: string }
       { count: todayCount },
       { data: todayAppointments },
       { data: monthlyAppointments },
+      { data: monthlyFinancialTransactions },
       { data: userData }
     ] = await Promise.all([
       supabase.from('clients').select('*', { count: 'exact', head: true }),
@@ -117,6 +120,11 @@ export async function getAppStats(): Promise<{ data?: AppStats; error?: string }
         .lte('date', lastDay)
         .in('status', ['completed', 'scheduled']),
       supabase
+        .from('financial_transactions')
+        .select('amount')
+        .gte('occurred_at', firstDayTimestamp)
+        .lt('occurred_at', nextMonthTimestamp),
+      supabase
         .from('users')
         .select('company_id')
         .eq('id', user.id)
@@ -135,7 +143,9 @@ export async function getAppStats(): Promise<{ data?: AppStats; error?: string }
     }
 
     // Calculate monthly revenue (use total_price if available, otherwise price)
-    const monthlyRevenue = monthlyAppointments?.reduce((sum, apt) => sum + (apt.total_price || apt.price || 0), 0) || 0
+    const appointmentRevenue = monthlyAppointments?.reduce((sum, apt) => sum + (apt.total_price || apt.price || 0), 0) || 0
+    const packageRevenue = monthlyFinancialTransactions?.reduce((sum, transaction) => sum + Number(transaction.amount || 0), 0) || 0
+    const monthlyRevenue = appointmentRevenue + packageRevenue
     const serviceAliasGroups = Object.values(SERVICE_ALIASES)
     const servicesCount = serviceAliasGroups.filter((aliases) =>
       serviceRows?.some((service) => serviceNameMatches(service.service_name, aliases))

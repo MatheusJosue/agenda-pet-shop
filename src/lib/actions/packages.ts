@@ -37,6 +37,34 @@ async function getCurrentCompanyId(): Promise<string | null> {
   return userData?.company_id || null
 }
 
+type SupabaseServerClient = Awaited<ReturnType<typeof createSupabaseClient>>
+
+async function createPackageFinancialTransaction(
+  supabase: SupabaseServerClient,
+  input: {
+    companyId: string
+    petPackageId: string
+    type: 'package_purchase' | 'package_renewal'
+    amount: number
+  }
+) {
+  const { error } = await supabase
+    .from('financial_transactions')
+    .insert({
+      company_id: input.companyId,
+      pet_package_id: input.petPackageId,
+      type: input.type,
+      amount: input.amount,
+    })
+
+  if (error) {
+    console.error('Error creating package financial transaction:', error)
+    return { error: 'Erro ao registrar faturamento do pacote' }
+  }
+
+  return {}
+}
+
 /**
  * Get all active package types for the current company
  */
@@ -236,6 +264,18 @@ export async function createPetPackage(input: PackageInput): Promise<PetPackageR
     return { error: 'Erro ao criar pacote' }
   }
 
+  const transactionResult = await createPackageFinancialTransaction(supabase, {
+    companyId,
+    petPackageId: data.id,
+    type: 'package_purchase',
+    amount: Number(packageType.price),
+  })
+
+  if (transactionResult.error) {
+    return { error: transactionResult.error }
+  }
+
+  revalidatePath('/app')
   revalidatePath(`/app/pets/${input.petId}`)
   revalidatePath('/app/pacotes')
 
@@ -769,6 +809,18 @@ export async function renewPackage(packageId: string): Promise<PetPackageRespons
     return { error: 'Erro ao renovar pacote' }
   }
 
+  const transactionResult = await createPackageFinancialTransaction(supabase, {
+    companyId,
+    petPackageId: packageId,
+    type: 'package_renewal',
+    amount: Number(packageData.package_type.price),
+  })
+
+  if (transactionResult.error) {
+    return { error: transactionResult.error }
+  }
+
+  revalidatePath('/app')
   revalidatePath('/app/pacotes')
   revalidatePath('/app/pets')
 

@@ -255,7 +255,7 @@ export default function NovoAgendamentoPage() {
       companyName={companyName}
       user={{ name: user?.user_metadata?.name, email: user?.email }}
     >
-      <div className="min-h-dvh bg-transparent relative flex flex-col overflow-hidden">
+      <div className="h-dvh min-h-0 bg-transparent relative flex flex-col overflow-hidden xl:h-full">
         {/* Premium animated background layers */}
         <div className="fixed inset-0 pointer-events-none overflow-hidden">
           <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-[#e8327b]/10 rounded-full blur-[120px] animate-[float_8s_ease-in-out_infinite]" />
@@ -270,8 +270,8 @@ export default function NovoAgendamentoPage() {
         />
 
         {/* Scrollable content area */}
-        <div className="flex-1 overflow-y-auto">
-          <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-36 sm:pb-8 lg:py-8 relative z-10">
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+          <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-[calc(9rem+env(safe-area-inset-bottom,0px))] sm:pb-8 lg:py-8 relative z-10">
             <div className="grid grid-cols-1 lg:grid-cols-12">
               <div className="lg:col-span-10 lg:col-start-2 space-y-6">
                 {/* Page Header */}

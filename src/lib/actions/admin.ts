@@ -14,6 +14,7 @@ export async function getAdminDashboardStats(): Promise<AdminActionResponse<Admi
     const now = new Date()
     const today = now.toISOString().split('T')[0]
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0]
+    const monthStartTimestamp = new Date(now.getFullYear(), now.getMonth(), 1).toISOString()
 
     const [
       companiesResult,
@@ -22,6 +23,7 @@ export async function getAdminDashboardStats(): Promise<AdminActionResponse<Admi
       petsResult,
       usersResult,
       appointmentsMonthResult,
+      financialTransactionsMonthResult,
       appointmentsTodayResult,
       invitesResult,
       recentCompaniesResult,
@@ -35,6 +37,10 @@ export async function getAdminDashboardStats(): Promise<AdminActionResponse<Admi
         .from('appointments')
         .select('date, status, price, total_price')
         .gte('date', monthStart),
+      supabaseAdmin
+        .from('financial_transactions')
+        .select('amount')
+        .gte('occurred_at', monthStartTimestamp),
       supabaseAdmin
         .from('appointments')
         .select('id', { count: 'exact', head: true })
@@ -52,12 +58,15 @@ export async function getAdminDashboardStats(): Promise<AdminActionResponse<Admi
     const companiesCount = companiesResult.count || 0
     const activeCompanies = activeCompaniesResult.count || 0
     const appointmentsThisMonth = appointmentsMonthResult.data || []
-    const revenue = appointmentsThisMonth
+    const appointmentRevenue = appointmentsThisMonth
       .filter((appointment) => appointment.status === 'completed')
       .reduce((sum, appointment) => {
         const price = Number(appointment.total_price ?? appointment.price ?? 0)
         return sum + price
       }, 0)
+    const packageRevenue = financialTransactionsMonthResult.data
+      ?.reduce((sum, transaction) => sum + Number(transaction.amount || 0), 0) || 0
+    const revenue = appointmentRevenue + packageRevenue
     const clientsCount = clientsResult.count || 0
     const pendingInvites = invitesResult.data?.filter((invite) =>
       !invite.accepted_at && new Date(invite.expires_at) >= now
@@ -233,21 +242,28 @@ export async function toggleCompanyStatus(id: string, active: boolean): Promise<
 export async function getCompanyMetrics(companyId: string): Promise<AdminActionResponse<CompanyMetrics>> {
   try {
     const today = new Date().toISOString().split('T')[0]
-    const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString()
+    const now = new Date()
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0]
 
-    const [clientsResult, petsResult, appointmentsResult] = await Promise.all([
+    const [clientsResult, petsResult, appointmentsResult, financialTransactionsResult] = await Promise.all([
       supabaseAdmin.from('clients').select('id', { count: 'exact', head: true }).eq('company_id', companyId),
       supabaseAdmin.from('pets').select('id', { count: 'exact', head: true }).eq('company_id', companyId),
       supabaseAdmin.from('appointments')
-        .select('date, price, status')
+        .select('date, price, total_price, status')
+        .eq('company_id', companyId),
+      supabaseAdmin.from('financial_transactions')
+        .select('amount')
         .eq('company_id', companyId)
     ])
 
     const appointmentsToday = appointmentsResult.data?.filter(a => a.date === today).length || 0
     const appointmentsThisMonth = appointmentsResult.data?.filter(a => a.date >= monthStart).length || 0
-    const revenue = appointmentsResult.data
+    const appointmentRevenue = appointmentsResult.data
       ?.filter(a => a.status === 'completed')
-      .reduce((sum, a) => sum + Number(a.price), 0) || 0
+      .reduce((sum, a) => sum + Number(a.total_price ?? a.price ?? 0), 0) || 0
+    const packageRevenue = financialTransactionsResult.data
+      ?.reduce((sum, transaction) => sum + Number(transaction.amount || 0), 0) || 0
+    const revenue = appointmentRevenue + packageRevenue
 
     return {
       data: {
