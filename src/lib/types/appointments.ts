@@ -76,6 +76,7 @@ export type AppointmentInput = {
   useCredit?: boolean
   clientPlanId?: string
   petPackageId?: string
+  createPackageRecurrence?: boolean
   notes?: string
 }
 

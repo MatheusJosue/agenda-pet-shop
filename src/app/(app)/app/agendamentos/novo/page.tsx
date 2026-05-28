@@ -231,6 +231,7 @@ export default function NovoAgendamentoPage() {
         date: formData.date,
         time: formData.time,
         petPackageId: billingType === "pacote" ? activePackage?.id : undefined,
+        createPackageRecurrence: billingType === "pacote",
         notes: formData.notes?.trim() || undefined,
       });
 

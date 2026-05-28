@@ -37,6 +37,46 @@ async function getCurrentCompanyId(): Promise<string | null> {
   return userData?.company_id || null
 }
 
+function formatDateInput(date: Date) {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
+function addDays(date: Date, days: number) {
+  const nextDate = new Date(date)
+  nextDate.setDate(nextDate.getDate() + days)
+  return nextDate
+}
+
+function addMonthsClamped(date: Date, months: number) {
+  const year = date.getFullYear()
+  const month = date.getMonth() + months
+  const day = date.getDate()
+  const lastDayOfTargetMonth = new Date(year, month + 1, 0).getDate()
+
+  return new Date(year, month, Math.min(day, lastDayOfTargetMonth))
+}
+
+function buildPackageAppointmentDates(
+  startDateInput: string,
+  intervalDays: number,
+  count: number
+) {
+  const [year, month, day] = startDateInput.split('-').map(Number)
+  const startDate = new Date(year, month - 1, day)
+
+  return Array.from({ length: count }, (_, index) => {
+    const date =
+      intervalDays === 30
+        ? addMonthsClamped(startDate, index)
+        : addDays(startDate, (intervalDays === 15 ? 14 : intervalDays) * index)
+
+    return formatDateInput(date)
+  })
+}
+
 /**
  * Get all appointments for the current user's company
  * Optionally filter by date range or status
@@ -187,6 +227,7 @@ export async function createAppointment(input: AppointmentInput): Promise<Appoin
     useCredit: input.useCredit || false,
     clientPlanId: input.clientPlanId,
     petPackageId: input.petPackageId,
+    createPackageRecurrence: input.createPackageRecurrence || false,
     notes: input.notes
   })
 
@@ -241,16 +282,19 @@ export async function createAppointment(input: AppointmentInput): Promise<Appoin
   )
   const totalPrice = validatedFields.data.totalPrice ?? servicesTotalPrice
 
-  const packageCreditsToUse = validatedFields.data.petPackageId
+  const packageCreditsPerAppointment = validatedFields.data.petPackageId
     ? validatedFields.data.servicePriceIds.length
     : 0
+  let appointmentCount = 1
+  let packageCreditsAvailable = 0
+  let packageIntervalDays = 0
 
   // Check if using pet package credit
   let finalPrice = totalPrice
   if (validatedFields.data.petPackageId) {
     const { data: petPackage } = await supabase
       .from('pet_packages')
-      .select('id, credits_remaining, expires_at')
+      .select('id, credits_remaining, expires_at, package_type:package_types!inner(interval_days)')
       .eq('id', validatedFields.data.petPackageId)
       .eq('company_id', companyId)
       .eq('pet_id', validatedFields.data.petId)
@@ -261,7 +305,7 @@ export async function createAppointment(input: AppointmentInput): Promise<Appoin
       return { error: 'Pacote não encontrado' }
     }
 
-    if (petPackage.credits_remaining < packageCreditsToUse) {
+    if (petPackage.credits_remaining < packageCreditsPerAppointment) {
       return { error: 'Créditos insuficientes no pacote' }
     }
 
@@ -269,6 +313,19 @@ export async function createAppointment(input: AppointmentInput): Promise<Appoin
       return { error: 'Pacote expirado' }
     }
 
+    const packageType = Array.isArray(petPackage.package_type)
+      ? petPackage.package_type[0]
+      : petPackage.package_type
+
+    if (!packageType) {
+      return { error: 'Tipo de pacote nÃ£o encontrado' }
+    }
+
+    packageCreditsAvailable = petPackage.credits_remaining
+    packageIntervalDays = packageType.interval_days
+    appointmentCount = validatedFields.data.createPackageRecurrence
+      ? Math.floor(packageCreditsAvailable / packageCreditsPerAppointment)
+      : 1
     finalPrice = totalPrice
   }
 
@@ -295,42 +352,55 @@ export async function createAppointment(input: AppointmentInput): Promise<Appoin
     }
   }
 
-  // Create appointment with first service in service_price_id for backward compatibility
-  const { data: appointment, error: insertError } = await supabase
-    .from('appointments')
-    .insert({
-      company_id: companyId,
-      client_id: validatedFields.data.clientId,
-      pet_id: validatedFields.data.petId,
-      service_price_id: validatedFields.data.servicePriceIds[0], // Keep first for backward compatibility
-      date: validatedFields.data.date,
-      time: validatedFields.data.time,
-      price: servicePricesWithAppointmentPrice[0].appointment_price, // Keep individual price for backward compatibility
-      total_price: finalPrice,
-      status: 'scheduled',
-      used_credit: validatedFields.data.useCredit || Boolean(validatedFields.data.petPackageId),
-      client_plan_id: validatedFields.data.clientPlanId,
-      pet_package_id: validatedFields.data.petPackageId,
-      notes: validatedFields.data.notes || null
-    })
-    .select()
-    .single()
+  const appointmentDates = validatedFields.data.petPackageId
+    ? buildPackageAppointmentDates(
+        validatedFields.data.date,
+        packageIntervalDays,
+        appointmentCount
+      )
+    : [validatedFields.data.date]
 
-  if (insertError) {
+  const appointmentRows = appointmentDates.map((date) => ({
+    company_id: companyId,
+    client_id: validatedFields.data.clientId,
+    pet_id: validatedFields.data.petId,
+    service_price_id: validatedFields.data.servicePriceIds[0], // Keep first for backward compatibility
+    date,
+    time: validatedFields.data.time,
+    price: servicePricesWithAppointmentPrice[0].appointment_price, // Keep individual price for backward compatibility
+    total_price: finalPrice,
+    status: 'scheduled',
+    used_credit: validatedFields.data.useCredit || Boolean(validatedFields.data.petPackageId),
+    client_plan_id: validatedFields.data.clientPlanId,
+    pet_package_id: validatedFields.data.petPackageId,
+    notes: validatedFields.data.notes || null
+  }))
+
+  // Create appointment with first service in service_price_id for backward compatibility
+  const { data: appointments, error: insertError } = await supabase
+    .from('appointments')
+    .insert(appointmentRows)
+    .select()
+
+  if (insertError || !appointments || appointments.length === 0) {
     console.error('Supabase insert error:', insertError)
     console.error('Error details:', JSON.stringify(insertError))
     if (process.env.NODE_ENV === 'development') {
-      return { error: `Erro ao criar agendamento: ${insertError.message}` }
+      return { error: `Erro ao criar agendamento: ${insertError?.message || 'sem detalhes'}` }
     }
     return { error: 'Erro ao criar agendamento' }
   }
 
+  const appointmentIds = appointments.map((appointment) => appointment.id)
+
   // Insert all services into appointment_services junction table
-  const appointmentServices = servicePricesWithAppointmentPrice.map(sp => ({
-    appointment_id: appointment.id,
-    service_price_id: sp.id,
-    price: sp.appointment_price
-  }))
+  const appointmentServices = appointments.flatMap((appointment) =>
+    servicePricesWithAppointmentPrice.map(sp => ({
+      appointment_id: appointment.id,
+      service_price_id: sp.id,
+      price: sp.appointment_price
+    }))
+  )
 
   const { error: servicesError } = await supabase
     .from('appointment_services')
@@ -339,12 +409,13 @@ export async function createAppointment(input: AppointmentInput): Promise<Appoin
   if (servicesError) {
     console.error('Error inserting appointment services:', servicesError)
     // Rollback appointment creation
-    await supabase.from('appointments').delete().eq('id', appointment.id)
+    await supabase.from('appointments').delete().in('id', appointmentIds)
     return { error: 'Erro ao vincular serviços ao agendamento' }
   }
 
   // Deduct pet package credits if used.
-  if (validatedFields.data.petPackageId && packageCreditsToUse > 0) {
+  const totalPackageCreditsToUse = packageCreditsPerAppointment * appointmentCount
+  if (validatedFields.data.petPackageId && totalPackageCreditsToUse > 0) {
     const { data: currentPackage, error: packageReadError } = await supabase
       .from('pet_packages')
       .select('credits_remaining')
@@ -355,15 +426,15 @@ export async function createAppointment(input: AppointmentInput): Promise<Appoin
       .single()
 
     if (packageReadError || !currentPackage) {
-      await supabase.from('appointment_services').delete().eq('appointment_id', appointment.id)
-      await supabase.from('appointments').delete().eq('id', appointment.id)
+      await supabase.from('appointment_services').delete().in('appointment_id', appointmentIds)
+      await supabase.from('appointments').delete().in('id', appointmentIds)
       return { error: 'Pacote não encontrado' }
     }
 
-    const nextCredits = currentPackage.credits_remaining - packageCreditsToUse
+    const nextCredits = currentPackage.credits_remaining - totalPackageCreditsToUse
     if (nextCredits < 0) {
-      await supabase.from('appointment_services').delete().eq('appointment_id', appointment.id)
-      await supabase.from('appointments').delete().eq('id', appointment.id)
+      await supabase.from('appointment_services').delete().in('appointment_id', appointmentIds)
+      await supabase.from('appointments').delete().in('id', appointmentIds)
       return { error: 'Créditos insuficientes no pacote' }
     }
 
@@ -378,8 +449,8 @@ export async function createAppointment(input: AppointmentInput): Promise<Appoin
       .eq('pet_id', validatedFields.data.petId)
 
     if (packageUpdateError) {
-      await supabase.from('appointment_services').delete().eq('appointment_id', appointment.id)
-      await supabase.from('appointments').delete().eq('id', appointment.id)
+      await supabase.from('appointment_services').delete().in('appointment_id', appointmentIds)
+      await supabase.from('appointments').delete().in('id', appointmentIds)
       return { error: 'Erro ao usar crédito do pacote' }
     }
   }
@@ -397,7 +468,7 @@ export async function createAppointment(input: AppointmentInput): Promise<Appoin
   revalidatePath(`/app/clientes/${input.clientId}/pets/${input.petId}`)
   revalidatePath(`/app/pets/${input.petId}`)
   revalidatePath('/app/pacotes')
-  return { data: appointment }
+  return { data: appointments[0] }
 }
 
 /**
