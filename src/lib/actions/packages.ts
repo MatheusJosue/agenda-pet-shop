@@ -272,7 +272,7 @@ export async function createPetPackage(input: PackageInput): Promise<PetPackageR
   })
 
   if (transactionResult.error) {
-    return { error: transactionResult.error }
+    console.warn('Package created without financial transaction:', transactionResult.error)
   }
 
   revalidatePath('/app')

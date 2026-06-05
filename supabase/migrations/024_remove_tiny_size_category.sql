@@ -90,5 +90,30 @@ ALTER TABLE pets
   ADD CONSTRAINT pets_size_check
   CHECK (size IN ('small', 'medium', 'large', 'giant'));
 
+UPDATE package_types
+SET active = false
+WHERE name IN (
+  'Pacote Semanal',
+  'Pacote Quinzenal',
+  'Pacote Mensal'
+);
+
+INSERT INTO package_types (company_id, name, interval_days, credits, price, active)
+SELECT c.id, v.name, v.interval_days, v.credits, v.price, true
+FROM companies c
+CROSS JOIN (
+  VALUES
+    ('Gigante - Semanal', 7, 4, 320.00),
+    ('Gigante - Quinzenal', 15, 2, 210.00),
+    ('Gigante - Mensal', 30, 1, 110.00)
+) AS v(name, interval_days, credits, price)
+WHERE NOT EXISTS (
+  SELECT 1
+  FROM package_types pt
+  WHERE pt.company_id = c.id
+    AND pt.name = v.name
+    AND pt.active = true
+);
+
 COMMENT ON COLUMN service_prices.size_category IS 'small=P/0-10kg, medium=M/10-20kg, large=G/20-30kg, giant=GG/30-60kg';
 COMMENT ON COLUMN pets.size IS 'small=P/0-10kg, medium=M/10-20kg, large=G/20-30kg, giant=GG/30-60kg';

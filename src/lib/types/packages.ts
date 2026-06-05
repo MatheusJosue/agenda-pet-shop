@@ -25,7 +25,7 @@ export interface PetPackageWithRelations extends PetPackage {
   pet: {
     id: string
     name: string
-    size: 'small' | 'medium' | 'large'
+    size: 'small' | 'medium' | 'large' | 'giant'
   }
   client: {
     id: string
