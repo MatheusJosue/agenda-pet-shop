@@ -29,7 +29,7 @@ type TodayAppointment = {
   time: string;
   pet?: {
     name?: string;
-    size?: "tiny" | "small" | "medium" | "large" | "giant";
+    size?: "small" | "medium" | "large" | "giant";
   };
   service?: {
     name?: string;
@@ -37,11 +37,10 @@ type TodayAppointment = {
 };
 
 const petIcons = {
-  tiny: "🐾",
-  small: "🐾",
-  medium: "🐶",
-  large: "🐕",
-  giant: "🐕",
+  small: "P",
+  medium: "M",
+  large: "G",
+  giant: "GG",
 };
 
 function capitalize(str: string): string {
@@ -192,8 +191,11 @@ export default function AppPage() {
                               {apt.time.slice(3, 5)}
                             </p>
                           </div>
-                          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#e6f7f8] text-xl">
-                            {petIcons[apt.pet?.size || "medium"]}
+                          <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#e6f7f8]">
+                            <PawPrint size={22} className="text-[#006c73]" />
+                            <span className="absolute -bottom-1 -right-1 rounded-full bg-[#006c73] px-1.5 py-0.5 text-[9px] font-bold text-white">
+                              {petIcons[apt.pet?.size || "medium"]}
+                            </span>
                           </div>
                           <div className="min-w-0 flex-1">
                             <p className="truncate font-extrabold text-[#21363a]">

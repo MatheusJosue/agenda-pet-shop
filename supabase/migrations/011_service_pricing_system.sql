@@ -29,7 +29,7 @@ CREATE INDEX idx_service_prices_service_name ON service_prices(service_name);
 COMMENT ON TABLE service_prices IS 'Preços de serviços por múltiplas dimensões: tipo de cobrança, tipo de pelo e porte';
 COMMENT ON COLUMN service_prices.billing_type IS 'avulso = pagamento único, pacote = usa créditos';
 COMMENT ON COLUMN service_prices.hair_type IS 'PC = Pelo Curto, PL = Pelo Longo, NULL = sem distinção';
-COMMENT ON COLUMN service_prices.size_category IS 'tiny=0-10kg, small=10-20kg, medium=20-30kg, large=30-50kg, giant=50-70kg';
+COMMENT ON COLUMN service_prices.size_category IS 'small=0-10kg, medium=10-20kg, large=20-30kg, giant=30-60kg';
 
 -- ============================================
 -- 2. Expand pets table to support 5 size categories
@@ -48,7 +48,7 @@ ALTER TABLE pets ADD CONSTRAINT pets_size_check
   CHECK (size IN ('tiny', 'small', 'medium', 'large', 'giant'));
 
 -- Add comment
-COMMENT ON COLUMN pets.size IS 'tiny=0-10kg, small=10-20kg, medium=20-30kg, large=30-50kg, giant=50-70kg';
+COMMENT ON COLUMN pets.size IS 'small=0-10kg, medium=10-20kg, large=20-30kg, giant=30-60kg';
 
 -- ============================================
 -- 3. Update appointments table for service_price_id

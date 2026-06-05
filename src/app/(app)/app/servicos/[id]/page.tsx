@@ -21,9 +21,9 @@ import { Pencil, Trash2, ArrowLeft, DollarSign } from "lucide-react";
 import type { Service } from "@/lib/types/services";
 
 const sizeEmojis = {
-  small: "🐱",
-  medium: "🐕",
-  large: "🦮",
+  small: "P",
+  medium: "M",
+  large: "G",
 };
 
 export default function ServicoDetailPage() {

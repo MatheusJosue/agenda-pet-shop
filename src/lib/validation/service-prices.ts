@@ -2,8 +2,8 @@
 
 import { z } from 'zod'
 
-export const sizeCategorySchema = z.enum(['tiny', 'small', 'medium', 'large', 'giant'], {
-  errorMap: () => ({ message: 'Porte deve ser tiny, small, medium, large ou giant' })
+export const sizeCategorySchema = z.enum(['small', 'medium', 'large', 'giant'], {
+  errorMap: () => ({ message: 'Porte deve ser small, medium, large ou giant' })
 })
 
 export const billingTypeSchema = z.enum(['avulso', 'pacote'], {

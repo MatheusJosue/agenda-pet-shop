@@ -544,7 +544,7 @@ function packageTypeMatchesPetSize(name: string, petSize: SizeCategory) {
 }
 
 function getPackageSizeLabel(petSize: SizeCategory) {
-  if (petSize === 'tiny' || petSize === 'small') return 'pequeno'
+  if (petSize === 'small') return 'pequeno'
   if (petSize === 'medium') return 'medio'
   if (petSize === 'large' || petSize === 'giant') return 'grande'
   return null

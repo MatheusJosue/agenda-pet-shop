@@ -1,9 +1,9 @@
 // src/lib/types/service-prices.ts
 
-import { Cat, Dog, Dog as DogLarge } from 'lucide-react'
+import { PawPrint } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
-export type SizeCategory = 'tiny' | 'small' | 'medium' | 'large' | 'giant'
+export type SizeCategory = 'small' | 'medium' | 'large' | 'giant'
 
 export type BillingType = 'avulso' | 'pacote'
 
@@ -60,29 +60,26 @@ export type PriceResponse = {
 
 // Size labels for UI
 export const SIZE_LABELS: Record<SizeCategory, string> = {
-  tiny: '0-10kg',
-  small: '10-20kg',
-  medium: '20-30kg',
-  large: '30-50kg',
-  giant: '50-70kg'
+  small: '0-10kg',
+  medium: '10-20kg',
+  large: '20-30kg',
+  giant: '30-60kg'
 } as const
 
 // Size emojis for UI
 export const SIZE_EMOJIS: Record<SizeCategory, string> = {
-  tiny: '🐭',
-  small: '🐱',
-  medium: '🐕',
-  large: '🦮',
-  giant: '🐕‍🦺'
+  small: 'P',
+  medium: 'M',
+  large: 'G',
+  giant: 'GG'
 } as const
 
 // Size icons for UI (Lucide React components)
 export const SIZE_ICONS: Record<SizeCategory, LucideIcon> = {
-  tiny: Cat,
-  small: Cat,
-  medium: Dog,
-  large: DogLarge,
-  giant: DogLarge
+  small: PawPrint,
+  medium: PawPrint,
+  large: PawPrint,
+  giant: PawPrint
 }
 
 // Hair type labels
@@ -93,7 +90,6 @@ export const HAIR_TYPE_LABELS: Record<HairType, string> = {
 
 // Size colors for UI badges
 export const SIZE_COLORS: Record<SizeCategory, string> = {
-  tiny: 'bg-green-500/20 text-black-200',
   small: 'bg-lime-500/20 text-black-200',
   medium: 'bg-yellow-500/20 text-black-200',
   large: 'bg-orange-500/20 text-black-200',
@@ -102,9 +98,8 @@ export const SIZE_COLORS: Record<SizeCategory, string> = {
 
 // Size categories array for selects
 export const SIZE_CATEGORIES: Array<{ value: SizeCategory; label: string }> = [
-  { value: 'tiny', label: '0-10kg (Tiny)' },
-  { value: 'small', label: '10-20kg (Pequeno)' },
-  { value: 'medium', label: '20-30kg (Médio)' },
-  { value: 'large', label: '30-50kg (Grande)' },
-  { value: 'giant', label: '50-70kg (Gigante)' }
+  { value: 'small', label: '0-10kg (Pequeno)' },
+  { value: 'medium', label: '10-20kg (Médio)' },
+  { value: 'large', label: '20-30kg (Grande)' },
+  { value: 'giant', label: '30-60kg (Gigante)' }
 ]

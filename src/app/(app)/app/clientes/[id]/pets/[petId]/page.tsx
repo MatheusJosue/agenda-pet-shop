@@ -14,7 +14,7 @@ import { AppLayout } from '@/components/layout/app-layout'
 import { BottomNavigation } from '@/components/layout/bottom-navigation'
 import { ManagePackageModal } from '@/components/pacotes/manage-package-modal'
 import { SkeletonInput, SkeletonForm } from '@/components/skeleton'
-import { Pencil, Trash2, Package, ArrowLeft, Sparkles, Calendar, ChevronRight } from 'lucide-react'
+import { Pencil, Trash2, Package, ArrowLeft, Sparkles, Calendar, ChevronRight, PawPrint } from 'lucide-react'
 import type { PetWithClient } from '@/lib/types/pets'
 import type { PetPackageWithRelations } from '@/lib/types/packages'
 import { SIZE_LABELS, SIZE_EMOJIS, SIZE_COLORS } from '@/lib/types/service-prices'
@@ -22,7 +22,6 @@ import { HAIR_TYPE_LABELS, type HairType } from '@/lib/types/pets'
 import type { SizeCategory } from '@/lib/types/service-prices'
 
 const SIZE_OPTIONS: Array<{ value: SizeCategory; label: string }> = [
-  { value: 'tiny', label: 'Tiny' },
   { value: 'small', label: 'Pequeno' },
   { value: 'medium', label: 'Médio' },
   { value: 'large', label: 'Grande' },
@@ -414,13 +413,13 @@ export default function ClientPetDetailPage() {
                   <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#e8327b] via-[#bf185d] to-[#006c73] blur-lg opacity-60 animate-pulse" />
 
                   {/* Avatar container */}
-                  <div className="relative w-full h-full rounded-full bg-transparent border-4 border-[#e8327b]/30 flex items-center justify-center text-5xl shadow-2xl">
-                    {SIZE_EMOJIS[pet.size]}
+                  <div className="relative w-full h-full rounded-full bg-transparent border-4 border-[#e8327b]/30 flex items-center justify-center shadow-2xl">
+                    <PawPrint size={46} className="text-[#e8327b]" />
                   </div>
 
                   {/* Size badge */}
                   <div className={`absolute -bottom-1 -right-1 px-2.5 py-1 rounded-full text-xs font-bold text-white shadow-lg ${SIZE_COLORS[pet.size]}`}>
-                    {pet.size.toUpperCase()}
+                    {SIZE_EMOJIS[pet.size]}
                   </div>
                 </div>
               </div>
@@ -454,8 +453,8 @@ export default function ClientPetDetailPage() {
                     )}
                     <div className="flex items-center justify-center gap-2 flex-wrap">
                       <span className="px-3 py-1.5 rounded-full bg-[#e8327b]/20 border border-[#e8327b]/30 text-[#e8327b] text-xs font-semibold uppercase tracking-wide flex items-center gap-1.5">
-                        <span className="text-sm">{SIZE_EMOJIS[pet.size]}</span>
-                        {SIZE_LABELS[pet.size]}
+                        <PawPrint size={13} />
+                        {SIZE_EMOJIS[pet.size]} · {SIZE_LABELS[pet.size]}
                       </span>
                       <span className="px-3 py-1.5 rounded-full bg-[#bf185d]/20 border border-[#bf185d]/30 text-[#bf185d] text-xs font-semibold uppercase tracking-wide">
                         {HAIR_TYPE_LABELS[pet.hair_type]}
@@ -473,11 +472,11 @@ export default function ClientPetDetailPage() {
             <GlassCard variant="default" className="p-4">
               <div className="flex items-center gap-3">
                 <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#006c73]/20 to-[#078f96]/20 flex items-center justify-center text-xl shadow-lg shadow-[#006c73]/10">
-                  📏
+                  <PawPrint size={22} className="text-[#078f96]" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-white/50 text-[10px] font-semibold uppercase tracking-wider mb-0.5">Porte</p>
-                  <p className="text-white text-sm font-medium truncate">{SIZE_LABELS[pet.size]}</p>
+                  <p className="text-white text-sm font-medium truncate">{SIZE_EMOJIS[pet.size]} · {SIZE_LABELS[pet.size]}</p>
                 </div>
               </div>
             </GlassCard>
@@ -552,10 +551,12 @@ export default function ClientPetDetailPage() {
               {/* Size Selection */}
               <GlassCard variant="default" className="p-4">
                 <p className="text-white/50 text-[10px] font-semibold uppercase tracking-wider mb-3 flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-lg bg-[#006c73]/20 flex items-center justify-center text-xs">📏</span>
+                  <span className="w-6 h-6 rounded-lg bg-[#006c73]/20 flex items-center justify-center text-xs">
+                    <PawPrint size={13} className="text-[#078f96]" />
+                  </span>
                   Porte *
                 </p>
-                <div className="grid grid-cols-5 gap-2">
+                <div className="grid grid-cols-4 gap-2">
                   {SIZE_OPTIONS.map((option) => (
                     <button
                       key={option.value}
@@ -567,8 +568,12 @@ export default function ClientPetDetailPage() {
                           : "bg-white/5 border-white/10 text-white/70 hover:border-white/30 hover:bg-white/10"
                       }`}
                     >
-                      <span className="block text-lg mb-1">{SIZE_EMOJIS[option.value]}</span>
-                      {option.label}
+                      <span className="flex items-center justify-center gap-1 mb-1">
+                        <PawPrint size={14} />
+                        <span className="text-sm font-bold">{SIZE_EMOJIS[option.value]}</span>
+                      </span>
+                      <span className="block">{option.label}</span>
+                      <span className="block text-[10px] opacity-70 mt-0.5">{SIZE_LABELS[option.value]}</span>
                     </button>
                   ))}
                 </div>

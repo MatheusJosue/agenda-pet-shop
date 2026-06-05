@@ -12,8 +12,8 @@ interface PriceTableProps {
   onEdit: () => void
 }
 
-const SIZES: Array<'tiny' | 'small' | 'medium' | 'large' | 'giant'> =
-  ['tiny', 'small', 'medium', 'large', 'giant']
+const SIZES: Array<'small' | 'medium' | 'large' | 'giant'> =
+  ['small', 'medium', 'large', 'giant']
 
 export function PriceTable({ serviceName, billingType, prices, onEdit }: PriceTableProps) {
   // Determine if service has hair types

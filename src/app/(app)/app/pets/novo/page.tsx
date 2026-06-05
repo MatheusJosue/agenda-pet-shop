@@ -34,7 +34,7 @@ export default function NovoPetPage() {
     clientId: "",
     name: "",
     breed: "",
-    size: "medium" as "tiny" | "small" | "medium" | "large" | "giant",
+    size: "medium" as "small" | "medium" | "large" | "giant",
     hairType: "PC" as HairType,
     notes: "",
   });
@@ -263,17 +263,16 @@ export default function NovoPetPage() {
                 >
                   <label className="block text-[#21363a] text-sm font-bold mb-2.5 flex items-center gap-2">
                     <span className="w-7 h-7 rounded-xl bg-[#e8327b]/20 flex items-center justify-center">
-                      <span className="text-sm">📏</span>
+                      <PawPrint size={14} className="text-[#e8327b]" />
                     </span>
                     Porte *
                   </label>
-                  <div className="grid grid-cols-5 gap-2">
+                  <div className="grid grid-cols-4 gap-2">
                     {[
-                      { value: "tiny", label: "Tiny", emoji: "🐭" },
-                      { value: "small", label: "Pequeno", emoji: "🐱" },
-                      { value: "medium", label: "Médio", emoji: "🐕" },
-                      { value: "large", label: "Grande", emoji: "🦮" },
-                      { value: "giant", label: "Gigante", emoji: "🦏" },
+                      { value: "small", label: "Pequeno", marker: "P", weight: "0-10kg" },
+                      { value: "medium", label: "Médio", marker: "M", weight: "10-20kg" },
+                      { value: "large", label: "Grande", marker: "G", weight: "20-30kg" },
+                      { value: "giant", label: "Gigante", marker: "GG", weight: "30-60kg" },
                     ].map((size) => (
                       <button
                         key={size.value}
@@ -285,9 +284,15 @@ export default function NovoPetPage() {
                             : "bg-white/86 border-[rgba(232,50,123,0.22)] text-[#006c73] hover:border-[#e8327b] hover:bg-[#fff1f6]"
                         }`}
                       >
-                        <div className="text-lg mb-0.5">{size.emoji}</div>
+                        <div className="flex items-center justify-center gap-1 mb-0.5">
+                          <PawPrint size={14} />
+                          <span className="text-sm font-bold">{size.marker}</span>
+                        </div>
                         <div className="text-[10px] font-medium leading-tight">
                           {size.label}
+                        </div>
+                        <div className="text-[10px] opacity-70 leading-tight mt-0.5">
+                          {size.weight}
                         </div>
                       </button>
                     ))}

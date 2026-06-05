@@ -9,13 +9,13 @@ export const CATALOG_SIZE_LABELS: Record<CatalogSize, string> = {
 };
 
 export const CATALOG_SIZE_HINTS: Record<CatalogSize, string> = {
-  small: "Até 10 kg",
-  medium: "De 10 a 25 kg",
-  large: "Acima de 25 kg",
+  small: "0 a 10 kg",
+  medium: "10 a 20 kg",
+  large: "20 a 30 kg",
 };
 
 export const CATALOG_SIZE_TO_SERVICE_SIZE: Record<CatalogSize, SizeCategory[]> = {
-  small: ["tiny", "small"],
+  small: ["small"],
   medium: ["medium"],
   large: ["large", "giant"],
 };

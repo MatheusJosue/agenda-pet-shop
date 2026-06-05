@@ -15,11 +15,10 @@ import { Plus, PawPrint } from 'lucide-react'
 import type { PetWithClient } from '@/lib/types/pets'
 
 const SIZE_EMOJIS: Record<string, string> = {
-  tiny: '🐭',
-  small: '🐱',
-  medium: '🐕',
-  large: '🦮',
-  giant: '🐕‍🦺'
+  small: 'P',
+  medium: 'M',
+  large: 'G',
+  giant: 'GG'
 }
 
 export function PetsPageContent() {
@@ -147,7 +146,7 @@ export function PetsPageContent() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
             {pets.map((pet: PetWithClient, index) => {
-              const sizeEmoji = SIZE_EMOJIS[pet.size] || '🐾'
+              const sizeLabel = SIZE_EMOJIS[pet.size] || 'P'
               return (
                 <Link
                   key={pet.id}
@@ -160,8 +159,11 @@ export function PetsPageContent() {
                     className="p-6 hover:scale-[1.02] transition-all duration-300 cursor-pointer h-full group"
                   >
                     <div className="flex flex-col h-full">
-                      <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#e8327b]/30 to-[#bf185d]/30 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:border-[#e8327b]/40 transition-all duration-300 shadow-lg shadow-[#e8327b]/10 border border-[#e8327b]/20">
-                        <span className="text-2xl">{sizeEmoji}</span>
+                      <div className="relative w-14 h-14 rounded-2xl bg-gradient-to-br from-[#e8327b]/30 to-[#bf185d]/30 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:border-[#e8327b]/40 transition-all duration-300 shadow-lg shadow-[#e8327b]/10 border border-[#e8327b]/20">
+                        <PawPrint size={28} className="text-[#e8327b]" />
+                        <span className="absolute -bottom-1 -right-1 rounded-full bg-[#e8327b] px-1.5 py-0.5 text-[10px] font-bold text-white">
+                          {sizeLabel}
+                        </span>
                       </div>
                       <h3 className="font-semibold text-white text-lg mb-1 truncate group-hover:text-[#e8327b] transition-colors">
                         {pet.name}
@@ -170,7 +172,7 @@ export function PetsPageContent() {
                         <p className="text-white/60 text-sm mb-3 truncate">{pet.breed}</p>
                       )}
                       <span className={`inline-block px-3 py-1.5 ${SIZE_COLORS[pet.size]} text-xs rounded-lg mb-4 self-start font-medium border border-white/10`}>
-                        {SIZE_LABELS[pet.size]}
+                        {sizeLabel} · {SIZE_LABELS[pet.size]}
                       </span>
                       <div className="mt-auto pt-3 border-t border-white/10">
                         <p className="text-white/50 text-sm truncate">

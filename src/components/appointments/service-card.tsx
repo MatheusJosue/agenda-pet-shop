@@ -11,7 +11,7 @@ interface ServiceCardProps {
   price: number
   pricePL?: number  // Preço para pelo longo
   hasHairType: boolean
-  sizeCategory: 'tiny' | 'small' | 'medium' | 'large' | 'giant'
+  sizeCategory: 'small' | 'medium' | 'large' | 'giant'
   petHairType?: HairType  // Pet's hair type - if provided, use it automatically
   selected?: boolean
   onSelect?: (hairType: 'PC' | 'PL' | null) => void

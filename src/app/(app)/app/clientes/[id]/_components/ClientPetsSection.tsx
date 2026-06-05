@@ -20,7 +20,6 @@ interface ClientPetsSectionProps {
 }
 
 const SIZE_OPTIONS: Array<{ value: SizeCategory; label: string }> = [
-  { value: "tiny", label: "Tiny" },
   { value: "small", label: "Pequeno" },
   { value: "medium", label: "Médio" },
   { value: "large", label: "Grande" },
@@ -28,11 +27,10 @@ const SIZE_OPTIONS: Array<{ value: SizeCategory; label: string }> = [
 ];
 
 const PET_EMOJIS: Record<SizeCategory, string> = {
-  tiny: "🐭",
-  small: "🐱",
-  medium: "🐕",
-  large: "🦮",
-  giant: "🐕‍🦺",
+  small: "P",
+  medium: "M",
+  large: "G",
+  giant: "GG",
 };
 
 export function ClientPetsSection({ clientId }: ClientPetsSectionProps) {
@@ -214,7 +212,7 @@ export function ClientPetsSection({ clientId }: ClientPetsSectionProps) {
               <label className="block text-white/80 text-sm font-semibold mb-3">
                 Porte *
               </label>
-              <div className="grid grid-cols-5 gap-2">
+              <div className="grid grid-cols-4 gap-2">
                 {SIZE_OPTIONS.map((option) => (
                   <button
                     key={option.value}
@@ -228,10 +226,12 @@ export function ClientPetsSection({ clientId }: ClientPetsSectionProps) {
                         : "bg-white/5 border-white/10 text-white/70 hover:border-white/30 hover:bg-white/10"
                     }`}
                   >
-                    <span className="block text-lg mb-1">
-                      {PET_EMOJIS[option.value]}
+                    <span className="flex items-center justify-center gap-1 mb-1">
+                      <PawPrint size={14} />
+                      <span className="text-sm font-bold">{PET_EMOJIS[option.value]}</span>
                     </span>
-                    {option.label}
+                    <span className="block">{option.label}</span>
+                    <span className="block text-[10px] opacity-70 mt-0.5">{SIZE_LABELS[option.value]}</span>
                   </button>
                 ))}
               </div>
@@ -361,8 +361,11 @@ export function ClientPetsSection({ clientId }: ClientPetsSectionProps) {
                   className="flex-1 hover:opacity-90 transition-opacity"
                 >
                   <div className="flex items-center gap-3 mb-2">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#e8327b]/20 to-[#bf185d]/20 flex items-center justify-center text-2xl border-2 border-[#e8327b]/20 shadow-lg shadow-[#e8327b]/10">
-                      {PET_EMOJIS[pet.size] || "🐾"}
+                    <div className="relative w-12 h-12 rounded-full bg-gradient-to-br from-[#e8327b]/20 to-[#bf185d]/20 flex items-center justify-center border-2 border-[#e8327b]/20 shadow-lg shadow-[#e8327b]/10">
+                      <PawPrint size={23} className="text-[#e8327b]" />
+                      <span className="absolute -bottom-1 -right-1 rounded-full bg-[#e8327b] px-1.5 py-0.5 text-[9px] font-bold text-white">
+                        {PET_EMOJIS[pet.size] || "P"}
+                      </span>
                     </div>
                     <div className="flex-1">
                       <h3 className="text-lg font-semibold text-white group-hover:text-[#e8327b] transition-colors">
@@ -371,7 +374,7 @@ export function ClientPetsSection({ clientId }: ClientPetsSectionProps) {
                       <span
                         className={`inline-block mt-1 px-2.5 py-0.5 rounded-full text-xs font-medium border ${SIZE_COLORS[pet.size]}`}
                       >
-                        {SIZE_LABELS[pet.size]}
+                        {PET_EMOJIS[pet.size]} · {SIZE_LABELS[pet.size]}
                       </span>
                     </div>
                   </div>

@@ -1,5 +1,5 @@
 -- Insert package prices for all combinations
--- Mapping: 0-10kg→tiny, 10-20kg→small, 20-30kg→medium, 30-50kg→large, 50-70kg→giant
+-- Mapping: 0-10kg→small, 10-20kg→medium, 20-30kg→large, 30-60kg→giant
 -- Frequencies: semanal (4 credits), quinzenal (2 credits), mensal (1 credit)
 
 -- First, delete existing package prices to avoid duplicates

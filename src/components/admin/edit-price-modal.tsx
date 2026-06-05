@@ -23,7 +23,7 @@ interface EditPriceModalProps {
   }>) => Promise<void>
 }
 
-const SIZES: Array<SizeCategory> = ['tiny', 'small', 'medium', 'large', 'giant']
+const SIZES: Array<SizeCategory> = ['small', 'medium', 'large', 'giant']
 
 export function EditPriceModal({
   serviceName,
