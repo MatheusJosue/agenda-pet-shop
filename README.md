@@ -2,7 +2,7 @@
 
 > SaaS multi-tenant para pet shops gerenciarem agendamentos de banho e tosa, clientes, pets e planos.
 
-🔗 **Demo:** https://agenda-pet-shop.vercel.app
+🔗 **Demo:** https://agendapetshop.vercel.app
 
 ## ✨ Funcionalidades
 
